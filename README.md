@@ -1,5 +1,24 @@
 Response
-=============================
+========
+
+The response module defines the `Response` class as an abstracton of frequency and impulse responses.
+
+    from response import Response
+    fs = 16
+    x = [1]
+    # Create impulsive response and do chain of processing
+    r = Response.from_time(fs, x) \
+                .zeropad(0, 15) \
+                .delay(0.5) \
+                .resample(10 * fs, window=('kaiser', 0.5)) \
+                .timecrop(0, 0.6) \
+                .time_window((0, 0.2), (0.5, 0.6))
+    # plot result
+    r.plot(show=True)
+    # time domain data
+    r.in_time
+    # frequency domain data
+    r.in_freq
 
 ## Testing
 
@@ -14,12 +33,10 @@ Always run tests before pushing code.
 Install for development with `pip install -e .` .
 
 Comments should comply with the [Numpy/Scipy documentation style][1]. An
-example can also be found [here][2].
+example can also be found [here][2]. Code should comply to the [pep8 coding style][3]. You can check if the code complies by executing
 
-Code should comply to the [pep8 coding style][3]. You can check if the code complies
-with
-
-	find . -name \*.py -exec pep8 {} +
+	pycodestyle
+    pydocstyle
 
 
 [1]: https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt

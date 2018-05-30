@@ -48,6 +48,8 @@ class Response(object):
 
         if fdata is not None:
             # fdata is given
+
+            fdata = np.atleast_1d(fdata)
             self._nf = fdata.shape[-1]
 
             if isEvenSampled:
@@ -59,6 +61,8 @@ class Response(object):
             self._set_frequency_data(fdata)
         else:
             # tdata is given
+
+            tdata = np.atleast_1d(tdata)
             self._nt = tdata.shape[-1]
             self._nf = self._nt // 2 + 1
             self._isEvenSampled = (self._nt % 2 == 0)
@@ -177,11 +181,11 @@ class Response(object):
 
         """
         if self._in_time is None:
-            self._in_time = np.fft.irfft(self._in_frequency, n=self._times.size)
+            self._in_time = np.fft.irfft(self._in_freq, n=self._times.size)
         return self._in_time
 
     @property
-    def in_frequency(self):
+    def in_freq(self):
         """Single sided amplitude spectrum.
 
         Returns
@@ -190,20 +194,20 @@ class Response(object):
             Complex frequency response.
 
         """
-        if self._in_frequency is None:
-            self._in_frequency = np.fft.rfft(self._in_time)
-        return self._in_frequency
+        if self._in_freq is None:
+            self._in_freq = np.fft.rfft(self._in_time)
+        return self._in_freq
 
     def _set_time_data(self, tdata):
         """Set time data without creating new object."""
         assert tdata.shape[-1] == self._nt
         self._in_time = tdata
-        self._in_frequency = None
+        self._in_freq = None
 
     def _set_frequency_data(self, fdata):
         """Set frequency data without creating new object."""
         assert fdata.shape[-1] == self._nf
-        self._in_frequency = fdata
+        self._in_freq = fdata
         self._in_time = None
 
     def plot(
@@ -264,7 +268,7 @@ class Response(object):
         unit = " " + self._unit if self._unit else ""
 
         # move time / frequency axis to first dimension
-        freq_plotready = np.rollaxis(self.in_frequency[slce], -1).reshape((self.nf, -1))
+        freq_plotready = np.rollaxis(self.in_freq[slce], -1).reshape((self.nf, -1))
         time_plotready = np.rollaxis(self.in_time[slce], -1).reshape((self.nt, -1))
 
         if use_fig is None:
@@ -362,8 +366,7 @@ class Response(object):
         Rounds of to closest integer delay.
         """
         x = delay(self.fs, self.in_time, dt, keep_length=keep_length)
-        self._set_time_data(x)
-        return self
+        return self.from_time(self.fs, x)
 
     def timecrop(self, start, end):
         """Crop time response.
@@ -447,10 +450,8 @@ class Response(object):
 
     def lowpass_by_frequency_domain_window(self, fstart, fstop):
         """Lowpass response by time domain window."""
-        h = self.in_time
-        h = lowpass_by_frequency_domain_window(self.fs, h, fstart, fstop)
-        self._set_time_data(h)
-        return self
+        h = lowpass_by_frequency_domain_window(self.fs, self.in_time, fstart, fstop)
+        return self.from_time(self.fs, h)
 
     def resample(self, fs_new, keep_gain=True, window=None):
         """Resample.
@@ -645,7 +646,6 @@ def delay(fs, x, dt, keep_length=True, axis=-1):
     zeros_shape[axis] = dn
     zeros = np.zeros(zeros_shape)
 
-    print(zeros.shape, x.shape)
     delayed = np.concatenate((zeros, x), axis=axis)
 
     if keep_length:
@@ -657,7 +657,7 @@ def delay(fs, x, dt, keep_length=True, axis=-1):
     return delayed
 
 
-def lowpass_by_frequency_domain_window(fs, x, fstart, fstop, axis=-1):
+def lowpass_by_frequency_domain_window(fs, x, fstart, fstop, axis=-1, window='hann'):
     """Lowpass by applying a frequency domain window.
 
     Parameters
@@ -672,6 +672,8 @@ def lowpass_by_frequency_domain_window(fs, x, fstart, fstop, axis=-1):
         Ending frequency of window
     axis : TYPE, optional
         signal is assumed to be along x[axis]
+    window : string, tuple, or array_like, optional
+        Desired window to use to design the low-pass filter.
 
     Returns
     -------
@@ -698,7 +700,7 @@ def lowpass_by_frequency_domain_window(fs, x, fstart, fstop, axis=-1):
     window_width = stop - start
     windowed_samples = np.arange(start, stop)
 
-    symmetric_window = hann(2 * window_width)
+    symmetric_window = get_window(window, 2 * window_width, fftbins=False)
     half_window = symmetric_window[window_width:]
 
     # frequency domain
@@ -755,31 +757,3 @@ def find_nearest(array, value):
     """
     idx = (np.abs(array - value)).argmin()
     return array[idx], idx
-
-
-# this is for testing only
-if __name__ == "__main__":
-    fs = 1000
-    nt = 2 ** 14
-    n_s = 24
-    n_mic = 15
-    tdata = np.zeros((n_s, n_mic, nt))
-    tdata[:, :, 0] = 1
-    Response.from_time(fs, tdata).plot(np.s_[:, 3])
-    plt.title("No delay impulse")
-
-    tdata = np.zeros((n_s, n_mic, nt))
-    tdata[:, :, int(nt // 2)] = 1
-    Response.from_time(fs, tdata).plot(np.s_[:, 3])
-    plt.title("Delayed impulse")
-
-    f = freq_vector(nt, fs)
-    tdelay = 0.49
-    fdata = np.ones((n_s, n_mic, len(f))) * np.exp(1j * 2 * np.pi * f * tdelay)
-    Response.from_freq(fs, fdata, isEvenSampled=True).plot(np.s_[:, 3])
-    plt.title("Even sampled, delayed, flat frequency response")
-
-    Response.from_freq(fs, fdata, isEvenSampled=False).plot(np.s_[:, 3])
-    plt.title("Odd sampled, delayed, flat frequency response")
-
-    plt.show()

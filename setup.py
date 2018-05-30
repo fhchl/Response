@@ -14,7 +14,7 @@ from setuptools import setup, Command
 # Package meta-data.
 NAME = 'response'
 DESCRIPTION = 'Domain agnostic system response representation.'
-URL = 'https://github.com/me/myproject'
+URL = 'https://github.com/fhchl/Response'
 EMAIL = 'franz.heuchel@gmail.com'
 AUTHOR = 'Franz M. Heuchel'
 REQUIRES_PYTHON = '>=3.6.0'
@@ -90,7 +90,7 @@ setup(
     author_email=EMAIL,
     python_requires=REQUIRES_PYTHON,
     url=URL,
-    #packages=find_packages(exclude=('tests',)),
+    # packages=find_packages(exclude=('tests',)),
     py_modules=['response'],
 
     # entry_points={
