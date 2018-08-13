@@ -1,19 +1,59 @@
-"""Representing responses in a domain agnostic manner."""
+"""Representing responses in a domain agnostic manner.
+
+Implements a fluent interface.
+https://en.wikipedia.org/wiki/Fluent_interface
+
+"""
 
 from pathlib import Path
+from fractions import Fraction
 
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.signal import get_window, resample
+from scipy.signal import get_window, resample, resample_poly
 from scipy.io import wavfile
+
+# center, lower, upper frequency
+third_oct_limits = (
+    (15.625, 13.920292470942801, 17.538469504833955),
+    (19.68626640460739, 17.53846950483395, 22.097086912079607),
+    (24.803141437003124, 22.097086912079615, 27.840584941885613),
+    (31.25, 27.840584941885602, 35.07693900966791),
+    (39.37253280921478, 35.0769390096679, 44.194173824159215),
+    (49.60628287400625, 44.19417382415923, 55.681169883771226),
+    (62.5, 55.681169883771204, 70.15387801933582),
+    (78.74506561842958, 70.15387801933582, 88.38834764831844),
+    (99.21256574801247, 88.38834764831843, 111.36233976754241),
+    (125.0, 111.36233976754241, 140.30775603867164),
+    (157.49013123685916, 140.30775603867164, 176.7766952966369),
+    (198.42513149602493, 176.77669529663686, 222.72467953508482),
+    (250.0, 222.72467953508482, 280.6155120773433),
+    (314.9802624737183, 280.6155120773433, 353.5533905932738),
+    (396.8502629920499, 353.5533905932738, 445.44935907016975),
+    (500.0, 445.44935907016963, 561.2310241546866),
+    (629.9605249474366, 561.2310241546866, 707.1067811865476),
+    (793.7005259840998, 707.1067811865476, 890.8987181403395),
+    (1000.0, 890.8987181403393, 1122.4620483093731),
+    (1259.9210498948732, 1122.4620483093731, 1414.213562373095),
+    (1587.4010519681995, 1414.2135623730949, 1781.7974362806785),
+    (2000.0, 1781.7974362806785, 2244.9240966187463),
+    (2519.8420997897465, 2244.9240966187463, 2828.42712474619),
+    (3174.8021039363994, 2828.42712474619, 3563.594872561358),
+    (4000.0, 3563.594872561357, 4489.8481932374925),
+    (5039.684199579493, 4489.8481932374925, 5656.85424949238),
+    (6349.604207872798, 5656.8542494923795, 7127.189745122714),
+    (8000.0, 7127.189745122714, 8979.696386474985),
+    (10079.368399158986, 8979.696386474985, 11313.70849898476),
+    (12699.208415745596, 11313.708498984759, 14254.379490245428),
+    (16000.0, 14254.379490245428, 17959.39277294997),
+    (20158.73679831797, 17959.392772949966, 22627.416997969518),
+)
 
 
 class Response(object):
     """Representation of a linear response in time and frequency domain."""
 
-    def __init__(
-        self, fs, fdata=None, tdata=None, isEvenSampled=True, norm=True, unit=None
-    ):
+    def __init__(self, fs, fdata=None, tdata=None, isEvenSampled=True, unit=None):
         """Create Response from time or frequency data.
 
         Use `from_time` or `from_freq methods` to create objects of this class!
@@ -29,8 +69,6 @@ class Response(object):
         isEvenSampled : bool or None, optional
             If fdata is given, this tells us if the last entry of fdata is the
             Nyquist frequency or not. Must be `None` if tdata is given.
-        norm: bool, optional
-            If True, sinusoid amplitudes are conserved.
 
         Raises
         ------
@@ -41,10 +79,11 @@ class Response(object):
               the normalization does.
 
         """
-        assert (
-            (fdata is not None and tdata is None)
-            or (tdata is not None and fdata is None)
+        assert (fdata is not None and tdata is None) or (
+            tdata is not None and fdata is None
         )
+
+        assert isinstance(fs, int)
 
         if fdata is not None:
             # fdata is given
@@ -65,7 +104,7 @@ class Response(object):
             tdata = np.atleast_1d(tdata)
             self._nt = tdata.shape[-1]
             self._nf = self._nt // 2 + 1
-            self._isEvenSampled = (self._nt % 2 == 0)
+            self._isEvenSampled = self._nt % 2 == 0
 
             self._set_time_data(tdata)
 
@@ -73,7 +112,6 @@ class Response(object):
         self._freqs = freq_vector(self._nt, fs)
         self._times = time_vector(self._nt, fs)
         self._time_length = self._nt * 1 / fs
-        self._normed = norm
         self._unit = unit
 
     @classmethod
@@ -114,6 +152,18 @@ class Response(object):
         return cls.from_time(fs, h_float)
 
     @classmethod
+    def new_dirac(cls, fs, T=None, n=None, nch=1):
+        """Generate new allpass / dirac response."""
+        nch = np.atleast_1d(nch)
+        if T is not None:
+            nt = round(fs * T)
+        else:
+            nt = n
+        h = np.zeros((*nch, nt))
+        h[..., 0] = 1
+        return cls.from_time(fs, h)
+
+    @classmethod
     def join(cls, tfs, axis=0, newaxis=True):
         """Concat or stack a set of Responses along a given axis.
 
@@ -137,8 +187,7 @@ class Response(object):
         """
         joinfunc = np.stack if newaxis else np.concatenate
         tdata = joinfunc([tf.in_time for tf in tfs], axis=axis)
-        tf = cls(tfs[0].fs, tdata=tdata, norm=tfs[0]._normed)
-        return tf
+        return cls.from_time(tfs[0].fs, tdata)
 
     @property
     def time_length(self):
@@ -454,7 +503,7 @@ class Response(object):
         return self.from_time(self.fs, h)
 
     def resample(self, fs_new, keep_gain=True, window=None):
-        """Resample.
+        """Resample using Fourier method.
 
         Parameters
         ----------
@@ -477,14 +526,17 @@ class Response(object):
             If resulting number of samples would be a non-integer.
 
         """
+        if fs_new == self.fs:
+            return self
+
         nt_new = fs_new * self.time_length
 
         if nt_new % 1 != 0:
             raise ValueError(
                 "New number of samples must be integer, but is {}".format(nt_new)
             )
-        else:
-            nt_new = int(nt_new)
+
+        nt_new = int(nt_new)
 
         h_new = resample(self.in_time, nt_new, axis=-1, window=window)
 
@@ -492,6 +544,49 @@ class Response(object):
             h_new *= self.nt / nt_new
 
         return self.from_time(fs_new, h_new)
+
+    def resample_poly(self, fs_new, keep_gain=True, window=("kaiser", 5.0)):
+        """Resample using polyphase filtering.
+
+        Parameters
+        ----------
+        fs_new : int
+            New sample rate
+        keep_gain : bool, optional
+            If keep gain is true, normalize such that the gain is the same
+            as the original signal.
+        window : None, optional
+            Passed to scipy.signal.resample.
+
+        Returns
+        -------
+        Response
+            New resampled response object.
+
+        """
+        if fs_new == self.fs:
+            return self
+
+        ratio = Fraction(fs_new, self.fs)
+        up = ratio.numerator
+        down = ratio.denominator
+
+        if up > 1000 or down > 1000:
+            print("Warning: resampling with high ratio {}/{}".format(up, down))
+
+        h_new = resample_poly(self.in_time, up, down, axis=-1, window=window)
+
+        if keep_gain:
+            h_new *= down / up
+
+        return self.from_time(fs_new, h_new)
+
+    def normalize(self, maxval=1):
+        """Normalize time response."""
+        h = self.in_time
+        h /= np.abs(self.in_time).max()
+        h *= maxval
+        return self.from_time(self.fs, h)
 
     def export_wav(self, folder, name_fmt="{:02d}.wav", dtype=np.int16):
         """Export response to wave file.
@@ -504,17 +599,54 @@ class Response(object):
             Format string for file names with one placeholder, e.g. 'filt1{:02d}.wav'.
 
         """
-        assert self.in_time.ndim == 2
-        assert np.all(np.abs(self.in_time) <= 1.0)
+        data = np.atleast_2d(self.in_time)
+
+        assert data.ndim == 2
+        assert np.all(np.abs(data) <= 1.0)
 
         # convert and scale to new output datatype
         lim_orig = (-1., 1.)
         lim_new = (np.iinfo(dtype).min, np.iinfo(dtype).max)
-        data = rescale(self.in_time, lim_orig, lim_new).astype(dtype)
+        data = rescale(data, lim_orig, lim_new).astype(dtype)
 
         for i in range(data.shape[0]):
             fp = Path(folder) / name_fmt.format(i + 1)
             wavfile.write(fp, self.fs, data[i])
+
+    def power_in_bands(self, bands=third_oct_limits):
+        """Compute power of signal in third octave bands
+
+        Power(band) =   1/T     sum       P(f) ** 2
+                             f in band
+
+        Parameters
+        ----------
+        bands : list of tuples, length nbands optional
+            Center, lower and upper frequencies of bands.
+
+        Returns
+        -------
+        ndarray, shape (..., nbands)
+            Power in bands
+
+        list, length nbands
+            Center frequencies of bands
+        """
+        shape = list(self.in_freq.shape)
+        shape[-1] = len(bands)
+        P = np.zeros(shape)
+        for i, (fc, fl, fu) in enumerate(bands):
+            if fu < self.freqs[-1]:
+                iband = np.logical_and(fl <= self.freqs, self.freqs <= fu)
+                P[..., i] = np.sum(np.abs(self.in_freq[..., iband]) ** 2, axis=-1)
+            else:
+                P[..., i] = 0
+
+        # linear averaging
+        T = self.nt * self.fs
+        P /= T
+
+        return P, fc
 
     @classmethod
     def time_vector(cls, n, fs):
@@ -536,7 +668,7 @@ class Response(object):
         return time_vector(n, fs)
 
     @classmethod
-    def freq_vector(n, fs, sided="single"):
+    def freq_vector(cls, n, fs, sided="single"):
         """Frequency values of filter with n taps sampled at fs up to Nyquist.
 
         Parameters
@@ -553,6 +685,7 @@ class Response(object):
 
         """
         return freq_vector(n, fs, sided=sided)
+
 
 ####################
 # Module functions #
@@ -620,20 +753,26 @@ def time_window(fs, n, startwindow, stopwindow, window="hann"):
         samples = [find_nearest(times, t)[1] for t in startwindow]
         length = samples[1] - samples[0]
         w = get_window(window, 2 * length, fftbins=False)[:length]
-        twindow[:samples[0]] = 0
-        twindow[samples[0]:samples[1]] = w
+        twindow[: samples[0]] = 0
+        twindow[samples[0] : samples[1]] = w
 
     if stopwindow is not None:
         stopwindow = list(stopwindow)
         if stopwindow[0] is None:
             stopwindow[0] = 0
+        elif stopwindow[0] < 0:
+            # time from end
+            stopwindow[0] = times[-1] + stopwindow[0]
         if stopwindow[1] is None:
             stopwindow[1] = times[-1]
+        elif stopwindow[1] < 0:
+            # time from end
+            stopwindow[1] = times[-1] + stopwindow[0]
         samples = [find_nearest(times, t)[1] for t in stopwindow]
         length = samples[1] - samples[0]
         w = get_window(window, 2 * length, fftbins=False)[length:]
-        twindow[samples[0] + 1:samples[1] + 1] = w
-        twindow[samples[1] + 1:] = 0
+        twindow[samples[0] + 1 : samples[1] + 1] = w
+        twindow[samples[1] + 1 :] = 0
 
     return twindow
 
@@ -657,7 +796,7 @@ def delay(fs, x, dt, keep_length=True, axis=-1):
     return delayed
 
 
-def lowpass_by_frequency_domain_window(fs, x, fstart, fstop, axis=-1, window='hann'):
+def lowpass_by_frequency_domain_window(fs, x, fstart, fstop, axis=-1, window="hann"):
     """Lowpass by applying a frequency domain window.
 
     Parameters
