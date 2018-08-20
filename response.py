@@ -417,6 +417,17 @@ class Response(object):
         x = delay(self.fs, self.in_time, dt, keep_length=keep_length)
         return self.from_time(self.fs, x)
 
+    def circdelay(self, dt):
+        """Delay by circular shift.
+
+        Rounds of to closest integer delay."""
+
+        x = self.in_time
+        n = int(round(dt * self.fs))
+        shifted = np.roll(x, n, axis=-1)
+
+        return self.from_time(self.fs, shifted)
+
     def timecrop(self, start, end):
         """Crop time response.
 
