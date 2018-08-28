@@ -283,25 +283,24 @@ class Response(object):
         slce : numpy.lib.index_tricks.IndexExpression
             only plot subset of responses defined by a slice. Last
             dimension (f, t) is always completely taken.
-        flim : tuple, optional
-            Description
-        dblim : None, optional
-            Description
-        tlim : None, optional
-            Description
+        flim : tuple or None, optional
+            Frequency axes limits as tuple `(lower, upper)`
+        dblim : tuple or None, optional
+            Magnitude axes limits as tuple `(lower, upper)`
+        tlim : tuple or None, optional
+            Time axes limits as tuple `(lower, upper)`
         dbref : float
             dB reference in magnitude plot
         show : bool, optional
-            Description
+            Run `matplotlib.pyplot.show()`
         fig : matplotlib.pyplot.Figure
-            Add data to the axes of a figure.
+            Reuse an existing figure.
         label : None, optional
             Description
-        unwrap : bool, optional
-            Description
+        unwrap_phase : bool, optional
+            unwrap phase in phase plot
         **fig_kw
-            Description
-
+            Additional options passe to figure creation.
         """
         if group_delay:
             unwrap = True
@@ -317,8 +316,12 @@ class Response(object):
         unit = " " + self._unit if self._unit else ""
 
         # move time / frequency axis to first dimension
-        freq_plotready = np.rollaxis(self.in_freq[tuple(slce)], -1).reshape((self.nf, -1))
-        time_plotready = np.rollaxis(self.in_time[tuple(slce)], -1).reshape((self.nt, -1))
+        freq_plotready = np.rollaxis(self.in_freq[tuple(slce)], -1).reshape(
+            (self.nf, -1)
+        )
+        time_plotready = np.rollaxis(self.in_time[tuple(slce)], -1).reshape(
+            (self.nt, -1)
+        )
 
         if use_fig is None:
             fig, axes = plt.subplots(nrows=3, constrained_layout=True, **fig_kw)
