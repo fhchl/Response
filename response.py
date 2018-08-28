@@ -152,7 +152,7 @@ class Response(object):
         return cls.from_time(fs, h_float)
 
     @classmethod
-    def new_dirac(cls, fs, T=None, n=None, nch=1):
+    def new_dirac(cls, fs, T=None, n=None, nch=(1,)):
         """Generate new allpass / dirac response."""
         nch = np.atleast_1d(nch)
         if T is not None:
@@ -317,8 +317,8 @@ class Response(object):
         unit = " " + self._unit if self._unit else ""
 
         # move time / frequency axis to first dimension
-        freq_plotready = np.rollaxis(self.in_freq[slce], -1).reshape((self.nf, -1))
-        time_plotready = np.rollaxis(self.in_time[slce], -1).reshape((self.nt, -1))
+        freq_plotready = np.rollaxis(self.in_freq[tuple(slce)], -1).reshape((self.nf, -1))
+        time_plotready = np.rollaxis(self.in_time[tuple(slce)], -1).reshape((self.nt, -1))
 
         if use_fig is None:
             fig, axes = plt.subplots(nrows=3, constrained_layout=True, **fig_kw)
@@ -379,8 +379,8 @@ class Response(object):
 
         return fig
 
-    def time_window(self, startwindow, stopwindow, window="hann", ret_window=False):
-        """Apply time windows.
+    def time_window(self, startwindow, stopwindow, window="hann"):
+        """Apply time domain windows.
 
         Parameters
         ----------
@@ -394,18 +394,38 @@ class Response(object):
 
         Returns
         -------
-        in_time: ndarray
-            windowed time response
-        twindow: ndarray
-            applied time window
+        Response
+            Time windowed response object
 
         """
         n = self.times.size
         twindow = time_window(self.fs, n, startwindow, stopwindow, window=window)
         new_response = self.from_time(self.fs, self.in_time * twindow)
 
-        if ret_window:
-            return twindow
+        return new_response
+
+    def freq_window(self, startwindow, stopwindow, window="hann"):
+        """Apply frequency domain window.
+
+        Parameters
+        ----------
+        startwindow : None or tuple
+            Tuple (t1, t2) with beginning and end frequencies of window opening.
+        stopwindow : None or tuple
+            Tuple (t1, t2) with beginning and end frequencies of window closing.
+        window : string or tuple of string and parameter values, optional
+            Desired window to use. See scipy.signal.get_window for a list of
+            windows and required parameters.
+
+        Returns
+        -------
+        Response
+            Frequency windowed response object
+
+        """
+        n = self.times.size
+        fwindow = freq_window(self.fs, n, startwindow, stopwindow, window=window)
+        new_response = self.from_freq(self.fs, self.in_freq * fwindow)
 
         return new_response
 
@@ -750,42 +770,63 @@ def freq_vector(n, fs, sided="single"):
     return f
 
 
-def time_window(fs, n, startwindow, stopwindow, window="hann"):
-    """Create a time window."""
-    times = time_vector(n, fs)
-    twindow = np.ones(n)
+def sample_window(n, startwindow, stopwindow, window="hann"):
+    """Create a sample domain window."""
+    swindow = np.ones(n)
 
     if startwindow is not None:
-        startwindow = list(startwindow)
-        if startwindow[0] is None:
-            startwindow[0] = 0
-        if startwindow[1] is None:
-            startwindow[1] = times[-1]
-        samples = [find_nearest(times, t)[1] for t in startwindow]
-        length = samples[1] - samples[0]
+        length = startwindow[1] - startwindow[0]
         w = get_window(window, 2 * length, fftbins=False)[:length]
-        twindow[: samples[0]] = 0
-        twindow[samples[0] : samples[1]] = w
+        swindow[: startwindow[0]] = 0
+        swindow[startwindow[0] : startwindow[1]] = w
 
     if stopwindow is not None:
-        stopwindow = list(stopwindow)
-        if stopwindow[0] is None:
-            stopwindow[0] = 0
-        elif stopwindow[0] < 0:
-            # time from end
-            stopwindow[0] = times[-1] + stopwindow[0]
-        if stopwindow[1] is None:
-            stopwindow[1] = times[-1]
-        elif stopwindow[1] < 0:
-            # time from end
-            stopwindow[1] = times[-1] + stopwindow[0]
-        samples = [find_nearest(times, t)[1] for t in stopwindow]
-        length = samples[1] - samples[0]
+        # stop window
+        length = stopwindow[1] - stopwindow[0]
         w = get_window(window, 2 * length, fftbins=False)[length:]
-        twindow[samples[0] + 1 : samples[1] + 1] = w
-        twindow[samples[1] + 1 :] = 0
+        swindow[stopwindow[0] + 1 : stopwindow[1] + 1] = w
+        swindow[stopwindow[1] + 1 :] = 0
+
+    return swindow
+
+
+def time_window(fs, n, startwindow, stopwindow, window="hann"):
+    """Create a time domain window."""
+
+    times = time_vector(n, fs)
+
+    if startwindow is not None:
+        startwindow_n = [find_nearest(times, t)[1] for t in startwindow]
+    else:
+        startwindow_n = None
+    if stopwindow:
+        stopwindow_n = [find_nearest(times, t)[1] for t in stopwindow]
+    else:
+        stopwindow_n = None
+
+    twindow = sample_window(n, startwindow_n, stopwindow_n, window=window)
 
     return twindow
+
+
+def freq_window(fs, n, startwindow, stopwindow, window="hann"):
+    """Create a frequency domain window."""
+
+    freqs = freq_vector(n, fs)
+
+    if startwindow is not None:
+        startwindow_n = [find_nearest(freqs, f)[1] for f in startwindow]
+    else:
+        startwindow_n = None
+
+    if stopwindow is not None:
+        stopwindow_n = [find_nearest(freqs, f)[1] for f in stopwindow]
+    else:
+        startwindow_n = None
+
+    fwindow = sample_window(len(freqs), startwindow_n, stopwindow_n, window=window)
+
+    return fwindow
 
 
 def delay(fs, x, dt, keep_length=True, axis=-1):
@@ -877,10 +918,10 @@ def rescale(x, xlim, ylim):
     ----------
     x : ndarray
         Values to rescale
-    xmin, xmax : float
-        Original value bounds
-    ymin, ymax : float
-        New value bounds
+    xlim : tuple
+        Original value bounds in from (xmin, xmax)
+    ylim : float
+        New value bounds in form (ymin, ymax)
 
     Returns
     -------
