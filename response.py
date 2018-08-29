@@ -836,7 +836,7 @@ def delay(fs, x, dt, keep_length=True, axis=-1):
     """Delay time signal by dt seconds by inserting zeros."""
     dn = int(round(dt * fs))
     n = x.shape[axis]
-    print(dn)
+
     if dn > 0:
         # delay
         zeros_shape = list(x.shape)
