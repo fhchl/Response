@@ -835,18 +835,36 @@ def freq_window(fs, n, startwindow, stopwindow, window="hann"):
 def delay(fs, x, dt, keep_length=True, axis=-1):
     """Delay time signal by dt seconds by inserting zeros."""
     dn = int(round(dt * fs))
+    n = x.shape[axis]
+    print(dn)
+    if dn > 0:
+        # delay
+        zeros_shape = list(x.shape)
+        zeros_shape[axis] = dn
+        zeros = np.zeros(zeros_shape)
 
-    zeros_shape = list(x.shape)
-    zeros_shape[axis] = dn
-    zeros = np.zeros(zeros_shape)
+        delayed = np.concatenate((zeros, x), axis=axis)
 
-    delayed = np.concatenate((zeros, x), axis=axis)
+        if keep_length:
+            # slice that takes 0 to ntaps samples along axis
+            slc = [slice(None)] * len(x.shape)
+            slc[axis] = slice(0, n)
+            delayed = delayed[slc]
 
-    if keep_length:
-        # slice that takes 0 to ntaps samples along axis
+    elif dn < 0:
+        # pre-delay
         slc = [slice(None)] * len(x.shape)
-        slc[axis] = slice(0, x.shape[axis])
-        delayed = delayed[slc]
+        slc[axis] = slice(-dn, n)
+        delayed = x[slc]
+
+        if keep_length:
+            zeros_shape = list(x.shape)
+            zeros_shape[axis] = -dn
+            zeros = np.zeros(zeros_shape)
+            delayed = np.concatenate((delayed, zeros), axis=axis)
+    else:
+        # no delay
+        delayed = x
 
     return delayed
 
