@@ -10,7 +10,7 @@ from fractions import Fraction
 
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.signal import get_window, resample, resample_poly
+from scipy.signal import get_window, resample, resample_poly, lfilter
 from scipy.io import wavfile
 
 # center, lower, upper frequency
@@ -719,6 +719,9 @@ class Response(object):
 
         """
         return freq_vector(n, fs, sided=sided)
+
+    def filter(self, b, a):
+        return self.from_time(self.fs, lfilter(b, a, self.in_time, axis=-1))
 
 
 ####################
