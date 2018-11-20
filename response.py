@@ -15,7 +15,7 @@ from scipy.signal import get_window, resample, resample_poly, lfilter
 from scipy.io import wavfile
 
 # center, lower, upper frequency
-third_oct_limits = (
+third_octave_bands = (
     (15.625, 13.920_292_470_942_801, 17.538_469_504_833_955),
     (19.686_266_404_607_39, 17.538_469_504_833_95, 22.097_086_912_079_607),
     (24.803_141_437_003_124, 22.097_086_912_079_615, 27.840_584_941_885_613),
@@ -64,7 +64,7 @@ class Response(object):
         fs : int
             Sampling frequency in Hertz
         fdata : (ns, nr, nt) complex ndarray, optional
-            Single sided amplitude spectra with nt from ns to nr points.
+            Single sided frequency spectra with nt from ns to nr points.
         tdata : (ns, nr, nf) real ndarray, optional
             Time responses with nt from ns to nr points.
         isEvenSampled : bool or None, optional
@@ -75,16 +75,12 @@ class Response(object):
         ------
         ValueError
             if neither fdata or tdata are given.
-
-        TODO: remove normalized functionionality because now it is clear what
-              the normalization does.
-
         """
         assert (fdata is not None and tdata is None) or (
             tdata is not None and fdata is None
         )
 
-        assert isinstance(fs, int)
+        assert float(fs).is_integer()
 
         if fdata is not None:
             # fdata is given
@@ -109,11 +105,13 @@ class Response(object):
 
             self._set_time_data(tdata)
 
-        self._fs = fs
+        self._fs = int(fs)
         self._freqs = freq_vector(self._nt, fs)
         self._times = time_vector(self._nt, fs)
         self._time_length = self._nt * 1 / fs
         self._unit = unit
+        self.df = self._freqs[1]  # frequency resolution
+        self.dt = self._times[1]  # time resolution
 
     @classmethod
     def from_time(cls, fs, tdata, **kwargs):
@@ -236,7 +234,7 @@ class Response(object):
 
     @property
     def in_freq(self):
-        """Single sided amplitude spectrum.
+        """Single sided frequency spectrum.
 
         Returns
         -------
@@ -247,6 +245,21 @@ class Response(object):
         if self._in_freq is None:
             self._in_freq = np.fft.rfft(self._in_time)
         return self._in_freq
+
+    @property
+    def amplitude_spectrum(self):
+        """Amplitude spectrum."""
+
+        X = self.in_freq / self.nt
+
+        if self.nt % 2 == 0:
+            # zero and nyquist element only appear once in complex spectrum
+            X[..., 1:-1] *= 2
+        else:
+            # there is no nyquist element
+            X[..., 1:] *= 2
+
+        return X
 
     def _set_time_data(self, tdata):
         """Set time data without creating new object."""
@@ -335,7 +348,7 @@ class Response(object):
         )
         axes[0].set_xlabel("Frequency [Hz]")
         axes[0].set_ylabel("Magnitude [dB re {:.2}{}]".format(float(dbref), unit))
-        axes[0].set_title("Amplitude response")
+        axes[0].set_title("Frequency response")
 
         phase = (
             np.unwrap(np.angle(freq_plotready)) if unwrap else np.angle(freq_plotready)
@@ -380,6 +393,45 @@ class Response(object):
 
         if show:
             plt.show()
+
+        return fig
+
+    def plot_power_in_bands(
+        self, bands=None, use_ax=None, barkwargs={}, avgaxis=None, dbref=1, **figkwargs
+    ):
+        """Plot signal's power in bands.
+
+        Parameters
+        ----------
+        bands : list or None, optional
+            list of tuples (f_center, f_lower, f_upper)
+        **figkwargs
+            Keyword arguments passed to plt.subplots
+
+        Returns
+        -------
+        tuple (P, fc, fig)
+
+        """
+        P, fc = self.power_in_bands(bands=bands, avgaxis=avgaxis)
+
+        nbands = P.shape[-1]
+        P = np.atleast_2d(P).reshape((-1, nbands))
+
+        if use_ax is None:
+            fig, ax = plt.subplots(**figkwargs)
+        else:
+            ax = use_ax
+            fig = ax.get_figure()
+
+        xticks = range(1, nbands + 1)
+        for i in range(P.shape[0]):
+            ax.bar(xticks, 10 * np.log10(P[i] / dbref**2), **barkwargs)
+        ax.set_xticks(xticks)
+        ax.set_xticklabels(["{:.0f}".format(f) for f in fc], rotation="vertical")
+        ax.grid(True)
+        ax.set_xlabel("Band's center frequencies [Hz]")
+        ax.set_ylabel("Power [dB]")
 
         return fig
 
@@ -684,11 +736,11 @@ class Response(object):
             fp = Path(folder) / name_fmt.format(i + 1)
             wavfile.write(fp, self.fs, data[i])
 
-    def power_in_bands(self, bands=third_oct_limits):
+    def power_in_bands(self, bands=None, avgaxis=None):
         """Compute power of signal in third octave bands
 
-        Power(band) =   1/T     sum       P(f) ** 2
-                             f in band
+        Power(band) =   1/T  integral  |X(f)| ** 2 df
+                            f in band
 
         Parameters
         ----------
@@ -703,21 +755,32 @@ class Response(object):
         list, length nbands
             Center frequencies of bands
         """
+        if bands is None:
+            bands = third_octave_bands
+
         shape = list(self.in_freq.shape)
         shape[-1] = len(bands)
         P = np.zeros(shape)
+        fcs = np.asarray([b[0] for b in bands])
+        f = np.fft.fftfreq(self.nt, d=1 / self.fs)
         for i, (fc, fl, fu) in enumerate(bands):
-            if fu < self.freqs[-1]:
-                iband = np.logical_and(fl <= self.freqs, self.freqs <= fu)
-                P[..., i] = np.sum(np.abs(self.in_freq[..., iband]) ** 2, axis=-1)
+            if fu < self.fs / 2:  # include only bands in frequency range
+                iband = np.logical_and(fl <= f, f < fu)
+                P[..., i] = np.sum(
+                    np.abs(np.fft.fft(self.in_time, axis=-1)[..., iband]) ** 2
+                    * 2  # energy from negative and positive frequencies
+                    * self.dt
+                    / self.nt
+                    / self.time_length,
+                    axis=-1,
+                )
             else:
                 P[..., i] = 0
 
-        # linear averaging
-        T = self.nt * self.fs
-        P /= T
+        if avgaxis is not None:
+            P = P.mean(axis=avgaxis)
 
-        return P, fc
+        return P, fcs
 
     @classmethod
     def time_vector(cls, n, fs):
@@ -760,10 +823,76 @@ class Response(object):
     def filter(self, b, a):
         return self.from_time(self.fs, lfilter(b, a, self.in_time, axis=-1))
 
+    def add_noise(self, snr, unit=None):
+        """Add noise to x with relative noise level SNR.
+
+        Parameters
+        ----------
+        x : ndarray
+            data
+        SNR : float
+            relative magnitude of noise, i.e. SNR = Ex/En
+        unit : None or str, optional
+            if "dB", SNR is specified in dB, i.e. SNR = 10*log(Ex/En).
+
+        Returns
+        -------
+        ndarray
+            data with noise
+
+        """
+        return self.from_time(self.fs, noisify(self.in_time, snr, unit=unit))
+
 
 ####################
 # Module functions #
 ####################
+
+
+def noisify(x, snr, unit=None):
+    """Add noise to x with relative noise level SNR.
+
+    Parameters
+    ----------
+    x : ndarray
+        data
+    SNR : float
+        relative magnitude of noise, i.e. SNR = Ex/En
+    unit : None or str, optional
+        if "dB", SNR is specified in dB, i.e. SNR = 10*log(Ex/En).
+
+    Returns
+    -------
+    ndarray
+        data with noise
+
+    Examples
+    --------
+    Add noise with 0dB SNR to a sinusoidal signal:
+
+    >>> t = np.linspace(0, 1, 1000000, endpoint=False)
+    >>> x = np.sin(2*np.pi*10*t)
+    >>> snr = 2
+    >>> snrdB = 10*np.log10(snr)
+    >>> xn = noisify(x, snrdB, "dB")
+    >>> energy_x = np.linalg.norm(x)**2
+    >>> energy_xn = np.linalg.norm(xn)**2
+    >>> np.allclose(SNR * energy_x, energy_xn, rtol=1e-3)
+    True
+
+    TODO: add pink noise
+    """
+    if unit == "dB":
+        snr = 10 ** (snr / 10)
+
+    if np.iscomplexobj(x):
+        n = np.random.standard_normal(x.shape) + 1j * np.random.standard_normal(x.shape)
+    else:
+        n = np.random.standard_normal(x.shape)
+
+    n *= 1 / np.sqrt(snr) * np.linalg.norm(x) / np.linalg.norm(n)
+
+    return x + n
 
 
 def time_vector(n, fs):

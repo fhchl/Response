@@ -26,7 +26,7 @@ class TestResponse(unittest.TestCase):
         n_mic = 3
         fdata = np.ones((n_s, n_mic, nf))
         resp = Response.from_freq(fs, fdata)
-        npt.assert_equal(fdata, resp.in_frequency)
+        npt.assert_equal(fdata, resp.in_freq)
 
     def test_flat_converts_to_dirac(self):
         fs = 64
@@ -48,7 +48,7 @@ class TestResponse(unittest.TestCase):
         tdata = np.zeros((n_s, n_mic, nt))
         tdata[:, :, 0] = 1
         resp = Response.from_time(fs, tdata)
-        npt.assert_almost_equal(resp.in_frequency, 1)
+        npt.assert_almost_equal(resp.in_freq, 1)
 
     def test_pad_to_power_of_2(self):
         fs = 64
