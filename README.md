@@ -1,7 +1,9 @@
 Response
 ========
 
-The response module defines the `Response` class as an abstracton of frequency and impulse responses.
+(work in progress)
+
+The response module defines the `Response` class as an abstraction of frequency and impulse responses.
 
 ```python
 from response import Response
@@ -36,7 +38,7 @@ Install for development with `pip install -e .` .
 Comments should comply with the [Numpy/Scipy documentation style][1]. An
 example can also be found [here][2]. Code should comply to the [pep8 coding style][3]. You can check if the code complies by executing
 
-	pycodestyle
+    pycodestyle
     pydocstyle
 
 
