@@ -3,6 +3,9 @@
 Implements a fluent interface.
 https://en.wikipedia.org/wiki/Fluent_interface
 
+Todo:
+- rename time_length to duration seconds
+
 """
 
 from pathlib import Path
@@ -76,15 +79,9 @@ class Response(object):
         ValueError
             if neither fdata or tdata are given.
         """
-        assert (fdata is not None and tdata is None) or (
-            tdata is not None and fdata is None
-        )
-
         assert float(fs).is_integer()
 
-        if fdata is not None:
-            # fdata is given
-
+        if fdata is not None and tdata is None:
             fdata = np.atleast_1d(fdata)
             self._nf = fdata.shape[-1]
 
@@ -95,15 +92,16 @@ class Response(object):
             self._isEvenSampled = isEvenSampled
 
             self._set_frequency_data(fdata)
-        else:
-            # tdata is given
-
+        elif tdata is not None and fdata is None:
+            assert np.all(np.imag(tdata) == 0), "Time data must be real."
             tdata = np.atleast_1d(tdata)
             self._nt = tdata.shape[-1]
             self._nf = self._nt // 2 + 1
             self._isEvenSampled = self._nt % 2 == 0
 
             self._set_time_data(tdata)
+        else:
+            raise ValueError("One and only one of fdata and tdata must be given.")
 
         self._fs = int(fs)
         self._freqs = freq_vector(self._nt, fs)
@@ -338,6 +336,7 @@ class Response(object):
         )
 
         if use_fig is None:
+            fig_kw = {**{"figsize": (10, 10)}, **fig_kw}
             fig, axes = plt.subplots(nrows=3, constrained_layout=True, **fig_kw)
         else:
             fig = use_fig
@@ -533,8 +532,8 @@ class Response(object):
 
         return new_response
 
-    def ncshrink(self, length):
-        """Shrink length of non-causal impulse response
+    def non_causal_timecrop(self, length):
+        """Cut length of non-causal impulse response
 
         "FFT shift, cropping on both ends, iFFT shift"
 
@@ -679,7 +678,7 @@ class Response(object):
             If keep gain is true, normalize such that the gain is the same
             as the original signal.
         window : None, optional
-            Passed to scipy.signal.resample.
+            Passed to scipy.signal.resample_poly.
 
         Returns
         -------
@@ -762,12 +761,13 @@ class Response(object):
         shape[-1] = len(bands)
         P = np.zeros(shape)
         fcs = np.asarray([b[0] for b in bands])
-        f = np.fft.fftfreq(self.nt, d=1 / self.fs)
+        Npow2 = 2 ** (self.nt - 1).bit_length()
+        f = np.fft.fftfreq(Npow2, d=1 / self.fs)
         for i, (fc, fl, fu) in enumerate(bands):
             if fu < self.fs / 2:  # include only bands in frequency range
                 iband = np.logical_and(fl <= f, f < fu)
                 P[..., i] = np.sum(
-                    np.abs(np.fft.fft(self.in_time, axis=-1)[..., iband]) ** 2
+                    np.abs(np.fft.fft(self.in_time, n=Npow2, axis=-1)[..., iband]) ** 2
                     * 2  # energy from negative and positive frequencies
                     * self.dt
                     / self.nt
@@ -971,7 +971,7 @@ def time_window(fs, n, startwindow, stopwindow, window="hann"):
         startwindow_n = [find_nearest(times, t)[1] for t in startwindow]
     else:
         startwindow_n = None
-    if stopwindow:
+    if stopwindow is not None:
         stopwindow_n = [find_nearest(times, t)[1] for t in stopwindow]
     else:
         stopwindow_n = None
@@ -1109,9 +1109,9 @@ def rescale(x, xlim, ylim):
     x : ndarray
         Values to rescale
     xlim : tuple
-        Original value bounds in from (xmin, xmax)
+        Original value bounds (xmin, xmax)
     ylim : float
-        New value bounds in form (ymin, ymax)
+        New value bounds (ymin, ymax)
 
     Returns
     -------
