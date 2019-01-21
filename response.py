@@ -14,7 +14,7 @@ import warnings
 
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.signal import get_window, resample, resample_poly, lfilter
+from scipy.signal import get_window, resample, resample_poly, lfilter, welch
 from scipy.io import wavfile
 
 # center, lower, upper frequency
@@ -425,7 +425,7 @@ class Response(object):
 
         xticks = range(1, nbands + 1)
         for i in range(P.shape[0]):
-            ax.bar(xticks, 10 * np.log10(P[i] / dbref**2), **barkwargs)
+            ax.bar(xticks, 10 * np.log10(P[i] / dbref ** 2), **barkwargs)
         ax.set_xticks(xticks)
         ax.set_xticklabels(["{:.0f}".format(f) for f in fc], rotation="vertical")
         ax.grid(True)
@@ -509,7 +509,8 @@ class Response(object):
         Parameters
         ----------
         start, end : float
-            Start and end times in seconds.
+            Start and end times in seconds. Does not include sample at t=end. Use
+            end=None to force inclusion of last sample.
 
         Returns
         -------
@@ -520,11 +521,27 @@ class Response(object):
         -----
         Creates new Response object.
 
+        The following should always hold:
+
+        >>> np.all(np.concatenate(
+        >>>     (
+        >>>         Response.from_time(fs, x).timecrop(0, split).in_time,
+        >>>         Response.from_time(fs, x).timecrop(split, None).in_time,
+        >>>     ),
+        >>>     axis=-1,
+        >>> ) == x)
+        True
+
         """
-        assert start < end
+        assert end is None or start < end
 
         _, i_start = find_nearest(self.times, start)
-        _, i_end = find_nearest(self.times, end)
+        if end is None:
+            i_end = None
+        else:
+            _, i_end = find_nearest(self.times, end)
+
+        print(i_start, i_end)
 
         h = self.in_time[..., i_start:i_end]
 
@@ -676,7 +693,7 @@ class Response(object):
             New sample rate
         keep_gain : bool, optional
             If keep gain is true, normalize such that the gain is the same
-            as the original signal.
+            as the original signal. Else, the amplitudes will be preserved.
         window : None, optional
             Passed to scipy.signal.resample_poly.
 
@@ -685,6 +702,7 @@ class Response(object):
         Response
             New resampled response object.
 
+        TODO: rename keep_gain to normalize={'gain', 'amplitude'}
         """
         if fs_new == self.fs:
             return self
@@ -842,6 +860,29 @@ class Response(object):
 
         """
         return self.from_time(self.fs, noisify(self.in_time, snr, unit=unit))
+
+    def spectrum(self, **kwargs):
+        """Compute the time averaged power spectrum of the time signal.
+
+        Parameters
+        ----------
+        kwargs
+            keword arguments passed to scipy.signal.welch
+
+        Returns
+        -------
+        f : ndarray
+            Array of sample frequencies.
+        Pxx : ndarray
+            Power spectrum of time signal.
+
+        Notes
+        -----
+
+        Use scaling='density' for power per bin bandwidth and scaling='spectrum' for
+        power per bin.
+        """
+        return welch(self.in_time, fs=self.fs, **kwargs)
 
 
 ####################

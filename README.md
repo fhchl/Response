@@ -27,7 +27,7 @@ r.in_freq
 
 Run tests in base directory with
 
-	nosetests
+	pytest
 
 Always run tests before pushing code.
 

@@ -4,12 +4,11 @@ from .context import response  # noqa
 
 from response import Response
 
-import unittest
 import numpy as np
 import numpy.testing as npt
 
 
-class TestResponse(unittest.TestCase):
+class TestCreation:
     def test_has_fs(self):
         fs = 64
         nf = 64
@@ -17,7 +16,7 @@ class TestResponse(unittest.TestCase):
         n_mic = 3
         fdata = np.ones((n_s, n_mic, nf))
         resp = Response.from_freq(fs, fdata)
-        self.assertEqual(fs, resp.fs)
+        assert fs == resp.fs
 
     def test_has_frequency_data(self):
         fs = 64
@@ -50,6 +49,53 @@ class TestResponse(unittest.TestCase):
         resp = Response.from_time(fs, tdata)
         npt.assert_almost_equal(resp.in_freq, 1)
 
+
+class TestMethods:
+    def test_timecrop_splits_concatenate_properly(self):
+        fs = 100
+        T = 1.12
+        t = np.linspace(0, T, int(T * fs), endpoint=False)
+        x = np.sin(t * np.pi * 2 * 10)
+
+        split = 0.5
+
+        assert np.all(
+            np.concatenate(
+                (
+                    Response.from_time(fs, x).timecrop(0, split).in_time,
+                    Response.from_time(fs, x).timecrop(split, None).in_time,
+                ),
+                axis=-1,
+            )
+            == x
+        )
+
+        split = 0.1
+
+        assert np.all(
+            np.concatenate(
+                (
+                    Response.from_time(fs, x).timecrop(0, split).in_time,
+                    Response.from_time(fs, x).timecrop(split, None).in_time,
+                ),
+                axis=-1,
+            )
+            == x
+        )
+
+        split = 0.611421251
+
+        assert np.all(
+            np.concatenate(
+                (
+                    Response.from_time(fs, x).timecrop(0, split).in_time,
+                    Response.from_time(fs, x).timecrop(split, None).in_time,
+                ),
+                axis=-1,
+            )
+            == x
+        )
+
     def test_pad_to_power_of_2(self):
         fs = 64
         nt = 204
@@ -61,7 +107,3 @@ class TestResponse(unittest.TestCase):
 
         assert rpad.nt == 256
         npt.assert_equal(r.in_time, rpad.in_time[..., :nt])
-
-
-if __name__ == '__main__':
-    unittest.main()
