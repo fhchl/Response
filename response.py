@@ -641,16 +641,16 @@ class Response(object):
         h = lowpass_by_frequency_domain_window(self.fs, self.in_time, fstart, fstop)
         return self.from_time(self.fs, h)
 
-    def resample(self, fs_new, keep_gain=True, window=None):
+    def resample(self, fs_new, normalize='keep_gain', window=None):
         """Resample using Fourier method.
 
         Parameters
         ----------
         fs_new : int
             New sample rate
-        keep_gain : bool, optional
-            If keep gain is true, normalize such that the gain is the same
-            as the original signal.
+        normalize : str, optional
+            If 'keep_gain', normalize such that the gain is the same
+            as the original signal. If 'keep_amplitudes', amplitudes will be preserved.
         window : None, optional
             Passed to scipy.signal.resample.
 
@@ -679,21 +679,25 @@ class Response(object):
 
         h_new = resample(self.in_time, nt_new, axis=-1, window=window)
 
-        if keep_gain:
+        if normalize == 'same_gain':
             h_new *= self.nt / nt_new
+        elif normalize == 'same_amplitude':
+            pass
+        else:
+            ValueError("Expected 'same_gain' or 'same_amplitude, got %s" % (normalize,))
 
         return self.from_time(fs_new, h_new)
 
-    def resample_poly(self, fs_new, keep_gain=True, window=("kaiser", 5.0)):
+    def resample_poly(self, fs_new, normalize='same_gain', window=("kaiser", 5.0)):
         """Resample using polyphase filtering.
 
         Parameters
         ----------
         fs_new : int
             New sample rate
-        keep_gain : bool, optional
-            If keep gain is true, normalize such that the gain is the same
-            as the original signal. Else, the amplitudes will be preserved.
+        normalize : str, optional
+            If 'keep_gain', normalize such that the gain is the same
+            as the original signal. If 'keep_amplitudes', amplitudes will be preserved.
         window : None, optional
             Passed to scipy.signal.resample_poly.
 
@@ -702,7 +706,6 @@ class Response(object):
         Response
             New resampled response object.
 
-        TODO: rename keep_gain to normalize={'gain', 'amplitude'}
         """
         if fs_new == self.fs:
             return self
@@ -716,8 +719,12 @@ class Response(object):
 
         h_new = resample_poly(self.in_time, up, down, axis=-1, window=window)
 
-        if keep_gain:
+        if normalize == 'same_gain':
             h_new *= down / up
+        elif normalize == 'same_amplitude':
+            pass
+        else:
+            ValueError("Expected 'same_gain' or 'same_amplitude, got %s" % (normalize,))
 
         return self.from_time(fs_new, h_new)
 
