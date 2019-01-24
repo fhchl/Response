@@ -314,8 +314,42 @@ class Response(object):
         **fig_kw
             Additional options passe to figure creation.
         """
+        if use_fig is None:
+            fig_kw = {**{"figsize": (10, 10)}, **fig_kw}
+            fig, axes = plt.subplots(nrows=3, constrained_layout=True, **fig_kw)
+        else:
+            fig = use_fig
+            axes = fig.axes
+
+        self.plot_magnitude(
+            use_ax=axes[0], slce=slce, dblim=dblim, flim=flim, dbref=dbref, label=label
+        )
         if group_delay:
-            unwrap = True
+            self.plot_group_delay(use_ax=axes[1], slce=slce, flim=flim, ylim=grpdlim)
+        else:
+            self.plot_phase(use_ax=axes[1], slce=slce, flim=flim)
+        self.plot_time(use_ax=axes[2], tlim=tlim, slce=slce, unwrap=unwrap)
+
+        if show:
+            plt.show()
+
+        return fig
+
+    def plot_magnitude(
+        self,
+        use_ax=None,
+        slce=None,
+        dblim=None,
+        flim=None,
+        dbref=1,
+        label=None,
+        **fig_kw,
+    ):
+        if use_ax is None:
+            fig_kw = {**{"figsize": (10, 5)}, **fig_kw}
+            fig, ax = plt.subplots(nrows=1, constrained_layout=True, **fig_kw)
+        else:
+            ax = use_ax
 
         # append frequency/time dimension to slice
         if slce is None:
@@ -331,69 +365,135 @@ class Response(object):
         freq_plotready = np.rollaxis(self.in_freq[tuple(slce)], -1).reshape(
             (self.nf, -1)
         )
-        time_plotready = np.rollaxis(self.in_time[tuple(slce)], -1).reshape(
-            (self.nt, -1)
-        )
 
-        if use_fig is None:
-            fig_kw = {**{"figsize": (10, 10)}, **fig_kw}
-            fig, axes = plt.subplots(nrows=3, constrained_layout=True, **fig_kw)
-        else:
-            fig = use_fig
-            axes = fig.axes
-
-        axes[0].semilogx(
+        ax.semilogx(
             self.freqs, 20 * np.log10(np.abs(freq_plotready / dbref)), label=label
         )
-        axes[0].set_xlabel("Frequency [Hz]")
-        axes[0].set_ylabel("Magnitude [dB re {:.2}{}]".format(float(dbref), unit))
-        axes[0].set_title("Frequency response")
+        ax.set_xlabel("Frequency [Hz]")
+        ax.set_ylabel("Magnitude [dB re {:.2}{}]".format(float(dbref), unit))
+        ax.set_title("Frequency response")
+        ax.grid(True)
 
+        if flim is None:
+            flim = (10, self.fs / 2)
+        ax.set_xlim(flim)
+
+        return fig
+
+    def plot_phase(
+        self,
+        use_ax=None,
+        slce=None,
+        flim=None,
+        label=None,
+        unwrap=False,
+        ylim=None,
+        **fig_kw,
+    ):
+        if use_ax is None:
+            fig_kw = {**{"figsize": (10, 5)}, **fig_kw}
+            fig, ax = plt.subplots(nrows=1, constrained_layout=True, **fig_kw)
+        else:
+            ax = use_ax
+
+        # append frequency/time dimension to slice
+        if slce is None:
+            slce = [np.s_[:] for n in range(len(self.in_time.shape))]
+        elif isinstance(slce, tuple):
+            slce = slce + (np.s_[:],)
+        else:
+            slce = (slce, np.s_[:])
+
+        # move time / frequency axis to first dimension
+        freq_plotready = np.rollaxis(self.in_freq[tuple(slce)], -1).reshape(
+            (self.nf, -1)
+        )
         phase = (
             np.unwrap(np.angle(freq_plotready)) if unwrap else np.angle(freq_plotready)
         )
 
-        if group_delay:
-            df = self.freqs[1] - self.freqs[0]
-            grpd = -np.gradient(phase, df, axis=0)
-            axes[1].semilogx(self.freqs, grpd)
-            axes[1].set_xlabel("Frequency [Hz]")
-            axes[1].set_ylabel("Time [s]")
-            axes[1].set_title("Group Delay")
-            if grpdlim:
-                axes[1].set_ylim(grpdlim)
-        else:
-            axes[1].semilogx(self.freqs, phase)
-            axes[1].set_xlabel("Frequency [Hz]")
-            axes[1].set_ylabel("Phase [rad]")
-            axes[1].set_title("Phase response")
-
-        axes[2].plot(self.times, time_plotready)
-        axes[2].set_xlabel("Time [s]")
-        axes[2].set_ylabel("")
-        axes[2].set_title("Time response")
-
-        for ax in axes:
-            ax.grid(True)
+        ax.semilogx(self.freqs, phase)
+        ax.set_xlabel("Frequency [Hz]")
+        ax.set_ylabel("Phase [rad]")
+        ax.set_title("Phase response")
+        ax.grid(True)
 
         if flim is None:
             flim = (10, self.fs / 2)
-        axes[0].set_xlim(flim)
-        axes[1].set_xlim(flim)
-
-        if tlim is not None:
-            axes[2].set_xlim(tlim)
-
-        if dblim:
-            axes[0].set_ylim(dblim)
-
-        if label:
-            axes[0].legend()
-
-        if show:
-            plt.show()
+        ax.set_xlim(flim)
+        if ylim:
+            ax.set_ylim(ylim)
 
         return fig
+
+    def plot_time(self, use_ax=None, slce=None, tlim=None, ylim=None, **fig_kw):
+        if use_ax is None:
+            fig_kw = {**{"figsize": (10, 5)}, **fig_kw}
+            fig, ax = plt.subplots(nrows=1, constrained_layout=True, **fig_kw)
+        else:
+            ax = use_ax
+
+        # append frequency/time dimension to slice
+        if slce is None:
+            slce = [np.s_[:] for n in range(len(self.in_time.shape))]
+        elif isinstance(slce, tuple):
+            slce = slce + (np.s_[:],)
+        else:
+            slce = (slce, np.s_[:])
+
+        time_plotready = np.rollaxis(self.in_time[tuple(slce)], -1).reshape(
+            (self.nt, -1)
+        )
+
+        ax.plot(self.times, time_plotready)
+        ax.set_xlabel("Time [s]")
+        ax.set_ylabel("")
+        ax.set_title("Time response")
+        ax.grid(True)
+        if tlim:
+            ax.set_xlim(tlim)
+        if ylim:
+            ax.set_ylim(ylim)
+
+        return fig
+
+    def plot_group_delay(
+        self, use_ax=None, slce=None, flim=None, label=None, ylim=None, **fig_kw
+    ):
+        if use_ax is None:
+            fig_kw = {**{"figsize": (10, 5)}, **fig_kw}
+            fig, ax = plt.subplots(nrows=1, constrained_layout=True, **fig_kw)
+        else:
+            ax = use_ax
+
+        # append frequency/time dimension to slice
+        if slce is None:
+            slce = [np.s_[:] for n in range(len(self.in_time.shape))]
+        elif isinstance(slce, tuple):
+            slce = slce + (np.s_[:],)
+        else:
+            slce = (slce, np.s_[:])
+
+        # move time / frequency axis to first dimension
+        freq_plotready = np.rollaxis(self.in_freq[tuple(slce)], -1).reshape(
+            (self.nf, -1)
+        )
+
+        df = self.freqs[1] - self.freqs[0]
+        grpd = -np.gradient(np.unwrap(np.angle(freq_plotready)), df, axis=0)
+
+        ax.semilogx(self.freqs, grpd)
+        ax.set_xlabel("Frequency [Hz]")
+        ax.set_ylabel("Delay [s]")
+        ax.set_title("Group Delay")
+        ax.grid(True)
+        if flim is None:
+            flim = (10, self.fs / 2)
+        ax.set_xlim(flim)
+        if ylim:
+            ax.set_ylim(ylim)
+
+        return ax
 
     def plot_power_in_bands(
         self, bands=None, use_ax=None, barkwargs={}, avgaxis=None, dbref=1, **figkwargs
@@ -641,7 +741,7 @@ class Response(object):
         h = lowpass_by_frequency_domain_window(self.fs, self.in_time, fstart, fstop)
         return self.from_time(self.fs, h)
 
-    def resample(self, fs_new, normalize='keep_gain', window=None):
+    def resample(self, fs_new, normalize="keep_gain", window=None):
         """Resample using Fourier method.
 
         Parameters
@@ -679,16 +779,16 @@ class Response(object):
 
         h_new = resample(self.in_time, nt_new, axis=-1, window=window)
 
-        if normalize == 'same_gain':
+        if normalize == "same_gain":
             h_new *= self.nt / nt_new
-        elif normalize == 'same_amplitude':
+        elif normalize == "same_amplitude":
             pass
         else:
             ValueError("Expected 'same_gain' or 'same_amplitude, got %s" % (normalize,))
 
         return self.from_time(fs_new, h_new)
 
-    def resample_poly(self, fs_new, normalize='same_gain', window=("kaiser", 5.0)):
+    def resample_poly(self, fs_new, normalize="same_gain", window=("kaiser", 5.0)):
         """Resample using polyphase filtering.
 
         Parameters
@@ -719,9 +819,9 @@ class Response(object):
 
         h_new = resample_poly(self.in_time, up, down, axis=-1, window=window)
 
-        if normalize == 'same_gain':
+        if normalize == "same_gain":
             h_new *= down / up
-        elif normalize == 'same_amplitude':
+        elif normalize == "same_amplitude":
             pass
         else:
             ValueError("Expected 'same_gain' or 'same_amplitude, got %s" % (normalize,))
@@ -868,8 +968,8 @@ class Response(object):
         """
         return self.from_time(self.fs, noisify(self.in_time, snr, unit=unit))
 
-    def spectrum(self, **kwargs):
-        """Compute the time averaged power spectrum of the time signal.
+    def psd(self, **kwargs):
+        """Compute the power spectral density of the signal.
 
         Parameters
         ----------
@@ -881,7 +981,7 @@ class Response(object):
         f : ndarray
             Array of sample frequencies.
         Pxx : ndarray
-            Power spectrum of time signal.
+            Power spectral density of time signal.
 
         Notes
         -----
