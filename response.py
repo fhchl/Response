@@ -74,6 +74,7 @@ class Response(object):
         ------
         ValueError
             if neither fdata or tdata are given.
+
         """
         assert float(fs).is_integer()
 
@@ -243,7 +244,6 @@ class Response(object):
     @property
     def amplitude_spectrum(self):
         """Amplitude spectrum."""
-
         X = self.in_freq / self.nt
 
         if self.nt % 2 == 0:
@@ -309,6 +309,7 @@ class Response(object):
             unwrap phase in phase plot
         **fig_kw
             Additional options passe to figure creation.
+
         """
         if use_fig is None:
             fig_kw = {**{"figsize": (10, 10)}, **fig_kw}
@@ -341,6 +342,7 @@ class Response(object):
         label=None,
         **fig_kw,
     ):
+        """Plot magnitude response."""
         if use_ax is None:
             fig_kw = {**{"figsize": (10, 5)}, **fig_kw}
             fig, ax = plt.subplots(nrows=1, constrained_layout=True, **fig_kw)
@@ -387,6 +389,7 @@ class Response(object):
         ylim=None,
         **fig_kw,
     ):
+        """Plot phase response."""
         if use_ax is None:
             fig_kw = {**{"figsize": (10, 5)}, **fig_kw}
             fig, ax = plt.subplots(nrows=1, constrained_layout=True, **fig_kw)
@@ -425,6 +428,7 @@ class Response(object):
         return fig
 
     def plot_time(self, use_ax=None, slce=None, tlim=None, ylim=None, **fig_kw):
+        """Plot time response."""
         if use_ax is None:
             fig_kw = {**{"figsize": (10, 5)}, **fig_kw}
             fig, ax = plt.subplots(nrows=1, constrained_layout=True, **fig_kw)
@@ -459,6 +463,7 @@ class Response(object):
     def plot_group_delay(
         self, use_ax=None, slce=None, flim=None, label=None, ylim=None, **fig_kw
     ):
+        """Plot group delay."""
         if use_ax is None:
             fig_kw = {**{"figsize": (10, 5)}, **fig_kw}
             fig, ax = plt.subplots(nrows=1, constrained_layout=True, **fig_kw)
@@ -595,8 +600,8 @@ class Response(object):
     def circdelay(self, dt):
         """Delay by circular shift.
 
-        Rounds of to closest integer delay."""
-
+        Rounds of to closest integer delay.
+        """
         x = self.in_time
         n = int(round(dt * self.fs))
         shifted = np.roll(x, n, axis=-1)
@@ -650,7 +655,7 @@ class Response(object):
         return new_response
 
     def non_causal_timecrop(self, length):
-        """Cut length of non-causal impulse response
+        """Cut length of non-causal impulse response.
 
         "FFT shift, cropping on both ends, iFFT shift"
 
@@ -667,6 +672,7 @@ class Response(object):
         Note
         ----
         Can introduce delay pre-delay by a sample.
+
         """
         assert length < self.time_length
 
@@ -861,7 +867,7 @@ class Response(object):
             wavfile.write(fp, self.fs, data[i])
 
     def power_in_bands(self, bands=None, avgaxis=None):
-        """Compute power of signal in third octave bands
+        """Compute power of signal in third octave bands.
 
         Power(band) =   1/T  integral  |X(f)| ** 2 df
                             f in band
@@ -878,6 +884,7 @@ class Response(object):
 
         list, length nbands
             Center frequencies of bands
+
         """
         if bands is None:
             bands = third_octave_bands
@@ -946,6 +953,7 @@ class Response(object):
         return freq_vector(n, fs, sided=sided)
 
     def filter(self, b, a):
+        """Filter response along one-dimension with an IIR or FIR filter."""
         return self.from_time(self.fs, lfilter(b, a, self.in_time, axis=-1))
 
     def add_noise(self, snr, unit=None):
@@ -985,9 +993,9 @@ class Response(object):
 
         Notes
         -----
-
         Use scaling='density' for power per bin bandwidth and scaling='spectrum' for
         power per bin.
+
         """
         return welch(self.in_time, fs=self.fs, **kwargs)
 
@@ -1029,6 +1037,7 @@ def noisify(x, snr, unit=None):
     True
 
     TODO: add pink noise
+
     """
     if unit == "dB":
         snr = 10 ** (snr / 10)
@@ -1112,7 +1121,6 @@ def sample_window(n, startwindow, stopwindow, window="hann"):
 
 def time_window(fs, n, startwindow, stopwindow, window="hann"):
     """Create a time domain window."""
-
     times = time_vector(n, fs)
 
     if startwindow is not None:
@@ -1131,7 +1139,6 @@ def time_window(fs, n, startwindow, stopwindow, window="hann"):
 
 def freq_window(fs, n, startwindow, stopwindow, window="hann"):
     """Create a frequency domain window."""
-
     freqs = freq_vector(n, fs)
 
     if startwindow is not None:
