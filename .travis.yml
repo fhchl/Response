@@ -1,0 +1,20 @@
+language: python
+sudo: false
+python:
+  - "3.5"
+  - "3.6"
+  - "3.7"
+install:
+  - pip install pytest pydocstyle pycodestyle
+  - python setup.py install
+# command to run tests
+script:
+  - pytest
+  - pydocstyle response.py
+  - pycodestyle response.py
+after_success:
+  - git config --global user.name "semantic-release (via TravisCI)"
+  - git config --global user.email "semantic-release@travis"
+  - pip install python-semantic-release
+  - semantic-release --post publish
+
