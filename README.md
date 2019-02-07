@@ -43,6 +43,9 @@ example can also be found [here][2]. Code should comply to the [pep8 coding styl
 
 Git commit messages follow [Angular style][4]. Use [python-semantic-release][5] for publishing.
 
+    semantic-release publish
+    # to tag and upload to github and pypi
+
 [1]: https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt
 [2]: http://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_numpy.html
 [3]: https://www.python.org/dev/peps/pep-0008/
