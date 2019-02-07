@@ -41,7 +41,10 @@ example can also be found [here][2]. Code should comply to the [pep8 coding styl
     pycodestyle
     pydocstyle
 
+Git commit messages follow [Angular style][4]. Use [python-semantic-release][5] for publishing.
 
 [1]: https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt
 [2]: http://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_numpy.html
 [3]: https://www.python.org/dev/peps/pep-0008/
+[4]: https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#-git-commit-guidelines
+[5]: https://github.com/relekang/python-semantic-release
