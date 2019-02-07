@@ -18,9 +18,9 @@ r = Response.from_time(fs, x) \
             .time_window((0, 0.2), (0.5, 0.6))
 # plot result
 r.plot(show=True)
-# time domain data
+# real impulse response
 r.in_time
-# frequency domain data
+# complex frequency response
 r.in_freq
 ```
 ## Testing
