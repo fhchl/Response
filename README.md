@@ -1,7 +1,10 @@
 Response
 ========
 
-(work in progress)
+[![](https://img.shields.io/pypi/l/response.svg?style=flat)](https://pypi.org/project/response/)
+[![](https://img.shields.io/pypi/v/response.svg?style=flat)](https://pypi.org/project/response/)
+[![travis-ci](https://travis-ci.org/fhchl/Response.svg?branch=master)](https://travis-ci.org/fhchl/Response)
+[![codecov](https://codecov.io/gh/fhchl/Response/branch/master/graph/badge.svg)](https://codecov.io/gh/fhchl/Response)
 
 The response module defines the `Response` class as an abstraction of frequency and impulse responses.
 
@@ -41,18 +44,7 @@ example can also be found [here][2]. Code should comply to the [pep8 coding styl
     pycodestyle
     pydocstyle
 
-Git commit messages follow [Angular style][4]. Use [python-semantic-release][5] for versioning.
-
-    semantic-release version
-    # to tag and upload to github and pypi
-
-And
-
-    python setup.py upload
-
-for pushing to GitHub and PyPi.
-
-Sadly, `semantic-release publish` wants pypi pw and username + github tokens set as env variables, rather than just using local settings.
+Git commit messages follow [Angular style][4]. Uses [python-semantic-release][5] for versioning on travis-ci for pushs to master branch.
 
 [1]: https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt
 [2]: http://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_numpy.html

@@ -1,14 +1,18 @@
 language: python
 sudo: false
-python:
-  - "3.6"
-  - "3.7"
+cache: pip
+matrix:
+  include:
+    - python: 3.6
+    - python: 3.7
+      dist: xenial
+      sudo: true
 install:
-  - pip install pytest pydocstyle pycodestyle
+  - pip install 'pytest>=3.6' pytest-cov codecov pydocstyle pycodestyle
   - python setup.py install
 # command to run tests
 script:
-  - pytest
+  - pytest --cov=response tests
   - pydocstyle response.py
   - pycodestyle response.py
 after_success:
@@ -16,4 +20,8 @@ after_success:
   - git config --global user.email "semantic-release@travis"
   - pip install python-semantic-release
   - semantic-release --post publish
+  - codecov
+branches:
+  only:
+    - master
 
