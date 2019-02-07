@@ -2,15 +2,11 @@
 
 Implements a fluent interface.
 https://en.wikipedia.org/wiki/Fluent_interface
-
-Todo:
-- rename time_length to duration seconds
-
 """
 
-from pathlib import Path
-from fractions import Fraction
 import warnings
+from fractions import Fraction
+from pathlib import Path
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -350,6 +346,7 @@ class Response(object):
             fig, ax = plt.subplots(nrows=1, constrained_layout=True, **fig_kw)
         else:
             ax = use_ax
+            fig = ax.get_figure()
 
         # append frequency/time dimension to slice
         if slce is None:
@@ -395,6 +392,7 @@ class Response(object):
             fig, ax = plt.subplots(nrows=1, constrained_layout=True, **fig_kw)
         else:
             ax = use_ax
+            fig = ax.get_figure()
 
         # append frequency/time dimension to slice
         if slce is None:
@@ -432,6 +430,7 @@ class Response(object):
             fig, ax = plt.subplots(nrows=1, constrained_layout=True, **fig_kw)
         else:
             ax = use_ax
+            fig = ax.get_figure()
 
         # append frequency/time dimension to slice
         if slce is None:
@@ -465,6 +464,7 @@ class Response(object):
             fig, ax = plt.subplots(nrows=1, constrained_layout=True, **fig_kw)
         else:
             ax = use_ax
+            fig = ax.get_figure()
 
         # append frequency/time dimension to slice
         if slce is None:
@@ -493,7 +493,7 @@ class Response(object):
         if ylim:
             ax.set_ylim(ylim)
 
-        return ax
+        return fig
 
     def plot_power_in_bands(
         self, bands=None, use_ax=None, barkwargs={}, avgaxis=None, dbref=1, **figkwargs
