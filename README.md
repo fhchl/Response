@@ -9,23 +9,39 @@ Response
 The response module defines the `Response` class as an abstraction of frequency and impulse responses.
 
 ```python
+import numpy as np
 from response import Response
-fs = 16
-x = [1]
-# Create impulsive response and do chain of processing
-r = Response.from_time(fs, x) \
-            .zeropad(0, 15) \
-            .delay(0.5) \
-            .resample(10 * fs, window=('kaiser', 0.5)) \
-            .timecrop(0, 0.6) \
-            .time_window((0, 0.2), (0.5, 0.6))
+
+fs = 48000  # sampling rate
+T = 0.5     # length of signal
+# a sine at 100 Hz
+t = np.arange(int(T * fs)) / fs
+x = np.sin(2 * np.pi * 100 * t)
+# Do chain of processing
+r = (
+    Response.from_time(fs, x)
+    # time window at the end and beginning
+    .time_window((0, 0.1), (-0.1, None), window="hann")  # equivalent to Tukey window
+    # zeropad to one second length
+    .zeropad_to_length(fs * 1)
+    # circular shift to center
+    .circdelay(T / 2)
+    # resample with polyphase filter, keep gain of filter
+    .resample_poly(500, window=("kaiser", 0.5), normalize="same_amplitude")
+    # cut 0.2s at beginning and end
+    .timecrop(0.2, -0.2)
+    # apply frequency domain window
+    .freq_window((0, 90), (110, 500))
+)
 # plot result
 r.plot(show=True)
 # real impulse response
 r.in_time
 # complex frequency response
 r.in_freq
+# and much more ...
 ```
+
 ## Testing
 
 Run tests in base directory with
