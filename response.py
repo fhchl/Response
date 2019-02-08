@@ -638,7 +638,12 @@ class Response(object):
         True
 
         """
-        assert end is None or start < end
+        if start < 0:
+            start += self.time_length
+        if end is not None and end < 0:
+            end += self.time_length
+        assert 0 <= start < self.time_length
+        assert end is None or (0 < end <= self.time_length)
 
         _, i_start = find_nearest(self.times, start)
         if end is None:
@@ -1119,35 +1124,52 @@ def sample_window(n, startwindow, stopwindow, window="hann"):
     return swindow
 
 
-def time_window(fs, n, startwindow, stopwindow, window="hann"):
-    """Create a time domain window."""
-    times = time_vector(n, fs)
+def time_window(fs, n, startwindow_t, stopwindow_t, window="hann"):
+    """Create a time domain window.
 
-    if startwindow is not None:
-        startwindow_n = [find_nearest(times, t)[1] for t in startwindow]
-    else:
+    Negative times are relative to the end. Short cut for end time is `None`.
+    """
+    times = time_vector(n, fs)
+    T = times[-1] + times[1]  # total time length
+
+    if startwindow_t is None:
         startwindow_n = None
-    if stopwindow is not None:
-        stopwindow_n = [find_nearest(times, t)[1] for t in stopwindow]
     else:
+        startwindow_n = []
+        for t in startwindow_t:
+            if t < 0:
+                t += T
+            assert 0 <= t or t <= T
+            startwindow_n.append(find_nearest(times, t)[1])
+
+    if stopwindow_t is None:
         stopwindow_n = None
+    else:
+        stopwindow_n = []
+        for t in stopwindow_t:
+            if t is None:
+                t = times[-1]
+            elif t < 0:
+                t += T
+            assert 0 <= t or t <= T
+            stopwindow_n.append(find_nearest(times, t)[1])
 
     twindow = sample_window(n, startwindow_n, stopwindow_n, window=window)
 
     return twindow
 
 
-def freq_window(fs, n, startwindow, stopwindow, window="hann"):
+def freq_window(fs, n, startwindow_f, stopwindow_f, window="hann"):
     """Create a frequency domain window."""
     freqs = freq_vector(n, fs)
 
-    if startwindow is not None:
-        startwindow_n = [find_nearest(freqs, f)[1] for f in startwindow]
+    if startwindow_f is not None:
+        startwindow_n = [find_nearest(freqs, f)[1] for f in startwindow_f]
     else:
         startwindow_n = None
 
-    if stopwindow is not None:
-        stopwindow_n = [find_nearest(freqs, f)[1] for f in stopwindow]
+    if stopwindow_f is not None:
+        stopwindow_n = [find_nearest(freqs, f)[1] for f in stopwindow_f]
     else:
         startwindow_n = None
 
