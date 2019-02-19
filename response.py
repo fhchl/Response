@@ -752,7 +752,7 @@ class Response(object):
         h = lowpass_by_frequency_domain_window(self.fs, self.in_time, fstart, fstop)
         return self.from_time(self.fs, h)
 
-    def resample(self, fs_new, normalize="keep_gain", window=None):
+    def resample(self, fs_new, normalize="same_gain", window=None):
         """Resample using Fourier method.
 
         Parameters
@@ -760,8 +760,8 @@ class Response(object):
         fs_new : int
             New sample rate
         normalize : str, optional
-            If 'keep_gain', normalize such that the gain is the same
-            as the original signal. If 'keep_amplitudes', amplitudes will be preserved.
+            If 'same_gain', normalize such that the gain is the same
+            as the original signal. If 'same_amplitude', amplitudes will be preserved.
         window : None, optional
             Passed to scipy.signal.resample.
 
@@ -795,7 +795,9 @@ class Response(object):
         elif normalize == "same_amplitude":
             pass
         else:
-            ValueError("Expected 'same_gain' or 'same_amplitude, got %s" % (normalize,))
+            raise ValueError(
+                "Expected 'same_gain' or 'same_amplitude', got %s" % (normalize,)
+            )
 
         return self.from_time(fs_new, h_new)
 
@@ -807,8 +809,8 @@ class Response(object):
         fs_new : int
             New sample rate
         normalize : str, optional
-            If 'keep_gain', normalize such that the gain is the same
-            as the original signal. If 'keep_amplitudes', amplitudes will be preserved.
+            If 'same_gain', normalize such that the gain is the same
+            as the original signal. If 'same_amplitude', amplitudes will be preserved.
         window : None, optional
             Passed to scipy.signal.resample_poly.
 
@@ -835,7 +837,9 @@ class Response(object):
         elif normalize == "same_amplitude":
             pass
         else:
-            ValueError("Expected 'same_gain' or 'same_amplitude, got %s" % (normalize,))
+            raise ValueError(
+                "Expected 'same_gain' or 'same_amplitude', got %s" % (normalize,)
+            )
 
         return self.from_time(fs_new, h_new)
 
