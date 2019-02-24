@@ -381,6 +381,9 @@ class Response(object):
             flim = (10, self.fs / 2)
         ax.set_xlim(flim)
 
+        if dblim is not None:
+            ax.set_ylim(dblim)
+
         return fig
 
     def plot_phase(
