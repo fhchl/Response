@@ -340,6 +340,7 @@ class Response(object):
         flim=None,
         dbref=1,
         label=None,
+        plot_kw={},
         **fig_kw,
     ):
         """Plot magnitude response."""
@@ -366,7 +367,10 @@ class Response(object):
         )
 
         ax.semilogx(
-            self.freqs, 20 * np.log10(np.abs(freq_plotready / dbref)), label=label
+            self.freqs,
+            20 * np.log10(np.abs(freq_plotready / dbref)),
+            label=label,
+            **plot_kw,
         )
         ax.set_xlabel("Frequency [Hz]")
         ax.set_ylabel("Magnitude [dB re {:.2}{}]".format(float(dbref), unit))
@@ -387,6 +391,7 @@ class Response(object):
         label=None,
         unwrap=False,
         ylim=None,
+        plot_kw={},
         **fig_kw,
     ):
         """Plot phase response."""
@@ -413,7 +418,7 @@ class Response(object):
             np.unwrap(np.angle(freq_plotready)) if unwrap else np.angle(freq_plotready)
         )
 
-        ax.semilogx(self.freqs, phase)
+        ax.semilogx(self.freqs, phase, **plot_kw)
         ax.set_xlabel("Frequency [Hz]")
         ax.set_ylabel("Phase [rad]")
         ax.set_title("Phase response")
@@ -427,7 +432,9 @@ class Response(object):
 
         return fig
 
-    def plot_time(self, use_ax=None, slce=None, tlim=None, ylim=None, **fig_kw):
+    def plot_time(
+        self, use_ax=None, slce=None, tlim=None, ylim=None, plot_kw={}, **fig_kw
+    ):
         """Plot time response."""
         if use_ax is None:
             fig_kw = {**{"figsize": (10, 5)}, **fig_kw}
@@ -448,7 +455,7 @@ class Response(object):
             (self.nt, -1)
         )
 
-        ax.plot(self.times, time_plotready)
+        ax.plot(self.times, time_plotready, **plot_kw)
         ax.set_xlabel("Time [s]")
         ax.set_ylabel("")
         ax.set_title("Time response")
@@ -461,7 +468,14 @@ class Response(object):
         return fig
 
     def plot_group_delay(
-        self, use_ax=None, slce=None, flim=None, label=None, ylim=None, **fig_kw
+        self,
+        use_ax=None,
+        slce=None,
+        flim=None,
+        label=None,
+        ylim=None,
+        plot_kw={},
+        **fig_kw,
     ):
         """Plot group delay."""
         if use_ax is None:
@@ -485,9 +499,10 @@ class Response(object):
         )
 
         df = self.freqs[1] - self.freqs[0]
+        # TODO: use scipy.signal.group_delay here as below has problem at larger delays
         grpd = -np.gradient(np.unwrap(np.angle(freq_plotready)), df, axis=0)
 
-        ax.semilogx(self.freqs, grpd)
+        ax.semilogx(self.freqs, grpd, **plot_kw)
         ax.set_xlabel("Frequency [Hz]")
         ax.set_ylabel("Delay [s]")
         ax.set_title("Group Delay")
