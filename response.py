@@ -384,6 +384,9 @@ class Response(object):
         if dblim is not None:
             ax.set_ylim(dblim)
 
+        if label is not None:
+            ax.legend()
+
         return fig
 
     def plot_phase(
@@ -421,7 +424,7 @@ class Response(object):
             np.unwrap(np.angle(freq_plotready)) if unwrap else np.angle(freq_plotready)
         )
 
-        ax.semilogx(self.freqs, phase, **plot_kw)
+        ax.semilogx(self.freqs, phase, label=label, **plot_kw)
         ax.set_xlabel("Frequency [Hz]")
         ax.set_ylabel("Phase [rad]")
         ax.set_title("Phase response")
@@ -433,10 +436,20 @@ class Response(object):
         if ylim:
             ax.set_ylim(ylim)
 
+        if label is not None:
+            ax.legend()
+
         return fig
 
     def plot_time(
-        self, use_ax=None, slce=None, tlim=None, ylim=None, plot_kw={}, **fig_kw
+        self,
+        use_ax=None,
+        slce=None,
+        tlim=None,
+        ylim=None,
+        label=None,
+        plot_kw={},
+        **fig_kw,
     ):
         """Plot time response."""
         if use_ax is None:
@@ -458,15 +471,19 @@ class Response(object):
             (self.nt, -1)
         )
 
-        ax.plot(self.times, time_plotready, **plot_kw)
+        ax.plot(self.times, time_plotready, label=label, **plot_kw)
         ax.set_xlabel("Time [s]")
         ax.set_ylabel("")
         ax.set_title("Time response")
         ax.grid(True)
+
         if tlim:
             ax.set_xlim(tlim)
         if ylim:
             ax.set_ylim(ylim)
+
+        if label is not None:
+            ax.legend()
 
         return fig
 
@@ -505,16 +522,21 @@ class Response(object):
         # TODO: use scipy.signal.group_delay here as below has problem at larger delays
         grpd = -np.gradient(np.unwrap(np.angle(freq_plotready)), df, axis=0)
 
-        ax.semilogx(self.freqs, grpd, **plot_kw)
+        ax.semilogx(self.freqs, grpd, label=label, **plot_kw)
         ax.set_xlabel("Frequency [Hz]")
         ax.set_ylabel("Delay [s]")
         ax.set_title("Group Delay")
         ax.grid(True)
+
         if flim is None:
             flim = (10, self.fs / 2)
         ax.set_xlim(flim)
+
         if ylim:
             ax.set_ylim(ylim)
+
+        if label is not None:
+            ax.legend()
 
         return fig
 
@@ -668,8 +690,6 @@ class Response(object):
             i_end = None
         else:
             _, i_end = find_nearest(self.times, end)
-
-        print(i_start, i_end)
 
         h = self.in_time[..., i_start:i_end]
 
