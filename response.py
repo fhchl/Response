@@ -1,8 +1,4 @@
-"""Representing responses in a domain agnostic manner.
-
-Implements a fluent interface.
-https://en.wikipedia.org/wiki/Fluent_interface
-"""
+"""Representing responses in a domain agnostic manner."""
 
 import warnings
 from fractions import Fraction
