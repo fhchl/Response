@@ -1311,6 +1311,36 @@ def lowpass_by_frequency_domain_window(fs, x, fstart, fstop, axis=-1, window="ha
     return np.fft.irfft(X_windowed, axis=axis, n=n)
 
 
+def delay_between(h1, h2):
+    """Estimate delay of h2 relative to h1 using cross correlation.
+
+    Parameters
+    ----------
+    h1 : ((N,) L) array_like
+        Reference signals.
+    h2 : ((M,) L) array_like
+        Delayed signals.
+
+    Returns
+    -------
+    delay : (N, M) numpy.ndarray
+        Delays in samples. `h2[j]` is delayed relative to `h1[i]` by `delay[i, j]`.
+    """
+    h1 = np.atleast_2d(h1)
+    h2 = np.atleast_2d(h2)
+    assert h1.shape[-1] == h2.shape[-1], 'h1 and h2 must have same number of samples'
+
+    N = h1.shape[-1]
+
+    print(h1.shape, h2.shape)
+    delay = np.zeros((h1.shape[0], h2.shape[0]))
+    for i in range(h1.shape[0]):
+        for j in range(h2.shape[0]):
+            delay[i, j] = np.argmax(np.correlate(h2[j], h1[i], mode="full")) - N + 1
+
+    return delay
+
+
 #########
 # Utils #
 #########
