@@ -1332,13 +1332,22 @@ def delay_between(h1, h2):
 
     N = h1.shape[-1]
 
-    print(h1.shape, h2.shape)
     delay = np.zeros((h1.shape[0], h2.shape[0]))
     for i in range(h1.shape[0]):
         for j in range(h2.shape[0]):
-            delay[i, j] = np.argmax(np.correlate(h2[j], h1[i], mode="full")) - N + 1
+            xcorrmax = np.argmax(np.correlate(h2[j], h1[i], mode="full"))
+            delay[i, j] = xcorrmax - N + 1
 
     return delay
+
+
+def align(h, href, upsample=1):
+    href = resample_poly(href, upsample, 1)
+    h = resample_poly(h, upsample, 1)
+    delay = delay_between(href, h).squeeze()
+    h = np.roll(h, -int(delay))
+    h = resample_poly(h, 1, upsample)
+    return h
 
 
 #########
