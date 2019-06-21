@@ -2,6 +2,7 @@
 
 from .context import response  # noqa
 
+import response
 from response import Response
 
 import numpy as np
@@ -107,3 +108,14 @@ class TestMethods:
 
         assert rpad.nt == 256
         npt.assert_equal(r.in_time, rpad.in_time[..., :nt])
+
+
+class TestFunctions:
+    def test_aroll(self):
+        x = np.eye(10)
+        dn = np.arange(10)
+
+        rolled = response.aroll(x, -dn)
+
+        assert np.all(rolled[:, :1] == 1)
+        assert np.all(rolled[:, 1:] == 0)

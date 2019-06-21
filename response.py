@@ -6,7 +6,7 @@ from pathlib import Path
 
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.signal import get_window, resample, resample_poly, lfilter, welch
+from scipy.signal import get_window, resample, resample_poly, lfilter, welch, tukey
 from scipy.io import wavfile
 
 # center, lower, upper frequency
@@ -1410,3 +1410,85 @@ def find_nearest(array, value):
     """
     idx = (np.abs(array - value)).argmin()
     return array[idx], idx
+
+
+def window_around_peak(r, tleft, tright, alpha=0.5):
+    """Time window responses around their maximum value.
+
+    Parameters
+    ----------
+    r : Response
+        Input response.
+    tleft : float
+        Start of time window relative to impulse response peak.
+    tright : float
+        End of time window relative to impulse response peak.
+    alpha : float, optional
+        Alpha parameter of Tukey window.
+
+    Returns
+    -------
+    Response
+        Time windowed response object.
+
+    """
+    fs = r.fs
+    irs = r.in_time.copy()
+    sleft = int(fs * tleft)
+    sright = int(fs * tright)
+    window = tukey(sright + sleft, alpha=alpha)
+    for i in range(irs.shape[0]):
+        for j in range(irs.shape[1]):
+            ipeak = np.argmax(np.abs(irs[i, j].mean(axis=0)))
+            iwstart = ipeak - sleft
+            iwend = ipeak + sright
+            irs[i, j, :, iwstart : iwend] *= window
+            irs[i, j, :, :iwstart] = 0
+            irs[i, j, :, iwend:] = 0
+    return Response.from_time(fs, irs)
+
+
+def aroll(x, n, circular=False, axis=-1, copy=True):
+    """Roll axes individually by sample vector.
+
+    Parameters
+    ----------
+    x : ndarray, shape
+        Input array
+    n : ndarray
+        Delay times of each entry along axis.
+    circular: bool
+        If True, wrap around ends. Else replace with zeros.
+    axis : int, optional
+        Axis along which is rolled.
+    copy : bool, optional
+        If True, operate on copy of `x`. Else roll inplace.
+
+    Returns
+    -------
+    ndarray
+        Delayed array.
+
+    """
+    n = n.astype(int)
+
+    if copy:
+        x = x.copy()
+
+    # move time axis to first dim and reshape to 2D
+    xview = np.rollaxis(x, axis)
+    xview = xview.reshape(xview.shape[0], -1)
+    n = n.reshape(-1)
+
+    assert n.shape[0] == xview.shape[1]
+
+    for i in range(n.shape[0]):
+        xview[:, i] = np.roll(xview[:, i], n[i])
+
+        if not circular:
+            if n[i] > 0:
+                xview[:n[i], i] = 0
+            elif n[i] < 0:
+                xview[n[i]:, i] = 0
+
+    return x
