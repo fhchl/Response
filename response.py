@@ -905,9 +905,27 @@ class Response(object):
         lim_new = (np.iinfo(dtype).min, np.iinfo(dtype).max)
         data = rescale(data, lim_orig, lim_new).astype(dtype)
 
+        path = Path(folder)
+        if not path.is_dir():
+            path.mkdir(parents=True, exist_ok=False)
+
         for i in range(data.shape[0]):
-            fp = Path(folder) / name_fmt.format(i + 1)
-            wavfile.write(fp, self.fs, data[i])
+            wavfile.write(path / name_fmt.format(i + 1), self.fs, data[i])
+
+    def export_npz(self, filename, dtype=np.float32):
+        """Export impulse response as npz file.
+
+        Parameters
+        ----------
+        filename: str or Path
+            File path
+        dtype:
+            Convert to this type before saving
+
+        """
+        np.savez(
+            filename, impulse_response=self.in_time.astype(dtype), samplerate=self.fs
+        )
 
     def power_in_bands(self, bands=None, avgaxis=None):
         """Compute power of signal in third octave bands.
