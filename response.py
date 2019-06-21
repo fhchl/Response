@@ -885,7 +885,7 @@ class Response(object):
         return self.from_time(self.fs, h)
 
     def export_wav(self, folder, name_fmt="{:02d}.wav", dtype=np.int16):
-        """Export response to wave file.
+        """Export impulse response to wave file.
 
         Parameters
         ----------
@@ -1343,10 +1343,11 @@ def delay_between(h1, h2):
     -------
     delay : (N, M) numpy.ndarray
         Delays in samples. `h2[j]` is delayed relative to `h1[i]` by `delay[i, j]`.
+
     """
     h1 = np.atleast_2d(h1)
     h2 = np.atleast_2d(h2)
-    assert h1.shape[-1] == h2.shape[-1], 'h1 and h2 must have same number of samples'
+    assert h1.shape[-1] == h2.shape[-1], "h1 and h2 must have same number of samples"
 
     N = h1.shape[-1]
 
@@ -1360,17 +1361,29 @@ def delay_between(h1, h2):
 
 
 def align(h, href, upsample=1):
+    """Align two impulse responses using cross correlation.
+
+    Parameters
+    ----------
+    h : array_like
+        Response that will be aligned.
+    href : array_like
+        Response to which will be aligned.
+    upsample : int, optional
+        Upsample both responses before alignment by this factor.
+
+    Returns
+    -------
+    ndarray
+        Time aligned version of `h`.
+
+    """
     href = resample_poly(href, upsample, 1)
     h = resample_poly(h, upsample, 1)
     delay = delay_between(href, h).squeeze()
     h = np.roll(h, -int(delay))
     h = resample_poly(h, 1, upsample)
     return h
-
-
-#########
-# Utils #
-#########
 
 
 def rescale(x, xlim, ylim):

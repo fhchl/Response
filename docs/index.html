@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.5.2" />
 <title>response API documentation</title>
-<meta name="description" content="Representing responses in a domain agnostic manner …" />
+<meta name="description" content="Representing responses in a domain agnostic manner." />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -21,18 +21,9 @@
 </header>
 <section id="section-intro">
 <p>Representing responses in a domain agnostic manner.</p>
-<dl>
-<dt>Implements a fluent interface.</dt>
-<dt><strong><code>https</code></strong> :&ensp;//<code>en.wikipedia.org</code>/<code>wiki</code>/<code>Fluent_interface</code></dt>
-<dd>&nbsp;</dd>
-</dl>
 <details class="source">
 <summary>Source code</summary>
-<pre><code class="python">&#34;&#34;&#34;Representing responses in a domain agnostic manner.
-
-Implements a fluent interface.
-https://en.wikipedia.org/wiki/Fluent_interface
-&#34;&#34;&#34;
+<pre><code class="python">&#34;&#34;&#34;Representing responses in a domain agnostic manner.&#34;&#34;&#34;
 
 import warnings
 from fractions import Fraction
@@ -40,7 +31,7 @@ from pathlib import Path
 
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.signal import get_window, resample, resample_poly, lfilter, welch
+from scipy.signal import get_window, resample, resample_poly, lfilter, welch, tukey
 from scipy.io import wavfile
 
 # center, lower, upper frequency
@@ -370,6 +361,7 @@ class Response(object):
         flim=None,
         dbref=1,
         label=None,
+        plot_kw={},
         **fig_kw,
     ):
         &#34;&#34;&#34;Plot magnitude response.&#34;&#34;&#34;
@@ -396,7 +388,10 @@ class Response(object):
         )
 
         ax.semilogx(
-            self.freqs, 20 * np.log10(np.abs(freq_plotready / dbref)), label=label
+            self.freqs,
+            20 * np.log10(np.abs(freq_plotready / dbref)),
+            label=label,
+            **plot_kw,
         )
         ax.set_xlabel(&#34;Frequency [Hz]&#34;)
         ax.set_ylabel(&#34;Magnitude [dB re {:.2}{}]&#34;.format(float(dbref), unit))
@@ -406,6 +401,12 @@ class Response(object):
         if flim is None:
             flim = (10, self.fs / 2)
         ax.set_xlim(flim)
+
+        if dblim is not None:
+            ax.set_ylim(dblim)
+
+        if label is not None:
+            ax.legend()
 
         return fig
 
@@ -417,6 +418,7 @@ class Response(object):
         label=None,
         unwrap=False,
         ylim=None,
+        plot_kw={},
         **fig_kw,
     ):
         &#34;&#34;&#34;Plot phase response.&#34;&#34;&#34;
@@ -443,7 +445,7 @@ class Response(object):
             np.unwrap(np.angle(freq_plotready)) if unwrap else np.angle(freq_plotready)
         )
 
-        ax.semilogx(self.freqs, phase)
+        ax.semilogx(self.freqs, phase, label=label, **plot_kw)
         ax.set_xlabel(&#34;Frequency [Hz]&#34;)
         ax.set_ylabel(&#34;Phase [rad]&#34;)
         ax.set_title(&#34;Phase response&#34;)
@@ -455,9 +457,21 @@ class Response(object):
         if ylim:
             ax.set_ylim(ylim)
 
+        if label is not None:
+            ax.legend()
+
         return fig
 
-    def plot_time(self, use_ax=None, slce=None, tlim=None, ylim=None, **fig_kw):
+    def plot_time(
+        self,
+        use_ax=None,
+        slce=None,
+        tlim=None,
+        ylim=None,
+        label=None,
+        plot_kw={},
+        **fig_kw,
+    ):
         &#34;&#34;&#34;Plot time response.&#34;&#34;&#34;
         if use_ax is None:
             fig_kw = {**{&#34;figsize&#34;: (10, 5)}, **fig_kw}
@@ -478,20 +492,31 @@ class Response(object):
             (self.nt, -1)
         )
 
-        ax.plot(self.times, time_plotready)
+        ax.plot(self.times, time_plotready, label=label, **plot_kw)
         ax.set_xlabel(&#34;Time [s]&#34;)
         ax.set_ylabel(&#34;&#34;)
         ax.set_title(&#34;Time response&#34;)
         ax.grid(True)
+
         if tlim:
             ax.set_xlim(tlim)
         if ylim:
             ax.set_ylim(ylim)
 
+        if label is not None:
+            ax.legend()
+
         return fig
 
     def plot_group_delay(
-        self, use_ax=None, slce=None, flim=None, label=None, ylim=None, **fig_kw
+        self,
+        use_ax=None,
+        slce=None,
+        flim=None,
+        label=None,
+        ylim=None,
+        plot_kw={},
+        **fig_kw,
     ):
         &#34;&#34;&#34;Plot group delay.&#34;&#34;&#34;
         if use_ax is None:
@@ -515,18 +540,24 @@ class Response(object):
         )
 
         df = self.freqs[1] - self.freqs[0]
+        # TODO: use scipy.signal.group_delay here as below has problem at larger delays
         grpd = -np.gradient(np.unwrap(np.angle(freq_plotready)), df, axis=0)
 
-        ax.semilogx(self.freqs, grpd)
+        ax.semilogx(self.freqs, grpd, label=label, **plot_kw)
         ax.set_xlabel(&#34;Frequency [Hz]&#34;)
         ax.set_ylabel(&#34;Delay [s]&#34;)
         ax.set_title(&#34;Group Delay&#34;)
         ax.grid(True)
+
         if flim is None:
             flim = (10, self.fs / 2)
         ax.set_xlim(flim)
+
         if ylim:
             ax.set_ylim(ylim)
+
+        if label is not None:
+            ax.legend()
 
         return fig
 
@@ -680,8 +711,6 @@ class Response(object):
             i_end = None
         else:
             _, i_end = find_nearest(self.times, end)
-
-        print(i_start, i_end)
 
         h = self.in_time[..., i_start:i_end]
 
@@ -881,7 +910,7 @@ class Response(object):
         return self.from_time(self.fs, h)
 
     def export_wav(self, folder, name_fmt=&#34;{:02d}.wav&#34;, dtype=np.int16):
-        &#34;&#34;&#34;Export response to wave file.
+        &#34;&#34;&#34;Export impulse response to wave file.
 
         Parameters
         ----------
@@ -901,9 +930,27 @@ class Response(object):
         lim_new = (np.iinfo(dtype).min, np.iinfo(dtype).max)
         data = rescale(data, lim_orig, lim_new).astype(dtype)
 
+        path = Path(folder)
+        if not path.is_dir():
+            path.mkdir(parents=True, exist_ok=False)
+
         for i in range(data.shape[0]):
-            fp = Path(folder) / name_fmt.format(i + 1)
-            wavfile.write(fp, self.fs, data[i])
+            wavfile.write(path / name_fmt.format(i + 1), self.fs, data[i])
+
+    def export_npz(self, filename, dtype=np.float32):
+        &#34;&#34;&#34;Export impulse response as npz file.
+
+        Parameters
+        ----------
+        filename: str or Path
+            File path
+        dtype:
+            Convert to this type before saving
+
+        &#34;&#34;&#34;
+        np.savez(
+            filename, impulse_response=self.in_time.astype(dtype), samplerate=self.fs
+        )
 
     def power_in_bands(self, bands=None, avgaxis=None):
         &#34;&#34;&#34;Compute power of signal in third octave bands.
@@ -1307,9 +1354,61 @@ def lowpass_by_frequency_domain_window(fs, x, fstart, fstop, axis=-1, window=&#3
     return np.fft.irfft(X_windowed, axis=axis, n=n)
 
 
-#########
-# Utils #
-#########
+def delay_between(h1, h2):
+    &#34;&#34;&#34;Estimate delay of h2 relative to h1 using cross correlation.
+
+    Parameters
+    ----------
+    h1 : ((N,) L) array_like
+        Reference signals.
+    h2 : ((M,) L) array_like
+        Delayed signals.
+
+    Returns
+    -------
+    delay : (N, M) numpy.ndarray
+        Delays in samples. `h2[j]` is delayed relative to `h1[i]` by `delay[i, j]`.
+
+    &#34;&#34;&#34;
+    h1 = np.atleast_2d(h1)
+    h2 = np.atleast_2d(h2)
+    assert h1.shape[-1] == h2.shape[-1], &#34;h1 and h2 must have same number of samples&#34;
+
+    N = h1.shape[-1]
+
+    delay = np.zeros((h1.shape[0], h2.shape[0]))
+    for i in range(h1.shape[0]):
+        for j in range(h2.shape[0]):
+            xcorrmax = np.argmax(np.correlate(h2[j], h1[i], mode=&#34;full&#34;))
+            delay[i, j] = xcorrmax - N + 1
+
+    return delay
+
+
+def align(h, href, upsample=1):
+    &#34;&#34;&#34;Align two impulse responses using cross correlation.
+
+    Parameters
+    ----------
+    h : array_like
+        Response that will be aligned.
+    href : array_like
+        Response to which will be aligned.
+    upsample : int, optional
+        Upsample both responses before alignment by this factor.
+
+    Returns
+    -------
+    ndarray
+        Time aligned version of `h`.
+
+    &#34;&#34;&#34;
+    href = resample_poly(href, upsample, 1)
+    h = resample_poly(h, upsample, 1)
+    delay = delay_between(href, h).squeeze()
+    h = np.roll(h, -int(delay))
+    h = resample_poly(h, 1, upsample)
+    return h
 
 
 def rescale(x, xlim, ylim):
@@ -1348,7 +1447,89 @@ def find_nearest(array, value):
 
     &#34;&#34;&#34;
     idx = (np.abs(array - value)).argmin()
-    return array[idx], idx</code></pre>
+    return array[idx], idx
+
+
+def window_around_peak(r, tleft, tright, alpha=0.5):
+    &#34;&#34;&#34;Time window responses around their maximum value.
+
+    Parameters
+    ----------
+    r : Response
+        Input response.
+    tleft : float
+        Start of time window relative to impulse response peak.
+    tright : float
+        End of time window relative to impulse response peak.
+    alpha : float, optional
+        Alpha parameter of Tukey window.
+
+    Returns
+    -------
+    Response
+        Time windowed response object.
+
+    &#34;&#34;&#34;
+    fs = r.fs
+    irs = r.in_time.copy()
+    sleft = int(fs * tleft)
+    sright = int(fs * tright)
+    window = tukey(sright + sleft, alpha=alpha)
+    for i in range(irs.shape[0]):
+        for j in range(irs.shape[1]):
+            ipeak = np.argmax(np.abs(irs[i, j].mean(axis=0)))
+            iwstart = ipeak - sleft
+            iwend = ipeak + sright
+            irs[i, j, :, iwstart : iwend] *= window
+            irs[i, j, :, :iwstart] = 0
+            irs[i, j, :, iwend:] = 0
+    return Response.from_time(fs, irs)
+
+
+def aroll(x, n, circular=False, axis=-1, copy=True):
+    &#34;&#34;&#34;Roll axes individually by sample vector.
+
+    Parameters
+    ----------
+    x : ndarray, shape
+        Input array
+    n : ndarray
+        Delay times of each entry along axis.
+    circular: bool
+        If True, wrap around ends. Else replace with zeros.
+    axis : int, optional
+        Axis along which is rolled.
+    copy : bool, optional
+        If True, operate on copy of `x`. Else roll inplace.
+
+    Returns
+    -------
+    ndarray
+        Delayed array.
+
+    &#34;&#34;&#34;
+    n = n.astype(int)
+
+    if copy:
+        x = x.copy()
+
+    # move time axis to first dim and reshape to 2D
+    xview = np.rollaxis(x, axis)
+    xview = xview.reshape(xview.shape[0], -1)
+    n = n.reshape(-1)
+
+    assert n.shape[0] == xview.shape[1]
+
+    for i in range(n.shape[0]):
+        xview[:, i] = np.roll(xview[:, i], n[i])
+
+        if not circular:
+            if n[i] &gt; 0:
+                xview[:n[i], i] = 0
+            elif n[i] &lt; 0:
+                xview[n[i]:, i] = 0
+
+    return x</code></pre>
 </details>
 </section>
 <section>
@@ -1358,6 +1539,124 @@ def find_nearest(array, value):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="response.align"><code class="name flex">
+<span>def <span class="ident">align</span></span>(<span>h, href, upsample=1)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Align two impulse responses using cross correlation.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>h</code></strong> :&ensp;<code>array_like</code></dt>
+<dd>Response that will be aligned.</dd>
+<dt><strong><code>href</code></strong> :&ensp;<code>array_like</code></dt>
+<dd>Response to which will be aligned.</dd>
+<dt><strong><code>upsample</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Upsample both responses before alignment by this factor.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>ndarray</code></strong></dt>
+<dd>Time aligned version of <code>h</code>.</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def align(h, href, upsample=1):
+    &#34;&#34;&#34;Align two impulse responses using cross correlation.
+
+    Parameters
+    ----------
+    h : array_like
+        Response that will be aligned.
+    href : array_like
+        Response to which will be aligned.
+    upsample : int, optional
+        Upsample both responses before alignment by this factor.
+
+    Returns
+    -------
+    ndarray
+        Time aligned version of `h`.
+
+    &#34;&#34;&#34;
+    href = resample_poly(href, upsample, 1)
+    h = resample_poly(h, upsample, 1)
+    delay = delay_between(href, h).squeeze()
+    h = np.roll(h, -int(delay))
+    h = resample_poly(h, 1, upsample)
+    return h</code></pre>
+</details>
+</dd>
+<dt id="response.aroll"><code class="name flex">
+<span>def <span class="ident">aroll</span></span>(<span>x, n, circular=False, axis=-1, copy=True)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Roll axes individually by sample vector.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>x</code></strong> :&ensp;<code>ndarray</code>, <code>shape</code></dt>
+<dd>Input array</dd>
+<dt><strong><code>n</code></strong> :&ensp;<code>ndarray</code></dt>
+<dd>Delay times of each entry along axis.</dd>
+<dt><strong><code>circular</code></strong> :&ensp;<code>bool</code></dt>
+<dd>If True, wrap around ends. Else replace with zeros.</dd>
+<dt><strong><code>axis</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Axis along which is rolled.</dd>
+<dt><strong><code>copy</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>If True, operate on copy of <code>x</code>. Else roll inplace.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>ndarray</code></strong></dt>
+<dd>Delayed array.</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def aroll(x, n, circular=False, axis=-1, copy=True):
+    &#34;&#34;&#34;Roll axes individually by sample vector.
+
+    Parameters
+    ----------
+    x : ndarray, shape
+        Input array
+    n : ndarray
+        Delay times of each entry along axis.
+    circular: bool
+        If True, wrap around ends. Else replace with zeros.
+    axis : int, optional
+        Axis along which is rolled.
+    copy : bool, optional
+        If True, operate on copy of `x`. Else roll inplace.
+
+    Returns
+    -------
+    ndarray
+        Delayed array.
+
+    &#34;&#34;&#34;
+    n = n.astype(int)
+
+    if copy:
+        x = x.copy()
+
+    # move time axis to first dim and reshape to 2D
+    xview = np.rollaxis(x, axis)
+    xview = xview.reshape(xview.shape[0], -1)
+    n = n.reshape(-1)
+
+    assert n.shape[0] == xview.shape[1]
+
+    for i in range(n.shape[0]):
+        xview[:, i] = np.roll(xview[:, i], n[i])
+
+        if not circular:
+            if n[i] &gt; 0:
+                xview[:n[i], i] = 0
+            elif n[i] &lt; 0:
+                xview[n[i]:, i] = 0
+
+    return x</code></pre>
+</details>
+</dd>
 <dt id="response.delay"><code class="name flex">
 <span>def <span class="ident">delay</span></span>(<span>fs, x, dt, keep_length=True, axis=-1)</span>
 </code></dt>
@@ -1400,6 +1699,56 @@ def find_nearest(array, value):
         delayed = x
 
     return delayed</code></pre>
+</details>
+</dd>
+<dt id="response.delay_between"><code class="name flex">
+<span>def <span class="ident">delay_between</span></span>(<span>h1, h2)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Estimate delay of h2 relative to h1 using cross correlation.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>h1</code></strong> :&ensp;((<code>N</code>,) <code>L</code>) <code>array_like</code></dt>
+<dd>Reference signals.</dd>
+<dt><strong><code>h2</code></strong> :&ensp;((<code>M</code>,) <code>L</code>) <code>array_like</code></dt>
+<dd>Delayed signals.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><a title="response.delay" href="#response.delay"><code>delay()</code></a></strong> :&ensp;(<code>N</code>, <code>M</code>) <code>numpy.ndarray</code></dt>
+<dd>Delays in samples. <code>h2[j]</code> is delayed relative to <code>h1[i]</code> by <code>delay[i, j]</code>.</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def delay_between(h1, h2):
+    &#34;&#34;&#34;Estimate delay of h2 relative to h1 using cross correlation.
+
+    Parameters
+    ----------
+    h1 : ((N,) L) array_like
+        Reference signals.
+    h2 : ((M,) L) array_like
+        Delayed signals.
+
+    Returns
+    -------
+    delay : (N, M) numpy.ndarray
+        Delays in samples. `h2[j]` is delayed relative to `h1[i]` by `delay[i, j]`.
+
+    &#34;&#34;&#34;
+    h1 = np.atleast_2d(h1)
+    h2 = np.atleast_2d(h2)
+    assert h1.shape[-1] == h2.shape[-1], &#34;h1 and h2 must have same number of samples&#34;
+
+    N = h1.shape[-1]
+
+    delay = np.zeros((h1.shape[0], h2.shape[0]))
+    for i in range(h1.shape[0]):
+        for j in range(h2.shape[0]):
+            xcorrmax = np.argmax(np.correlate(h2[j], h1[i], mode=&#34;full&#34;))
+            delay[i, j] = xcorrmax - N + 1
+
+    return delay</code></pre>
 </details>
 </dd>
 <dt id="response.find_nearest"><code class="name flex">
@@ -1827,6 +2176,65 @@ times in seconds</p></section>
     return twindow</code></pre>
 </details>
 </dd>
+<dt id="response.window_around_peak"><code class="name flex">
+<span>def <span class="ident">window_around_peak</span></span>(<span>r, tleft, tright, alpha=0.5)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Time window responses around their maximum value.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>r</code></strong> :&ensp;<a title="response.Response" href="#response.Response"><code>Response</code></a></dt>
+<dd>Input response.</dd>
+<dt><strong><code>tleft</code></strong> :&ensp;<code>float</code></dt>
+<dd>Start of time window relative to impulse response peak.</dd>
+<dt><strong><code>tright</code></strong> :&ensp;<code>float</code></dt>
+<dd>End of time window relative to impulse response peak.</dd>
+<dt><strong><code>alpha</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Alpha parameter of Tukey window.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><a title="response.Response" href="#response.Response"><code>Response</code></a></strong></dt>
+<dd>Time windowed response object.</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def window_around_peak(r, tleft, tright, alpha=0.5):
+    &#34;&#34;&#34;Time window responses around their maximum value.
+
+    Parameters
+    ----------
+    r : Response
+        Input response.
+    tleft : float
+        Start of time window relative to impulse response peak.
+    tright : float
+        End of time window relative to impulse response peak.
+    alpha : float, optional
+        Alpha parameter of Tukey window.
+
+    Returns
+    -------
+    Response
+        Time windowed response object.
+
+    &#34;&#34;&#34;
+    fs = r.fs
+    irs = r.in_time.copy()
+    sleft = int(fs * tleft)
+    sright = int(fs * tright)
+    window = tukey(sright + sleft, alpha=alpha)
+    for i in range(irs.shape[0]):
+        for j in range(irs.shape[1]):
+            ipeak = np.argmax(np.abs(irs[i, j].mean(axis=0)))
+            iwstart = ipeak - sleft
+            iwend = ipeak + sright
+            irs[i, j, :, iwstart : iwend] *= window
+            irs[i, j, :, :iwstart] = 0
+            irs[i, j, :, iwend:] = 0
+    return Response.from_time(fs, irs)</code></pre>
+</details>
+</dd>
 </dl>
 </section>
 <section>
@@ -2129,6 +2537,7 @@ times in seconds</p></section>
         flim=None,
         dbref=1,
         label=None,
+        plot_kw={},
         **fig_kw,
     ):
         &#34;&#34;&#34;Plot magnitude response.&#34;&#34;&#34;
@@ -2155,7 +2564,10 @@ times in seconds</p></section>
         )
 
         ax.semilogx(
-            self.freqs, 20 * np.log10(np.abs(freq_plotready / dbref)), label=label
+            self.freqs,
+            20 * np.log10(np.abs(freq_plotready / dbref)),
+            label=label,
+            **plot_kw,
         )
         ax.set_xlabel(&#34;Frequency [Hz]&#34;)
         ax.set_ylabel(&#34;Magnitude [dB re {:.2}{}]&#34;.format(float(dbref), unit))
@@ -2165,6 +2577,12 @@ times in seconds</p></section>
         if flim is None:
             flim = (10, self.fs / 2)
         ax.set_xlim(flim)
+
+        if dblim is not None:
+            ax.set_ylim(dblim)
+
+        if label is not None:
+            ax.legend()
 
         return fig
 
@@ -2176,6 +2594,7 @@ times in seconds</p></section>
         label=None,
         unwrap=False,
         ylim=None,
+        plot_kw={},
         **fig_kw,
     ):
         &#34;&#34;&#34;Plot phase response.&#34;&#34;&#34;
@@ -2202,7 +2621,7 @@ times in seconds</p></section>
             np.unwrap(np.angle(freq_plotready)) if unwrap else np.angle(freq_plotready)
         )
 
-        ax.semilogx(self.freqs, phase)
+        ax.semilogx(self.freqs, phase, label=label, **plot_kw)
         ax.set_xlabel(&#34;Frequency [Hz]&#34;)
         ax.set_ylabel(&#34;Phase [rad]&#34;)
         ax.set_title(&#34;Phase response&#34;)
@@ -2214,9 +2633,21 @@ times in seconds</p></section>
         if ylim:
             ax.set_ylim(ylim)
 
+        if label is not None:
+            ax.legend()
+
         return fig
 
-    def plot_time(self, use_ax=None, slce=None, tlim=None, ylim=None, **fig_kw):
+    def plot_time(
+        self,
+        use_ax=None,
+        slce=None,
+        tlim=None,
+        ylim=None,
+        label=None,
+        plot_kw={},
+        **fig_kw,
+    ):
         &#34;&#34;&#34;Plot time response.&#34;&#34;&#34;
         if use_ax is None:
             fig_kw = {**{&#34;figsize&#34;: (10, 5)}, **fig_kw}
@@ -2237,20 +2668,31 @@ times in seconds</p></section>
             (self.nt, -1)
         )
 
-        ax.plot(self.times, time_plotready)
+        ax.plot(self.times, time_plotready, label=label, **plot_kw)
         ax.set_xlabel(&#34;Time [s]&#34;)
         ax.set_ylabel(&#34;&#34;)
         ax.set_title(&#34;Time response&#34;)
         ax.grid(True)
+
         if tlim:
             ax.set_xlim(tlim)
         if ylim:
             ax.set_ylim(ylim)
 
+        if label is not None:
+            ax.legend()
+
         return fig
 
     def plot_group_delay(
-        self, use_ax=None, slce=None, flim=None, label=None, ylim=None, **fig_kw
+        self,
+        use_ax=None,
+        slce=None,
+        flim=None,
+        label=None,
+        ylim=None,
+        plot_kw={},
+        **fig_kw,
     ):
         &#34;&#34;&#34;Plot group delay.&#34;&#34;&#34;
         if use_ax is None:
@@ -2274,18 +2716,24 @@ times in seconds</p></section>
         )
 
         df = self.freqs[1] - self.freqs[0]
+        # TODO: use scipy.signal.group_delay here as below has problem at larger delays
         grpd = -np.gradient(np.unwrap(np.angle(freq_plotready)), df, axis=0)
 
-        ax.semilogx(self.freqs, grpd)
+        ax.semilogx(self.freqs, grpd, label=label, **plot_kw)
         ax.set_xlabel(&#34;Frequency [Hz]&#34;)
         ax.set_ylabel(&#34;Delay [s]&#34;)
         ax.set_title(&#34;Group Delay&#34;)
         ax.grid(True)
+
         if flim is None:
             flim = (10, self.fs / 2)
         ax.set_xlim(flim)
+
         if ylim:
             ax.set_ylim(ylim)
+
+        if label is not None:
+            ax.legend()
 
         return fig
 
@@ -2439,8 +2887,6 @@ times in seconds</p></section>
             i_end = None
         else:
             _, i_end = find_nearest(self.times, end)
-
-        print(i_start, i_end)
 
         h = self.in_time[..., i_start:i_end]
 
@@ -2640,7 +3086,7 @@ times in seconds</p></section>
         return self.from_time(self.fs, h)
 
     def export_wav(self, folder, name_fmt=&#34;{:02d}.wav&#34;, dtype=np.int16):
-        &#34;&#34;&#34;Export response to wave file.
+        &#34;&#34;&#34;Export impulse response to wave file.
 
         Parameters
         ----------
@@ -2660,9 +3106,27 @@ times in seconds</p></section>
         lim_new = (np.iinfo(dtype).min, np.iinfo(dtype).max)
         data = rescale(data, lim_orig, lim_new).astype(dtype)
 
+        path = Path(folder)
+        if not path.is_dir():
+            path.mkdir(parents=True, exist_ok=False)
+
         for i in range(data.shape[0]):
-            fp = Path(folder) / name_fmt.format(i + 1)
-            wavfile.write(fp, self.fs, data[i])
+            wavfile.write(path / name_fmt.format(i + 1), self.fs, data[i])
+
+    def export_npz(self, filename, dtype=np.float32):
+        &#34;&#34;&#34;Export impulse response as npz file.
+
+        Parameters
+        ----------
+        filename: str or Path
+            File path
+        dtype:
+            Convert to this type before saving
+
+        &#34;&#34;&#34;
+        np.savez(
+            filename, impulse_response=self.in_time.astype(dtype), samplerate=self.fs
+        )
 
     def power_in_bands(self, bands=None, avgaxis=None):
         &#34;&#34;&#34;Compute power of signal in third octave bands.
@@ -3309,11 +3773,41 @@ Nyquist frequency or not. Must be <code>None</code> if tdata is given.</dd>
     return self.from_time(self.fs, x)</code></pre>
 </details>
 </dd>
+<dt id="response.Response.export_npz"><code class="name flex">
+<span>def <span class="ident">export_npz</span></span>(<span>self, filename, dtype=&lt;class &#39;numpy.float32&#39;&gt;)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Export impulse response as npz file.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>str</code> or <code>Path</code></dt>
+<dd>File path</dd>
+<dt><strong><code>dtype</code></strong></dt>
+<dd>Convert to this type before saving</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def export_npz(self, filename, dtype=np.float32):
+    &#34;&#34;&#34;Export impulse response as npz file.
+
+    Parameters
+    ----------
+    filename: str or Path
+        File path
+    dtype:
+        Convert to this type before saving
+
+    &#34;&#34;&#34;
+    np.savez(
+        filename, impulse_response=self.in_time.astype(dtype), samplerate=self.fs
+    )</code></pre>
+</details>
+</dd>
 <dt id="response.Response.export_wav"><code class="name flex">
 <span>def <span class="ident">export_wav</span></span>(<span>self, folder, name_fmt=&#39;{:02d}.wav&#39;, dtype=&lt;class &#39;numpy.int16&#39;&gt;)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Export response to wave file.</p>
+<section class="desc"><p>Export impulse response to wave file.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>folder</code></strong> :&ensp;<code>file</code> <code>path</code></dt>
@@ -3324,7 +3818,7 @@ Nyquist frequency or not. Must be <code>None</code> if tdata is given.</dd>
 <details class="source">
 <summary>Source code</summary>
 <pre><code class="python">def export_wav(self, folder, name_fmt=&#34;{:02d}.wav&#34;, dtype=np.int16):
-    &#34;&#34;&#34;Export response to wave file.
+    &#34;&#34;&#34;Export impulse response to wave file.
 
     Parameters
     ----------
@@ -3344,9 +3838,12 @@ Nyquist frequency or not. Must be <code>None</code> if tdata is given.</dd>
     lim_new = (np.iinfo(dtype).min, np.iinfo(dtype).max)
     data = rescale(data, lim_orig, lim_new).astype(dtype)
 
+    path = Path(folder)
+    if not path.is_dir():
+        path.mkdir(parents=True, exist_ok=False)
+
     for i in range(data.shape[0]):
-        fp = Path(folder) / name_fmt.format(i + 1)
-        wavfile.write(fp, self.fs, data[i])</code></pre>
+        wavfile.write(path / name_fmt.format(i + 1), self.fs, data[i])</code></pre>
 </details>
 </dd>
 <dt id="response.Response.filter"><code class="name flex">
@@ -3595,14 +4092,21 @@ dimension (f, t) is always completely taken.</dd>
 </details>
 </dd>
 <dt id="response.Response.plot_group_delay"><code class="name flex">
-<span>def <span class="ident">plot_group_delay</span></span>(<span>self, use_ax=None, slce=None, flim=None, label=None, ylim=None, **fig_kw)</span>
+<span>def <span class="ident">plot_group_delay</span></span>(<span>self, use_ax=None, slce=None, flim=None, label=None, ylim=None, plot_kw={}, **fig_kw)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Plot group delay.</p></section>
 <details class="source">
 <summary>Source code</summary>
 <pre><code class="python">def plot_group_delay(
-    self, use_ax=None, slce=None, flim=None, label=None, ylim=None, **fig_kw
+    self,
+    use_ax=None,
+    slce=None,
+    flim=None,
+    label=None,
+    ylim=None,
+    plot_kw={},
+    **fig_kw,
 ):
     &#34;&#34;&#34;Plot group delay.&#34;&#34;&#34;
     if use_ax is None:
@@ -3626,24 +4130,30 @@ dimension (f, t) is always completely taken.</dd>
     )
 
     df = self.freqs[1] - self.freqs[0]
+    # TODO: use scipy.signal.group_delay here as below has problem at larger delays
     grpd = -np.gradient(np.unwrap(np.angle(freq_plotready)), df, axis=0)
 
-    ax.semilogx(self.freqs, grpd)
+    ax.semilogx(self.freqs, grpd, label=label, **plot_kw)
     ax.set_xlabel(&#34;Frequency [Hz]&#34;)
     ax.set_ylabel(&#34;Delay [s]&#34;)
     ax.set_title(&#34;Group Delay&#34;)
     ax.grid(True)
+
     if flim is None:
         flim = (10, self.fs / 2)
     ax.set_xlim(flim)
+
     if ylim:
         ax.set_ylim(ylim)
+
+    if label is not None:
+        ax.legend()
 
     return fig</code></pre>
 </details>
 </dd>
 <dt id="response.Response.plot_magnitude"><code class="name flex">
-<span>def <span class="ident">plot_magnitude</span></span>(<span>self, use_ax=None, slce=None, dblim=None, flim=None, dbref=1, label=None, **fig_kw)</span>
+<span>def <span class="ident">plot_magnitude</span></span>(<span>self, use_ax=None, slce=None, dblim=None, flim=None, dbref=1, label=None, plot_kw={}, **fig_kw)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Plot magnitude response.</p></section>
@@ -3657,6 +4167,7 @@ dimension (f, t) is always completely taken.</dd>
     flim=None,
     dbref=1,
     label=None,
+    plot_kw={},
     **fig_kw,
 ):
     &#34;&#34;&#34;Plot magnitude response.&#34;&#34;&#34;
@@ -3683,7 +4194,10 @@ dimension (f, t) is always completely taken.</dd>
     )
 
     ax.semilogx(
-        self.freqs, 20 * np.log10(np.abs(freq_plotready / dbref)), label=label
+        self.freqs,
+        20 * np.log10(np.abs(freq_plotready / dbref)),
+        label=label,
+        **plot_kw,
     )
     ax.set_xlabel(&#34;Frequency [Hz]&#34;)
     ax.set_ylabel(&#34;Magnitude [dB re {:.2}{}]&#34;.format(float(dbref), unit))
@@ -3694,11 +4208,17 @@ dimension (f, t) is always completely taken.</dd>
         flim = (10, self.fs / 2)
     ax.set_xlim(flim)
 
+    if dblim is not None:
+        ax.set_ylim(dblim)
+
+    if label is not None:
+        ax.legend()
+
     return fig</code></pre>
 </details>
 </dd>
 <dt id="response.Response.plot_phase"><code class="name flex">
-<span>def <span class="ident">plot_phase</span></span>(<span>self, use_ax=None, slce=None, flim=None, label=None, unwrap=False, ylim=None, **fig_kw)</span>
+<span>def <span class="ident">plot_phase</span></span>(<span>self, use_ax=None, slce=None, flim=None, label=None, unwrap=False, ylim=None, plot_kw={}, **fig_kw)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Plot phase response.</p></section>
@@ -3712,6 +4232,7 @@ dimension (f, t) is always completely taken.</dd>
     label=None,
     unwrap=False,
     ylim=None,
+    plot_kw={},
     **fig_kw,
 ):
     &#34;&#34;&#34;Plot phase response.&#34;&#34;&#34;
@@ -3738,7 +4259,7 @@ dimension (f, t) is always completely taken.</dd>
         np.unwrap(np.angle(freq_plotready)) if unwrap else np.angle(freq_plotready)
     )
 
-    ax.semilogx(self.freqs, phase)
+    ax.semilogx(self.freqs, phase, label=label, **plot_kw)
     ax.set_xlabel(&#34;Frequency [Hz]&#34;)
     ax.set_ylabel(&#34;Phase [rad]&#34;)
     ax.set_title(&#34;Phase response&#34;)
@@ -3749,6 +4270,9 @@ dimension (f, t) is always completely taken.</dd>
     ax.set_xlim(flim)
     if ylim:
         ax.set_ylim(ylim)
+
+    if label is not None:
+        ax.legend()
 
     return fig</code></pre>
 </details>
@@ -3810,13 +4334,22 @@ dimension (f, t) is always completely taken.</dd>
 </details>
 </dd>
 <dt id="response.Response.plot_time"><code class="name flex">
-<span>def <span class="ident">plot_time</span></span>(<span>self, use_ax=None, slce=None, tlim=None, ylim=None, **fig_kw)</span>
+<span>def <span class="ident">plot_time</span></span>(<span>self, use_ax=None, slce=None, tlim=None, ylim=None, label=None, plot_kw={}, **fig_kw)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Plot time response.</p></section>
 <details class="source">
 <summary>Source code</summary>
-<pre><code class="python">def plot_time(self, use_ax=None, slce=None, tlim=None, ylim=None, **fig_kw):
+<pre><code class="python">def plot_time(
+    self,
+    use_ax=None,
+    slce=None,
+    tlim=None,
+    ylim=None,
+    label=None,
+    plot_kw={},
+    **fig_kw,
+):
     &#34;&#34;&#34;Plot time response.&#34;&#34;&#34;
     if use_ax is None:
         fig_kw = {**{&#34;figsize&#34;: (10, 5)}, **fig_kw}
@@ -3837,15 +4370,19 @@ dimension (f, t) is always completely taken.</dd>
         (self.nt, -1)
     )
 
-    ax.plot(self.times, time_plotready)
+    ax.plot(self.times, time_plotready, label=label, **plot_kw)
     ax.set_xlabel(&#34;Time [s]&#34;)
     ax.set_ylabel(&#34;&#34;)
     ax.set_title(&#34;Time response&#34;)
     ax.grid(True)
+
     if tlim:
         ax.set_xlim(tlim)
     if ylim:
         ax.set_ylim(ylim)
+
+    if label is not None:
+        ax.legend()
 
     return fig</code></pre>
 </details>
@@ -4230,8 +4767,6 @@ end=None to force inclusion of last sample.</dd>
     else:
         _, i_end = find_nearest(self.times, end)
 
-    print(i_start, i_end)
-
     h = self.in_time[..., i_start:i_end]
 
     new_response = self.from_time(self.fs, h)
@@ -4347,7 +4882,10 @@ end=None to force inclusion of last sample.</dd>
 <ul id="index">
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="response.align" href="#response.align">align</a></code></li>
+<li><code><a title="response.aroll" href="#response.aroll">aroll</a></code></li>
 <li><code><a title="response.delay" href="#response.delay">delay</a></code></li>
+<li><code><a title="response.delay_between" href="#response.delay_between">delay_between</a></code></li>
 <li><code><a title="response.find_nearest" href="#response.find_nearest">find_nearest</a></code></li>
 <li><code><a title="response.freq_vector" href="#response.freq_vector">freq_vector</a></code></li>
 <li><code><a title="response.freq_window" href="#response.freq_window">freq_window</a></code></li>
@@ -4357,6 +4895,7 @@ end=None to force inclusion of last sample.</dd>
 <li><code><a title="response.sample_window" href="#response.sample_window">sample_window</a></code></li>
 <li><code><a title="response.time_vector" href="#response.time_vector">time_vector</a></code></li>
 <li><code><a title="response.time_window" href="#response.time_window">time_window</a></code></li>
+<li><code><a title="response.window_around_peak" href="#response.window_around_peak">window_around_peak</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
@@ -4369,6 +4908,7 @@ end=None to force inclusion of last sample.</dd>
 <li><code><a title="response.Response.amplitude_spectrum" href="#response.Response.amplitude_spectrum">amplitude_spectrum</a></code></li>
 <li><code><a title="response.Response.circdelay" href="#response.Response.circdelay">circdelay</a></code></li>
 <li><code><a title="response.Response.delay" href="#response.Response.delay">delay</a></code></li>
+<li><code><a title="response.Response.export_npz" href="#response.Response.export_npz">export_npz</a></code></li>
 <li><code><a title="response.Response.export_wav" href="#response.Response.export_wav">export_wav</a></code></li>
 <li><code><a title="response.Response.filter" href="#response.Response.filter">filter</a></code></li>
 <li><code><a title="response.Response.freq_vector" href="#response.Response.freq_vector">freq_vector</a></code></li>
