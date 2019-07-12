@@ -625,6 +625,26 @@ class Response(object):
 
         return new_response
 
+    def window_around_peak(self, tleft, tright, alpha):
+        """Time window each impulse response around its peak value.
+
+        Parameters
+        ----------
+        tleft, tright : float
+            Window starts `tleft` seconds before and ends `tright` seconds after maximum
+            of impulse response.
+        alpha : float
+            `alpha` parameter of `scipy.signal.tukey` window.
+
+        Returns
+        -------
+        Response
+            Time windowed response object.
+
+        """
+        irs = window_around_peak(self.fs, self.in_time, tleft, tright, alpha=alpha)
+        return self.from_time(self.fs, irs)
+
     def delay(self, dt, keep_length=True):
         """Delay time response by dt seconds.
 
@@ -1227,7 +1247,7 @@ def freq_window(fs, n, startwindow_f, stopwindow_f, window="hann"):
     if stopwindow_f is not None:
         stopwindow_n = [find_nearest(freqs, f)[1] for f in stopwindow_f]
     else:
-        startwindow_n = None
+        stopwindow_n = None
 
     fwindow = sample_window(len(freqs), startwindow_n, stopwindow_n, window=window)
 
@@ -1425,7 +1445,7 @@ def find_nearest(array, value):
     return array[idx], idx
 
 
-def window_around_peak(r, tleft, tright, alpha=0.5):
+def window_around_peak(fs, irs, tleft, tright, alpha=0.5):
     """Time window responses around their maximum value.
 
     Parameters
@@ -1445,20 +1465,20 @@ def window_around_peak(r, tleft, tright, alpha=0.5):
         Time windowed response object.
 
     """
-    fs = r.fs
-    irs = r.in_time.copy()
+    irs = irs.copy()
     sleft = int(fs * tleft)
     sright = int(fs * tright)
     window = tukey(sright + sleft, alpha=alpha)
     for i in range(irs.shape[0]):
         for j in range(irs.shape[1]):
             ipeak = np.argmax(np.abs(irs[i, j].mean(axis=0)))
-            iwstart = ipeak - sleft
-            iwend = ipeak + sright
+            iwstart = max(ipeak - sleft, 0)
+            iwend = min(ipeak + sright, irs.shape[-1])
+            window = tukey(iwend - iwstart, alpha=alpha)
             irs[i, j, :, iwstart : iwend] *= window
             irs[i, j, :, :iwstart] = 0
             irs[i, j, :, iwend:] = 0
-    return Response.from_time(fs, irs)
+    return irs
 
 
 def aroll(x, n, circular=False, axis=-1, copy=True):
