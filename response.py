@@ -970,12 +970,14 @@ class Response(object):
         if bands is None:
             bands = third_octave_bands
 
-        shape = list(self.in_freq.shape)
-        shape[-1] = len(bands)
-        P = np.zeros(shape)
+        # center frequencies
         fcs = np.asarray([b[0] for b in bands])
         Npow2 = 2 ** (self.nt - 1).bit_length()
         f = np.fft.fftfreq(Npow2, d=1 / self.fs)
+
+        shape = list(self.in_freq.shape)
+        shape[-1] = len(bands)
+        P = np.zeros(shape)
         for i, (fc, fl, fu) in enumerate(bands):
             if fu < self.fs / 2:  # include only bands in frequency range
                 iband = np.logical_and(fl <= f, f < fu)
@@ -1369,13 +1371,13 @@ def delay_between(h1, h2):
     h2 = np.atleast_2d(h2)
     assert h1.shape[-1] == h2.shape[-1], "h1 and h2 must have same number of samples"
 
-    N = h1.shape[-1]
+    L = h1.shape[-1]
 
     delay = np.zeros((h1.shape[0], h2.shape[0]))
     for i in range(h1.shape[0]):
         for j in range(h2.shape[0]):
             xcorrmax = np.argmax(np.correlate(h2[j], h1[i], mode="full"))
-            delay[i, j] = xcorrmax - N + 1
+            delay[i, j] = xcorrmax - L + 1
 
     return delay
 
