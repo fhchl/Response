@@ -374,7 +374,8 @@ class Response(object):
         ax.grid(True)
 
         if flim is None:
-            flim = (10, self.fs / 2)
+            lowlim = min(10, self.fs / 2 / 100)
+            flim = (lowlim, self.fs / 2)
         ax.set_xlim(flim)
 
         if dblim is not None:
@@ -427,7 +428,8 @@ class Response(object):
         ax.grid(True)
 
         if flim is None:
-            flim = (10, self.fs / 2)
+            lowlim = min(10, self.fs / 2 / 100)
+            flim = (lowlim, self.fs / 2)
         ax.set_xlim(flim)
         if ylim:
             ax.set_ylim(ylim)
@@ -525,7 +527,8 @@ class Response(object):
         ax.grid(True)
 
         if flim is None:
-            flim = (10, self.fs / 2)
+            lowlim = min(10, self.fs / 2 / 100)
+            flim = (lowlim, self.fs / 2)
         ax.set_xlim(flim)
 
         if ylim:
