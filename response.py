@@ -1366,8 +1366,15 @@ def delay_between(h1, h2):
 
     Returns
     -------
-    delay : (N, M) numpy.ndarray
+    delay : (N, M) ndarray
         Delays in samples. `h2[j]` is delayed relative to `h1[i]` by `delay[i, j]`.
+
+    Examples
+    --------
+    >>> a = [1, 0, 0, 0]
+    >>> b = [0, 0, 1, 0]
+    >>> response.delay_between(a, b)
+    array(2.)
 
     """
     h1 = np.atleast_2d(h1)
@@ -1376,13 +1383,13 @@ def delay_between(h1, h2):
 
     L = h1.shape[-1]
 
-    delay = np.zeros((h1.shape[0], h2.shape[0]))
+    delay = np.zeros((h1.shape[0], h2.shape[0]), dtype=int)
     for i in range(h1.shape[0]):
         for j in range(h2.shape[0]):
             xcorrmax = np.argmax(np.correlate(h2[j], h1[i], mode="full"))
             delay[i, j] = xcorrmax - L + 1
 
-    return delay
+    return delay.squeeze()
 
 
 def align(h, href, upsample=1):
