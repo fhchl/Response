@@ -1462,7 +1462,7 @@ def window_around_peak(fs, irs, tleft, tright, alpha=0.5):
 
     Parameters
     ----------
-    r : Response
+    irs : array_like
         Input response.
     tleft : float
         Start of time window relative to impulse response peak.
@@ -1473,24 +1473,28 @@ def window_around_peak(fs, irs, tleft, tright, alpha=0.5):
 
     Returns
     -------
-    Response
+    ndarray
         Time windowed response object.
 
     """
     irs = irs.copy()
     sleft = int(fs * tleft)
     sright = int(fs * tright)
-    window = tukey(sright + sleft, alpha=alpha)
-    for i in range(irs.shape[0]):
-        for j in range(irs.shape[1]):
-            ipeak = np.argmax(np.abs(irs[i, j].mean(axis=0)))
-            iwstart = max(ipeak - sleft, 0)
-            iwend = min(ipeak + sright, irs.shape[-1])
-            window = tukey(iwend - iwstart, alpha=alpha)
-            irs[i, j, :, iwstart : iwend] *= window
-            irs[i, j, :, :iwstart] = 0
-            irs[i, j, :, iwend:] = 0
-    return irs
+    orig_shape = irs.shape
+
+    flat = irs.reshape(-1, orig_shape[-1])
+    for i in range(flat.shape[0]):
+        ipeak = np.argmax(np.abs(flat[i]))
+        iwstart = max(ipeak - sleft, 0)
+        iwend = min(ipeak + sright, flat.shape[-1])
+
+        window = tukey(iwend - iwstart, alpha=alpha)
+
+        flat[i, iwstart : iwend] *= window
+        flat[i, :iwstart] = 0
+        flat[i, iwend:] = 0
+
+    return irs.reshape(orig_shape)
 
 
 def aroll(x, n, circular=False, axis=-1, copy=True):
