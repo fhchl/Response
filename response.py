@@ -1276,13 +1276,13 @@ def delay(fs, x, dt, keep_length=True, axis=-1):
             # slice that takes 0 to ntaps samples along axis
             slc = [slice(None)] * len(x.shape)
             slc[axis] = slice(0, n)
-            delayed = delayed[slc]
+            delayed = delayed[tuple(slc)]
 
     elif dn < 0:
         # pre-delay
         slc = [slice(None)] * len(x.shape)
         slc[axis] = slice(-dn, n)
-        delayed = x[slc]
+        delayed = x[tuple(slc)]
 
         if keep_length:
             zeros_shape = list(x.shape)
