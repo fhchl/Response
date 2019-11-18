@@ -4,10 +4,11 @@ import warnings
 from fractions import Fraction
 from pathlib import Path
 
-import numpy as np
 import matplotlib.pyplot as plt
-from scipy.signal import get_window, resample, resample_poly, lfilter, welch, tukey
+import numpy as np
 from scipy.io import wavfile
+from scipy.signal import (get_window, lfilter, resample, resample_poly, tukey,
+                          welch)
 
 # center, lower, upper frequency
 third_octave_bands = (
@@ -135,11 +136,12 @@ class Response(object):
         hlist = [data] + [wavfile.read(fp)[1] for fp in fpi]
 
         h = np.array(hlist)
-        lim_orig = (np.iinfo(data.dtype).min, np.iinfo(data.dtype).max)
-        lim_new = (-1.0, 1.0)
-        h_float = rescale(h, lim_orig, lim_new).astype(np.double)
+        if data.dtype in [np.uint8, np.int16, np.int32]:
+            lim_orig = (np.iinfo(data.dtype).min, np.iinfo(data.dtype).max)
+            lim_new = (-1.0, 1.0)
+            h = rescale(h, lim_orig, lim_new).astype(np.double)
 
-        return cls.from_time(fs, h_float)
+        return cls.from_time(fs, h)
 
     @classmethod
     def new_dirac(cls, fs, T=None, n=None, nch=(1,)):
@@ -924,9 +926,14 @@ class Response(object):
         assert np.all(np.abs(data) <= 1.0)
 
         # convert and scale to new output datatype
-        lim_orig = (-1.0, 1.0)
-        lim_new = (np.iinfo(dtype).min, np.iinfo(dtype).max)
-        data = rescale(data, lim_orig, lim_new).astype(dtype)
+        if dtype in [np.uint8, np.int16, np.int32]:
+            lim_orig = (-1.0, 1.0)
+            lim_new = (np.iinfo(dtype).min, np.iinfo(dtype).max)
+            data = rescale(data, lim_orig, lim_new).astype(dtype)
+        elif dtype != np.float32:
+            raise TypeError(f"dtype {dtype} is not supported by scipy.wavfile.write.")
+        else:
+            print("not rescaled")
 
         path = Path(folder)
         if not path.is_dir():
