@@ -278,6 +278,7 @@ class Response(object):
         use_fig=None,
         label=None,
         unwrap=False,
+        plot_kw={},
         **fig_kw,
     ):
         """Plot the response in both domains.
@@ -317,13 +318,14 @@ class Response(object):
             axes = fig.axes
 
         self.plot_magnitude(
-            use_ax=axes[0], slce=slce, dblim=dblim, flim=flim, dbref=dbref, label=label
+            use_ax=axes[0], slce=slce, dblim=dblim, flim=flim, dbref=dbref, label=label,
+            plot_kw=plot_kw
         )
         if group_delay:
-            self.plot_group_delay(use_ax=axes[1], slce=slce, flim=flim, ylim=grpdlim)
+            self.plot_group_delay(use_ax=axes[1], slce=slce, flim=flim, ylim=grpdlim, plot_kw=plot_kw)
         else:
-            self.plot_phase(use_ax=axes[1], slce=slce, flim=flim)
-        self.plot_time(use_ax=axes[2], tlim=tlim, slce=slce, unwrap=unwrap)
+            self.plot_phase(use_ax=axes[1], slce=slce, flim=flim, plot_kw=plot_kw)
+        self.plot_time(use_ax=axes[2], tlim=tlim, slce=slce, unwrap=unwrap, plot_kw=plot_kw)
 
         if show:
             plt.show()
@@ -932,8 +934,6 @@ class Response(object):
             data = rescale(data, lim_orig, lim_new).astype(dtype)
         elif dtype != np.float32:
             raise TypeError(f"dtype {dtype} is not supported by scipy.wavfile.write.")
-        else:
-            print("not rescaled")
 
         path = Path(folder)
         if not path.is_dir():
