@@ -9,42 +9,6 @@ import numpy as np
 from scipy.io import wavfile
 from scipy.signal import get_window, lfilter, resample, resample_poly, tukey, welch
 
-# center, lower, upper frequency
-third_octave_bands = (
-    (15.625, 13.920_292_470_942_801, 17.538_469_504_833_955),
-    (19.686_266_404_607_39, 17.538_469_504_833_95, 22.097_086_912_079_607),
-    (24.803_141_437_003_124, 22.097_086_912_079_615, 27.840_584_941_885_613),
-    (31.25, 27.840_584_941_885_602, 35.076_939_009_667_91),
-    (39.372_532_809_214_78, 35.076_939_009_667_9, 44.194_173_824_159_215),
-    (49.606_282_874_006_25, 44.194_173_824_159_23, 55.681_169_883_771_226),
-    (62.5, 55.681_169_883_771_204, 70.153_878_019_335_82),
-    (78.745_065_618_429_58, 70.153_878_019_335_82, 88.388_347_648_318_44),
-    (99.212_565_748_012_47, 88.388_347_648_318_43, 111.362_339_767_542_41),
-    (125.0, 111.362_339_767_542_41, 140.307_756_038_671_64),
-    (157.490_131_236_859_16, 140.307_756_038_671_64, 176.776_695_296_636_9),
-    (198.425_131_496_024_93, 176.776_695_296_636_86, 222.724_679_535_084_82),
-    (250.0, 222.724_679_535_084_82, 280.615_512_077_343_3),
-    (314.980_262_473_718_3, 280.615_512_077_343_3, 353.553_390_593_273_8),
-    (396.850_262_992_049_9, 353.553_390_593_273_8, 445.449_359_070_169_75),
-    (500.0, 445.449_359_070_169_63, 561.231_024_154_686_6),
-    (629.960_524_947_436_6, 561.231_024_154_686_6, 707.106_781_186_547_6),
-    (793.700_525_984_099_8, 707.106_781_186_547_6, 890.898_718_140_339_5),
-    (1000.0, 890.898_718_140_339_3, 1122.462_048_309_373_1),
-    (1259.921_049_894_873_2, 1122.462_048_309_373_1, 1414.213_562_373_095),
-    (1587.401_051_968_199_5, 1414.213_562_373_094_9, 1781.797_436_280_678_5),
-    (2000.0, 1781.797_436_280_678_5, 2244.924_096_618_746_3),
-    (2519.842_099_789_746_5, 2244.924_096_618_746_3, 2828.427_124_746_19),
-    (3174.802_103_936_399_4, 2828.427_124_746_19, 3563.594_872_561_358),
-    (4000.0, 3563.594_872_561_357, 4489.848_193_237_492_5),
-    (5039.684_199_579_493, 4489.848_193_237_492_5, 5656.854_249_492_38),
-    (6349.604_207_872_798, 5656.854_249_492_379_5, 7127.189_745_122_714),
-    (8000.0, 7127.189_745_122_714, 8979.696_386_474_985),
-    (10079.368_399_158_986, 8979.696_386_474_985, 11313.708_498_984_76),
-    (12699.208_415_745_596, 11313.708_498_984_759, 14254.379_490_245_428),
-    (16000.0, 14254.379_490_245_428, 17959.392_772_949_97),
-    (20158.736_798_317_97, 17959.392_772_949_966, 22627.416_997_969_518),
-)
-
 
 class Response(object):
     """Representation of a linear response in time and frequency domain."""
@@ -138,7 +102,7 @@ class Response(object):
         if data.dtype in [np.uint8, np.int16, np.int32]:
             lim_orig = (np.iinfo(data.dtype).min, np.iinfo(data.dtype).max)
             lim_new = (-1.0, 1.0)
-            h = rescale(h, lim_orig, lim_new).astype(np.double)
+            h = _rescale(h, lim_orig, lim_new).astype(np.double)
 
         return cls.from_time(fs, h)
 
@@ -277,6 +241,8 @@ class Response(object):
         use_fig=None,
         label=None,
         unwrap=False,
+        logf=True,
+        third_oct_f=True,
         plot_kw={},
         **fig_kw,
     ):
@@ -305,6 +271,8 @@ class Response(object):
             Description
         unwrap_phase : bool, optional
             unwrap phase in phase plot
+        logf : bool, optional
+            If `True`, use logarithmic frequency axis.
         **fig_kw
             Additional options passe to figure creation.
 
@@ -324,13 +292,28 @@ class Response(object):
             dbref=dbref,
             label=label,
             plot_kw=plot_kw,
+            logf=logf,
+            third_oct_f=third_oct_f,
         )
         if group_delay:
             self.plot_group_delay(
-                use_ax=axes[1], slce=slce, flim=flim, ylim=grpdlim, plot_kw=plot_kw
+                use_ax=axes[1],
+                slce=slce,
+                flim=flim,
+                ylim=grpdlim,
+                plot_kw=plot_kw,
+                logf=logf,
+                third_oct_f=third_oct_f,
             )
         else:
-            self.plot_phase(use_ax=axes[1], slce=slce, flim=flim, plot_kw=plot_kw)
+            self.plot_phase(
+                use_ax=axes[1],
+                slce=slce,
+                flim=flim,
+                plot_kw=plot_kw,
+                logf=logf,
+                third_oct_f=third_oct_f,
+            )
         self.plot_time(
             use_ax=axes[2], tlim=tlim, slce=slce, unwrap=unwrap, plot_kw=plot_kw
         )
@@ -349,6 +332,8 @@ class Response(object):
         dbref=1,
         label=None,
         plot_kw={},
+        logf=True,
+        third_oct_f=True,
         **fig_kw,
     ):
         """Plot magnitude response."""
@@ -374,7 +359,8 @@ class Response(object):
             (self.nf, -1)
         )
 
-        ax.semilogx(
+        plotf = ax.semilogx if logf else ax.plot
+        plotf(
             self.freqs,
             20 * np.log10(np.abs(freq_plotready / dbref)),
             label=label,
@@ -396,6 +382,9 @@ class Response(object):
         if label is not None:
             ax.legend()
 
+        if third_oct_f:
+            _add_octave_band_xticks(ax)
+
         return fig
 
     def plot_phase(
@@ -407,6 +396,8 @@ class Response(object):
         unwrap=False,
         ylim=None,
         plot_kw={},
+        logf=True,
+        third_oct_f=True,
         **fig_kw,
     ):
         """Plot phase response."""
@@ -433,7 +424,8 @@ class Response(object):
             np.unwrap(np.angle(freq_plotready)) if unwrap else np.angle(freq_plotready)
         )
 
-        ax.semilogx(self.freqs, phase, label=label, **plot_kw)
+        plotf = ax.semilogx if logf else ax.plot
+        plotf(self.freqs, phase, label=label, **plot_kw)
         ax.set_xlabel("Frequency [Hz]")
         ax.set_ylabel("Phase [rad]")
         ax.set_title("Phase response")
@@ -448,6 +440,9 @@ class Response(object):
 
         if label is not None:
             ax.legend()
+
+        if third_oct_f:
+            _add_octave_band_xticks(ax)
 
         return fig
 
@@ -505,6 +500,8 @@ class Response(object):
         label=None,
         ylim=None,
         plot_kw={},
+        logf=True,
+        third_oct_f=True,
         **fig_kw,
     ):
         """Plot group delay."""
@@ -532,7 +529,8 @@ class Response(object):
         # TODO: use scipy.signal.group_delay here as below has problem at larger delays
         grpd = -np.gradient(np.unwrap(np.angle(freq_plotready)), df, axis=0)
 
-        ax.semilogx(self.freqs, grpd, label=label, **plot_kw)
+        plotf = ax.semilogx if logf else ax.plot
+        plotf(self.freqs, grpd, label=label, **plot_kw)
         ax.set_xlabel("Frequency [Hz]")
         ax.set_ylabel("Delay [s]")
         ax.set_title("Group Delay")
@@ -548,6 +546,9 @@ class Response(object):
 
         if label is not None:
             ax.legend()
+
+        if third_oct_f:
+            _add_octave_band_xticks(ax)
 
         return fig
 
@@ -661,7 +662,7 @@ class Response(object):
             Time window, if `return_window` is `True`.
 
         """
-        window = construct_window_around_peak(
+        window = _construct_window_around_peak(
             self.fs, self.in_time, tleft, tright, alpha=alpha
         )
 
@@ -726,11 +727,11 @@ class Response(object):
         assert 0 <= start < self.time_length
         assert end is None or (0 < end <= self.time_length)
 
-        _, i_start = find_nearest(self.times, start)
+        _, i_start = _find_nearest(self.times, start)
         if end is None:
             i_end = None
         else:
-            _, i_end = find_nearest(self.times, end)
+            _, i_end = _find_nearest(self.times, end)
 
         h = self.in_time[..., i_start:i_end]
 
@@ -762,8 +763,8 @@ class Response(object):
 
         cut = (self.time_length - length) / 2
 
-        _, i_start = find_nearest(self.times, cut)
-        _, i_end = find_nearest(self.times, self.time_length - cut)
+        _, i_start = _find_nearest(self.times, cut)
+        _, i_end = _find_nearest(self.times, self.time_length - cut)
 
         h = np.fft.ifftshift(np.fft.fftshift(self.in_time)[..., i_start:i_end])
 
@@ -949,7 +950,7 @@ class Response(object):
         if dtype in [np.uint8, np.int16, np.int32]:
             lim_orig = (-1.0, 1.0)
             lim_new = (np.iinfo(dtype).min, np.iinfo(dtype).max)
-            data = rescale(data, lim_orig, lim_new).astype(dtype)
+            data = _rescale(data, lim_orig, lim_new).astype(dtype)
         elif dtype != np.float32:
             raise TypeError(f"dtype {dtype} is not supported by scipy.wavfile.write.")
 
@@ -996,7 +997,7 @@ class Response(object):
 
         """
         if bands is None:
-            bands = third_octave_bands
+            bands = _third_octave_bands
 
         # center frequencies
         fcs = np.asarray([b[0] for b in bands])
@@ -1210,7 +1211,7 @@ def freq_vector(n, fs, sided="single"):
     return f
 
 
-def sample_window(n, startwindow, stopwindow, window="hann"):
+def _sample_window(n, startwindow, stopwindow, window="hann"):
     """Create a sample domain window."""
     swindow = np.ones(n)
 
@@ -1246,7 +1247,7 @@ def time_window(fs, n, startwindow_t, stopwindow_t, window="hann"):
             if t < 0:
                 t += T
             assert 0 <= t or t <= T
-            startwindow_n.append(find_nearest(times, t)[1])
+            startwindow_n.append(_find_nearest(times, t)[1])
 
     if stopwindow_t is None:
         stopwindow_n = None
@@ -1258,9 +1259,9 @@ def time_window(fs, n, startwindow_t, stopwindow_t, window="hann"):
             elif t < 0:
                 t += T
             assert 0 <= t or t <= T
-            stopwindow_n.append(find_nearest(times, t)[1])
+            stopwindow_n.append(_find_nearest(times, t)[1])
 
-    twindow = sample_window(n, startwindow_n, stopwindow_n, window=window)
+    twindow = _sample_window(n, startwindow_n, stopwindow_n, window=window)
 
     return twindow
 
@@ -1270,16 +1271,16 @@ def freq_window(fs, n, startwindow_f, stopwindow_f, window="hann"):
     freqs = freq_vector(n, fs)
 
     if startwindow_f is not None:
-        startwindow_n = [find_nearest(freqs, f)[1] for f in startwindow_f]
+        startwindow_n = [_find_nearest(freqs, f)[1] for f in startwindow_f]
     else:
         startwindow_n = None
 
     if stopwindow_f is not None:
-        stopwindow_n = [find_nearest(freqs, f)[1] for f in stopwindow_f]
+        stopwindow_n = [_find_nearest(freqs, f)[1] for f in stopwindow_f]
     else:
         stopwindow_n = None
 
-    fwindow = sample_window(len(freqs), startwindow_n, stopwindow_n, window=window)
+    fwindow = _sample_window(len(freqs), startwindow_n, stopwindow_n, window=window)
 
     return fwindow
 
@@ -1354,8 +1355,8 @@ def lowpass_by_frequency_domain_window(fs, x, fstart, fstop, axis=-1, window="ha
     f = freq_vector(n, fs)
 
     # corresponding indices
-    _, start = find_nearest(f, fstart)
-    _, stop = find_nearest(f, fstop)
+    _, start = _find_nearest(f, fstart)
+    _, stop = _find_nearest(f, fstop)
 
     if not (start and stop):
         raise ValueError("Frequencies are to large.")
@@ -1443,7 +1444,7 @@ def align(h, href, upsample=1):
     return h
 
 
-def rescale(x, xlim, ylim):
+def _rescale(x, xlim, ylim):
     """Rescale values to new bounds.
 
     Parameters
@@ -1467,7 +1468,7 @@ def rescale(x, xlim, ylim):
     return y
 
 
-def find_nearest(array, value):
+def _find_nearest(array, value):
     """Find nearest value in an array and its index.
 
     Returns
@@ -1482,7 +1483,7 @@ def find_nearest(array, value):
     return array[idx], idx
 
 
-def construct_window_around_peak(fs, irs, tleft, tright, alpha=0.5):
+def _construct_window_around_peak(fs, irs, tleft, tright, alpha=0.5):
     """Create time window around maximum of response.
 
     Parameters
@@ -1543,11 +1544,11 @@ def window_around_peak(fs, irs, tleft, tright, alpha=0.5):
         Time windowed response object.
 
     """
-    window = construct_window_around_peak(fs, irs, tleft, tright, alpha)
+    window = _construct_window_around_peak(fs, irs, tleft, tright, alpha)
     return irs * window
 
 
-def window_around_peak_old(fs, irs, tleft, tright, alpha=0.5):
+def _window_around_peak_old(fs, irs, tleft, tright, alpha=0.5):
     """Time window responses around their maximum value.
 
     Parameters
@@ -1587,7 +1588,7 @@ def window_around_peak_old(fs, irs, tleft, tright, alpha=0.5):
     return irs.reshape(orig_shape)
 
 
-def aroll(x, n, circular=False, axis=-1, copy=True):
+def _aroll(x, n, circular=False, axis=-1, copy=True):
     """Roll axes individually by sample vector.
 
     Parameters
@@ -1609,6 +1610,7 @@ def aroll(x, n, circular=False, axis=-1, copy=True):
         Delayed array.
 
     """
+    # TODO: remove as not used here?
     n = n.astype(int)
 
     if copy:
@@ -1631,3 +1633,49 @@ def aroll(x, n, circular=False, axis=-1, copy=True):
                 xview[n[i] :, i] = 0
 
     return x
+
+
+# center, lower, upper frequency of third octave bands
+_third_octave_bands = (
+    (16, 13.920_292_470_942_801, 17.538_469_504_833_955),
+    (20, 17.538_469_504_833_95, 22.097_086_912_079_607),
+    (25, 22.097_086_912_079_615, 27.840_584_941_885_613),
+    (31, 27.840_584_941_885_602, 35.076_939_009_667_91),
+    (40, 35.076_939_009_667_9, 44.194_173_824_159_215),
+    (50, 44.194_173_824_159_23, 55.681_169_883_771_226),
+    (63, 55.681_169_883_771_204, 70.153_878_019_335_82),
+    (80, 70.153_878_019_335_82, 88.388_347_648_318_44),
+    (100, 88.388_347_648_318_43, 111.362_339_767_542_41),
+    (125, 111.362_339_767_542_41, 140.307_756_038_671_64),
+    (160, 140.307_756_038_671_64, 176.776_695_296_636_9),
+    (200, 176.776_695_296_636_86, 222.724_679_535_084_82),
+    (250, 222.724_679_535_084_82, 280.615_512_077_343_3),
+    (315, 280.615_512_077_343_3, 353.553_390_593_273_8),
+    (400, 353.553_390_593_273_8, 445.449_359_070_169_75),
+    (500, 445.449_359_070_169_63, 561.231_024_154_686_6),
+    (630, 561.231_024_154_686_6, 707.106_781_186_547_6),
+    (800, 707.106_781_186_547_6, 890.898_718_140_339_5),
+    (1000, 890.898_718_140_339_3, 1122.462_048_309_373_1),
+    (1260, 1122.462_048_309_373_1, 1414.213_562_373_095),
+    (1600, 1414.213_562_373_094_9, 1781.797_436_280_678_5),
+    (2000, 1781.797_436_280_678_5, 2244.924_096_618_746_3),
+    (2500, 2244.924_096_618_746_3, 2828.427_124_746_19),
+    (3200, 2828.427_124_746_19, 3563.594_872_561_358),
+    (4000, 3563.594_872_561_357, 4489.848_193_237_492_5),
+    (5000, 4489.848_193_237_492_5, 5656.854_249_492_38),
+    (6300, 5656.854_249_492_379_5, 7127.189_745_122_714),
+    (8000, 7127.189_745_122_714, 8979.696_386_474_985),
+    (10000, 8979.696_386_474_985, 11313.708_498_984_76),
+    (12600, 11313.708_498_984_759, 14254.379_490_245_428),
+    (16000, 14254.379_490_245_428, 17959.392_772_949_97),
+    (20000, 17959.392_772_949_966, 22627.416_997_969_518),
+)
+
+
+def _add_octave_band_xticks(ax, bands=np.array(_third_octave_bands)[:, 0]):
+    """Add band ticks to axis."""
+    left, right = ax.get_xlim()
+    b = bands[np.logical_and(left <= bands, bands <= right)]
+    ax.set_xticks(b)
+    ax.set_xticks([], minor=True)
+    ax.set_xticklabels([int(round(bs)) for bs in b], minor=False)
