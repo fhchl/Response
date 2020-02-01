@@ -7,8 +7,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.io import wavfile
-from scipy.signal import (get_window, lfilter, resample, resample_poly, tukey,
-                          welch)
+from scipy.signal import get_window, lfilter, resample, resample_poly, tukey, welch
 
 # center, lower, upper frequency
 third_octave_bands = (
@@ -318,14 +317,23 @@ class Response(object):
             axes = fig.axes
 
         self.plot_magnitude(
-            use_ax=axes[0], slce=slce, dblim=dblim, flim=flim, dbref=dbref, label=label,
-            plot_kw=plot_kw
+            use_ax=axes[0],
+            slce=slce,
+            dblim=dblim,
+            flim=flim,
+            dbref=dbref,
+            label=label,
+            plot_kw=plot_kw,
         )
         if group_delay:
-            self.plot_group_delay(use_ax=axes[1], slce=slce, flim=flim, ylim=grpdlim, plot_kw=plot_kw)
+            self.plot_group_delay(
+                use_ax=axes[1], slce=slce, flim=flim, ylim=grpdlim, plot_kw=plot_kw
+            )
         else:
             self.plot_phase(use_ax=axes[1], slce=slce, flim=flim, plot_kw=plot_kw)
-        self.plot_time(use_ax=axes[2], tlim=tlim, slce=slce, unwrap=unwrap, plot_kw=plot_kw)
+        self.plot_time(
+            use_ax=axes[2], tlim=tlim, slce=slce, unwrap=unwrap, plot_kw=plot_kw
+        )
 
         if show:
             plt.show()
@@ -1508,7 +1516,7 @@ def construct_window_around_peak(fs, irs, tleft, tright, alpha=0.5):
 
         window = tukey(iwend - iwstart, alpha=alpha)
 
-        windows[i, iwstart : iwend] *= window
+        windows[i, iwstart:iwend] *= window
         windows[i, :iwstart] = 0
         windows[i, iwend:] = 0
 
@@ -1572,7 +1580,7 @@ def window_around_peak_old(fs, irs, tleft, tright, alpha=0.5):
 
         window = tukey(iwend - iwstart, alpha=alpha)
 
-        flat[i, iwstart : iwend] *= window
+        flat[i, iwstart:iwend] *= window
         flat[i, :iwstart] = 0
         flat[i, iwend:] = 0
 
@@ -1618,8 +1626,8 @@ def aroll(x, n, circular=False, axis=-1, copy=True):
 
         if not circular:
             if n[i] > 0:
-                xview[:n[i], i] = 0
+                xview[: n[i], i] = 0
             elif n[i] < 0:
-                xview[n[i]:, i] = 0
+                xview[n[i] :, i] = 0
 
     return x
