@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from .context import response  # noqa
-
+import numpy as np
+import numpy.testing as npt
 import response
 from response import Response
 
-import numpy as np
-import numpy.testing as npt
+from .context import response  # noqa
 
 
 class TestCreation:
@@ -119,3 +118,12 @@ class TestFunctions:
 
         assert np.all(rolled[:, :1] == 1)
         assert np.all(rolled[:, 1:] == 0)
+
+    def test_window_around_peak_new_vs_old(self):
+        fs = 100
+        r = Response.from_time(fs, np.random.normal(size=(2, 3, 4, 100)))
+
+        npt.assert_equal(
+            response.window_around_peak(fs, r.in_time, 0.1, 0.1, alpha=0.5),
+            response.window_around_peak_old(fs, r.in_time, 0.1, 0.1, alpha=0.5)
+        )

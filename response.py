@@ -632,7 +632,7 @@ class Response(object):
 
         return new_response
 
-    def window_around_peak(self, tleft, tright, alpha):
+    def window_around_peak(self, tleft, tright, alpha, return_window=False):
         """Time window each impulse response around its peak value.
 
         Parameters
@@ -642,15 +642,25 @@ class Response(object):
             of impulse response.
         alpha : float
             `alpha` parameter of `scipy.signal.tukey` window.
+        return_window : bool, optional
+            Also return used time window
 
         Returns
         -------
         Response
             Time windowed response object.
+        ndarray
+            Time window, if `return_window` is `True`.
 
         """
-        irs = window_around_peak(self.fs, self.in_time, tleft, tright, alpha=alpha)
-        return self.from_time(self.fs, irs)
+        window = construct_window_around_peak(
+            self.fs, self.in_time, tleft, tright, alpha=alpha
+        )
+
+        if return_window:
+            return self.from_time(self.fs, self.in_time * window), window
+
+        return self.from_time(self.fs, self.in_time * window)
 
     def delay(self, dt, keep_length=True):
         """Delay time response by dt seconds.
@@ -1464,7 +1474,72 @@ def find_nearest(array, value):
     return array[idx], idx
 
 
+def construct_window_around_peak(fs, irs, tleft, tright, alpha=0.5):
+    """Create time window around maximum of response.
+
+    Parameters
+    ----------
+    irs : array_like
+        Input response.
+    tleft : float
+        Start of time window relative to impulse response peak.
+    tright : float
+        End of time window relative to impulse response peak.
+    alpha : float, optional
+        Alpha parameter of Tukey window.
+
+    Returns
+    -------
+    ndarray
+        Time windows.
+
+    """
+    orig_shape = irs.shape
+    flat_irs = irs.reshape(-1, irs.shape[-1])
+
+    sleft = int(fs * tleft)
+    sright = int(fs * tright)
+
+    windows = np.ones(flat_irs.shape)
+    for i in range(flat_irs.shape[0]):
+        ipeak = np.argmax(np.abs(flat_irs[i]))
+        iwstart = max(ipeak - sleft, 0)
+        iwend = min(ipeak + sright, flat_irs.shape[-1])
+
+        window = tukey(iwend - iwstart, alpha=alpha)
+
+        windows[i, iwstart : iwend] *= window
+        windows[i, :iwstart] = 0
+        windows[i, iwend:] = 0
+
+    return windows.reshape(orig_shape)
+
+
 def window_around_peak(fs, irs, tleft, tright, alpha=0.5):
+    """Time window responses around their maximum value.
+
+    Parameters
+    ----------
+    irs : array_like
+        Input response.
+    tleft : float
+        Start of time window relative to impulse response peak.
+    tright : float
+        End of time window relative to impulse response peak.
+    alpha : float, optional
+        Alpha parameter of Tukey window.
+
+    Returns
+    -------
+    ndarray
+        Time windowed response object.
+
+    """
+    window = construct_window_around_peak(fs, irs, tleft, tright, alpha)
+    return irs * window
+
+
+def window_around_peak_old(fs, irs, tleft, tright, alpha=0.5):
     """Time window responses around their maximum value.
 
     Parameters
