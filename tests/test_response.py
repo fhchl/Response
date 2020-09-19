@@ -114,16 +114,7 @@ class TestFunctions:
         x = np.eye(10)
         dn = np.arange(10)
 
-        rolled = response.aroll(x, -dn)
+        rolled = response._aroll(x, -dn)
 
         assert np.all(rolled[:, :1] == 1)
         assert np.all(rolled[:, 1:] == 0)
-
-    def test_window_around_peak_new_vs_old(self):
-        fs = 100
-        r = Response.from_time(fs, np.random.normal(size=(2, 3, 4, 100)))
-
-        npt.assert_equal(
-            response.window_around_peak(fs, r.in_time, 0.1, 0.1, alpha=0.5),
-            response.window_around_peak_old(fs, r.in_time, 0.1, 0.1, alpha=0.5)
-        )

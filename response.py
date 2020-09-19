@@ -1,4 +1,57 @@
-"""Representing responses in a domain agnostic manner."""
+"""
+
+_Your handy frequency and impulse response processing object!_
+
+[![](https://img.shields.io/pypi/l/response.svg?style=flat)](https://pypi.org/project/response/)
+[![](https://img.shields.io/pypi/v/response.svg?style=flat)](https://pypi.org/project/response/)
+[![travis-ci](https://travis-ci.org/fhchl/Response.svg?branch=master)](https://travis-ci.org/fhchl/Response)
+[![codecov](https://codecov.io/gh/fhchl/Response/branch/master/graph/badge.svg)](https://codecov.io/gh/fhchl/Response)
+
+This module supplies the `Response` class: an abstraction of frequency and
+impulse responses and a set of handy methods their its processing. It implements a
+[fluent interface][1] for chaining the processing commands.
+
+Find the documentation [here][2] and the source code on [GitHub][3].
+
+[1]: https://en.wikipedia.org/wiki/Fluent_interface
+[2]: https://fhchl.github.io/Response/
+[3]: https://github.com/fhchl/Response
+
+```python
+import numpy as np
+from response import Response
+
+fs = 48000  # sampling rate
+T = 0.5     # length of signal
+# a sine at 100 Hz
+t = np.arange(int(T * fs)) / fs
+x = np.sin(2 * np.pi * 100 * t)
+# Do chain of processing
+r = (
+    Response.from_time(fs, x)
+    # time window at the end and beginning
+    .time_window((0, 0.1), (-0.1, None), window="hann")  # equivalent to Tukey window
+    # zeropad to one second length
+    .zeropad_to_length(fs * 1)
+    # circular shift to center
+    .circdelay(T / 2)
+    # resample with polyphase filter, keep gain of filter
+    .resample_poly(500, window=("kaiser", 0.5), normalize="same_amplitude")
+    # cut 0.2s at beginning and end
+    .timecrop(0.2, -0.2)
+    # apply frequency domain window
+    .freq_window((0, 90), (110, 500))
+)
+# plot magnitude, phase and time response
+r.plot(show=True)
+# real impulse response
+r.in_time
+# complex frequency response
+r.in_freq
+# and much more ...
+```
+
+"""
 
 import warnings
 from fractions import Fraction
@@ -13,7 +66,7 @@ from scipy.signal import get_window, lfilter, resample, resample_poly, tukey, we
 class Response(object):
     """Representation of a linear response in time and frequency domain."""
 
-    def __init__(self, fs, fdata=None, tdata=None, isEvenSampled=True, unit=None):
+    def __init__(self, fs, fdata=None, tdata=None, isEvenSampled=True):
         """Create Response from time or frequency data.
 
         Use `from_time` or `from_freq methods` to create objects of this class!
@@ -22,9 +75,9 @@ class Response(object):
         ----------
         fs : int
             Sampling frequency in Hertz
-        fdata : (ns, nr, nt) complex ndarray, optional
+        fdata : (..., nt) complex ndarray, optional
             Single sided frequency spectra with nt from ns to nr points.
-        tdata : (ns, nr, nf) real ndarray, optional
+        tdata : (..., nf) real ndarray, optional
             Time responses with nt from ns to nr points.
         isEvenSampled : bool or None, optional
             If fdata is given, this tells us if the last entry of fdata is the
@@ -48,7 +101,7 @@ class Response(object):
                 self._nt = 2 * self._nf - 1
             self._isEvenSampled = isEvenSampled
 
-            self._set_frequency_data(fdata)
+            self.__set_frequency_data(fdata)
         elif tdata is not None and fdata is None:
             assert np.all(np.imag(tdata) == 0), "Time data must be real."
             tdata = np.atleast_1d(tdata)
@@ -56,7 +109,7 @@ class Response(object):
             self._nf = self._nt // 2 + 1
             self._isEvenSampled = self._nt % 2 == 0
 
-            self._set_time_data(tdata)
+            self.__set_time_data(tdata)
         else:
             raise ValueError("One and only one of fdata and tdata must be given.")
 
@@ -64,7 +117,6 @@ class Response(object):
         self._freqs = freq_vector(self._nt, fs)
         self._times = time_vector(self._nt, fs)
         self._time_length = self._nt * 1 / fs
-        self._unit = unit
         self.df = self._freqs[1]  # frequency resolution
         self.dt = self._times[1]  # time resolution
 
@@ -86,7 +138,8 @@ class Response(object):
 
         Parameters
         ----------
-        fps : list of file paths
+        fps : list
+            File paths of all wav files.
 
         Returns
         -------
@@ -216,13 +269,13 @@ class Response(object):
 
         return X
 
-    def _set_time_data(self, tdata):
+    def __set_time_data(self, tdata):
         """Set time data without creating new object."""
         assert tdata.shape[-1] == self._nt
         self._in_time = tdata
         self._in_freq = None
 
-    def _set_frequency_data(self, fdata):
+    def __set_frequency_data(self, fdata):
         """Set frequency data without creating new object."""
         assert fdata.shape[-1] == self._nf
         self._in_freq = fdata
@@ -240,7 +293,7 @@ class Response(object):
         show=False,
         use_fig=None,
         label=None,
-        unwrap=False,
+        unwrap_phase=False,
         logf=True,
         third_oct_f=True,
         plot_kw={},
@@ -254,18 +307,20 @@ class Response(object):
             Display group delay instead of phase.
         slce : numpy.lib.index_tricks.IndexExpression
             only plot subset of responses defined by a slice. Last
-            dimension (f, t) is always completely taken.
+            dimension (frequency or time) is always completely taken.
         flim : tuple or None, optional
-            Frequency axes limits as tuple `(lower, upper)`
+            Frequency axis limits as tuple `(lower, upper)`
         dblim : tuple or None, optional
-            Magnitude axes limits as tuple `(lower, upper)`
+            Magnitude axis limits as tuple `(lower, upper)`
         tlim : tuple or None, optional
-            Time axes limits as tuple `(lower, upper)`
+            Time axis limits as tuple `(lower, upper)`
+        grpdlim: tuple or None, optional
+            Group delay axis limit as tuple `(lower, upper)`
         dbref : float
             dB reference in magnitude plot
         show : bool, optional
             Run `matplotlib.pyplot.show()`
-        fig : matplotlib.pyplot.Figure
+        use_fig : matplotlib.pyplot.Figure
             Reuse an existing figure.
         label : None, optional
             Description
@@ -273,6 +328,10 @@ class Response(object):
             unwrap phase in phase plot
         logf : bool, optional
             If `True`, use logarithmic frequency axis.
+        third_oct_f: bool, optional
+            Label frequency axis with third octave bands.
+        plot_kw : dictionary, optional
+            Keyword arguments passed to the `plt.plot` commands.
         **fig_kw
             Additional options passe to figure creation.
 
@@ -311,11 +370,12 @@ class Response(object):
                 slce=slce,
                 flim=flim,
                 plot_kw=plot_kw,
+                unwrap=unwrap_phase,
                 logf=logf,
                 third_oct_f=third_oct_f,
             )
         self.plot_time(
-            use_ax=axes[2], tlim=tlim, slce=slce, unwrap=unwrap, plot_kw=plot_kw
+            use_ax=axes[2], tlim=tlim, slce=slce, plot_kw=plot_kw
         )
 
         if show:
@@ -337,6 +397,7 @@ class Response(object):
         **fig_kw,
     ):
         """Plot magnitude response."""
+        # TODO: compute db limits similar to librosa.amplitude_to_db / power_to_db
         if use_ax is None:
             fig_kw = {**{"figsize": (10, 5)}, **fig_kw}
             fig, ax = plt.subplots(nrows=1, constrained_layout=True, **fig_kw)
@@ -352,8 +413,6 @@ class Response(object):
         else:
             slce = (slce, np.s_[:])
 
-        unit = " " + self._unit if self._unit else ""
-
         # move time / frequency axis to first dimension
         freq_plotready = np.rollaxis(self.in_freq[tuple(slce)], -1).reshape(
             (self.nf, -1)
@@ -367,7 +426,7 @@ class Response(object):
             **plot_kw,
         )
         ax.set_xlabel("Frequency [Hz]")
-        ax.set_ylabel("Magnitude [dB re {:.2}{}]".format(float(dbref), unit))
+        ax.set_ylabel("Magnitude [dB]")
         ax.set_title("Frequency response")
         ax.grid(True)
 
@@ -560,13 +619,27 @@ class Response(object):
         Parameters
         ----------
         bands : list or None, optional
-            list of tuples (f_center, f_lower, f_upper)
+            List of tuples (f_center, f_lower, f_upper). If `None`, use third octave
+            bands.
+        use_ax : matplotlib.axis.Axis or None, optional
+            Plot into this axis.
+        barkwargs : dict
+            Keyword arguments to `axis.bar`
+        avgaxis : int, tuple or None
+            Average power over these axes.
+        dbref : float
+            dB reference.
         **figkwargs
             Keyword arguments passed to plt.subplots
 
         Returns
         -------
-        tuple (P, fc, fig)
+        P : ndarray
+            Power in bands
+        fc : ndarray
+            Band frequencies
+        fig : matplotlib.figure.Figure
+            Figure
 
         """
         P, fc = self.power_in_bands(bands=bands, avgaxis=avgaxis)
@@ -589,7 +662,7 @@ class Response(object):
         ax.set_xlabel("Band's center frequencies [Hz]")
         ax.set_ylabel("Power [dB]")
 
-        return fig
+        return (P, fc, fig)
 
     def time_window(self, startwindow, stopwindow, window="hann"):
         """Apply time domain windows.
@@ -611,7 +684,7 @@ class Response(object):
 
         """
         n = self.times.size
-        twindow = time_window(self.fs, n, startwindow, stopwindow, window=window)
+        twindow = _time_window(self.fs, n, startwindow, stopwindow, window=window)
         new_response = self.from_time(self.fs, self.in_time * twindow)
 
         return new_response
@@ -636,7 +709,7 @@ class Response(object):
 
         """
         n = self.times.size
-        fwindow = freq_window(self.fs, n, startwindow, stopwindow, window=window)
+        fwindow = _freq_window(self.fs, n, startwindow, stopwindow, window=window)
         new_response = self.from_freq(self.fs, self.in_freq * fwindow)
 
         return new_response
@@ -708,15 +781,22 @@ class Response(object):
         -----
         Creates new Response object.
 
-        The following should always hold:
+        Examples
+        --------
+        >>> import numpy as np
+        >>> from response import Response
+        >>> r = Response.from_time(100, np.random.normal(size=100))
+        >>> split = 0.2
+
+        The following holds:
 
         >>> np.all(np.concatenate(
-        >>>     (
-        >>>         Response.from_time(fs, x).timecrop(0, split).in_time,
-        >>>         Response.from_time(fs, x).timecrop(split, None).in_time,
-        >>>     ),
-        >>>     axis=-1,
-        >>> ) == x)
+        ...     (
+        ...         r.timecrop(0, split).in_time,
+        ...         r.timecrop(split, None).in_time,
+        ...     ),
+        ...     axis=-1,
+        ... ) == r.in_time)
         True
 
         """
@@ -815,7 +895,7 @@ class Response(object):
         return self.zeropad(0, n - self.nt)
 
     def zeropad_to_length(self, n):
-        """Zeropad time response to length.
+        """Zeropad time response to specific length.
 
         Returns
         -------
@@ -826,11 +906,6 @@ class Response(object):
         oldn = self.nt
         assert n >= oldn
         return self.zeropad(0, n - oldn)
-
-    def lowpass_by_frequency_domain_window(self, fstart, fstop):
-        """Lowpass response by time domain window."""
-        h = lowpass_by_frequency_domain_window(self.fs, self.in_time, fstart, fstop)
-        return self.from_time(self.fs, h)
 
     def resample(self, fs_new, normalize="same_gain", window=None):
         """Resample using Fourier method.
@@ -924,14 +999,27 @@ class Response(object):
         return self.from_time(fs_new, h_new)
 
     def normalize(self, maxval=1):
-        """Normalize time response."""
+        """Normalize time response.
+
+        Parameters
+        ----------
+        maxval: float, optional
+            Maximum amplitude in resulting time response.
+
+        Returns
+        -------
+        Response
+
+        """
         h = self.in_time
         h /= np.abs(self.in_time).max()
         h *= maxval
         return self.from_time(self.fs, h)
 
     def export_wav(self, folder, name_fmt="{:02d}.wav", dtype=np.int16):
-        """Export impulse response to wave file.
+        """Export impulse response to wave files.
+
+        Dimension of data must 2.
 
         Parameters
         ----------
@@ -939,6 +1027,8 @@ class Response(object):
             Save in this folder
         name_fmt : str, optional
             Format string for file names with one placeholder, e.g. 'filt1{:02d}.wav'.
+        dtype : one of np.float32, np.int32, np.int16, np.uint8
+            Data is converted to this type.
 
         """
         data = np.atleast_2d(self.in_time)
@@ -968,7 +1058,7 @@ class Response(object):
         ----------
         filename: str or Path
             File path
-        dtype:
+        dtype: numpy dtype
             Convert to this type before saving
 
         """
@@ -986,13 +1076,14 @@ class Response(object):
         ----------
         bands : list of tuples, length nbands optional
             Center, lower and upper frequencies of bands.
+        avgaxis: int, tuple or None
+            Average result over these axis
 
         Returns
         -------
-        ndarray, shape (..., nbands)
+        P: ndarray, shape (..., nbands)
             Power in bands
-
-        list, length nbands
+        fcs: list, length nbands
             Center frequencies of bands
 
         """
@@ -1046,7 +1137,7 @@ class Response(object):
         return time_vector(n, fs)
 
     @classmethod
-    def freq_vector(cls, n, fs, sided="single"):
+    def freq_vector(cls, n, fs):
         """Frequency values of filter with n taps sampled at fs up to Nyquist.
 
         Parameters
@@ -1062,10 +1153,20 @@ class Response(object):
             Frequencies in Hz
 
         """
-        return freq_vector(n, fs, sided=sided)
+        return freq_vector(n, fs, sided='single')
 
-    def filter(self, b, a):
-        """Filter response along one-dimension with an IIR or FIR filter."""
+    def filter(self, b, a=[1]):
+        """Filter response along one-dimension with an IIR or FIR filter.
+
+        Parameters
+        ----------
+        b : array_like
+            The numerator coefficient vector in a 1-D sequence.
+        a : array_like, optional
+            The denominator coefficient vector in a 1-D sequence.  If ``a[0]``
+            is not 1, then both `a` and `b` are normalized by ``a[0]``.
+
+        """
         return self.from_time(self.fs, lfilter(b, a, self.in_time, axis=-1))
 
     def add_noise(self, snr, unit=None):
@@ -1073,17 +1174,14 @@ class Response(object):
 
         Parameters
         ----------
-        x : ndarray
-            data
-        SNR : float
-            relative magnitude of noise, i.e. SNR = Ex/En
+        snr : float
+            relative magnitude of noise, i.e. snr = Ex/En
         unit : None or str, optional
             if "dB", SNR is specified in dB, i.e. SNR = 10*log(Ex/En).
 
         Returns
         -------
-        ndarray
-            data with noise
+        Response
 
         """
         return self.from_time(self.fs, noisify(self.in_time, snr, unit=unit))
@@ -1124,10 +1222,10 @@ def noisify(x, snr, unit=None):
     ----------
     x : ndarray
         data
-    SNR : float
-        relative magnitude of noise, i.e. SNR = Ex/En
+    snr : float
+        relative energy of noise, snr = Energy(x)/Energy(n).
     unit : None or str, optional
-        if "dB", SNR is specified in dB, i.e. SNR = 10*log(Ex/En).
+        if "dB", snr is specified in dB, i.e. snr = 10*log(Ex/En).
 
     Returns
     -------
@@ -1136,23 +1234,26 @@ def noisify(x, snr, unit=None):
 
     Examples
     --------
-    Add noise with 0dB SNR to a sinusoidal signal:
+    Create signal
 
+    >>> import numpy as np
     >>> t = np.linspace(0, 1, 1000000, endpoint=False)
-    >>> x = np.sin(2*np.pi*10*t)
-    >>> snr = 2
-    >>> snrdB = 10*np.log10(snr)
-    >>> xn = noisify(x, snrdB, "dB")
+    >>> x = np.sin(2*np.pi*10*t)  # signal
+
+    Add noise with 6 dB SNR to a sinusoidal signal:
+
+    >>> snrdB = 6
+    >>> xn = noisify(x, snrdB, "dB")  # signal plus noise
+
     >>> energy_x = np.linalg.norm(x)**2
     >>> energy_xn = np.linalg.norm(xn)**2
-    >>> np.allclose(SNR * energy_x, energy_xn, rtol=1e-3)
+    >>> snr = 10 ** (snrdB / 20)
+    >>> np.allclose((1 + 1/snr) * energy_x, energy_xn, rtol=1e-2)
     True
-
-    TODO: add pink noise
 
     """
     if unit == "dB":
-        snr = 10 ** (snr / 10)
+        snr = 10 ** (snr / 20)
 
     if np.iscomplexobj(x):
         n = np.random.standard_normal(x.shape) + 1j * np.random.standard_normal(x.shape)
@@ -1193,6 +1294,8 @@ def freq_vector(n, fs, sided="single"):
         Number of taps in FIR filter
     fs : int
         Sampling frequency in Hertz
+    sided: str
+        Generate frequencies for a "single" or "double" sided spectrum
 
     Returns
     -------
@@ -1211,83 +1314,26 @@ def freq_vector(n, fs, sided="single"):
     return f
 
 
-def _sample_window(n, startwindow, stopwindow, window="hann"):
-    """Create a sample domain window."""
-    swindow = np.ones(n)
-
-    if startwindow is not None:
-        length = startwindow[1] - startwindow[0]
-        w = get_window(window, 2 * length, fftbins=False)[:length]
-        swindow[: startwindow[0]] = 0
-        swindow[startwindow[0] : startwindow[1]] = w
-
-    if stopwindow is not None:
-        # stop window
-        length = stopwindow[1] - stopwindow[0]
-        w = get_window(window, 2 * length, fftbins=False)[length:]
-        swindow[stopwindow[0] + 1 : stopwindow[1] + 1] = w
-        swindow[stopwindow[1] + 1 :] = 0
-
-    return swindow
-
-
-def time_window(fs, n, startwindow_t, stopwindow_t, window="hann"):
-    """Create a time domain window.
-
-    Negative times are relative to the end. Short cut for end time is `None`.
-    """
-    times = time_vector(n, fs)
-    T = times[-1] + times[1]  # total time length
-
-    if startwindow_t is None:
-        startwindow_n = None
-    else:
-        startwindow_n = []
-        for t in startwindow_t:
-            if t < 0:
-                t += T
-            assert 0 <= t or t <= T
-            startwindow_n.append(_find_nearest(times, t)[1])
-
-    if stopwindow_t is None:
-        stopwindow_n = None
-    else:
-        stopwindow_n = []
-        for t in stopwindow_t:
-            if t is None:
-                t = times[-1]
-            elif t < 0:
-                t += T
-            assert 0 <= t or t <= T
-            stopwindow_n.append(_find_nearest(times, t)[1])
-
-    twindow = _sample_window(n, startwindow_n, stopwindow_n, window=window)
-
-    return twindow
-
-
-def freq_window(fs, n, startwindow_f, stopwindow_f, window="hann"):
-    """Create a frequency domain window."""
-    freqs = freq_vector(n, fs)
-
-    if startwindow_f is not None:
-        startwindow_n = [_find_nearest(freqs, f)[1] for f in startwindow_f]
-    else:
-        startwindow_n = None
-
-    if stopwindow_f is not None:
-        stopwindow_n = [_find_nearest(freqs, f)[1] for f in stopwindow_f]
-    else:
-        stopwindow_n = None
-
-    fwindow = _sample_window(len(freqs), startwindow_n, stopwindow_n, window=window)
-
-    return fwindow
-
-
 def delay(fs, x, dt, keep_length=True, axis=-1):
-    """Delay time signal by dt seconds by inserting zeros."""
+    """Delay time signal by dt seconds by inserting zeros.
+
+    Examples
+    --------
+    >>> delay(1, [1, 2, 3], 1)
+    array([0., 1., 2.])
+
+    >>> delay(1, [1, 2, 3], 1, keep_length=False)
+    array([0., 1., 2., 3.])
+
+    >>> delay(1, [1, 0, 0], -1)
+    array([0., 0., 0.])
+
+    >>> delay(1, [1, 0, 0], -1, keep_length=False)
+    array([0, 0])
+
+    """
     dn = int(round(dt * fs))
+    x = np.asarray(x)
     n = x.shape[axis]
 
     if dn > 0:
@@ -1322,64 +1368,6 @@ def delay(fs, x, dt, keep_length=True, axis=-1):
     return delayed
 
 
-def lowpass_by_frequency_domain_window(fs, x, fstart, fstop, axis=-1, window="hann"):
-    """Lowpass by applying a frequency domain window.
-
-    Parameters
-    ----------
-    fs : int
-        Sampling frequency
-    x : array like
-        Real time domain signal
-    fstart : float
-        Starting frequency of window
-    fstop : TYPE
-        Ending frequency of window
-    axis : TYPE, optional
-        signal is assumed to be along x[axis]
-    window : string, tuple, or array_like, optional
-        Desired window to use to design the low-pass filter.
-
-    Returns
-    -------
-    ndarray
-        Filtered time signal
-
-    Raises
-    ------
-    ValueError
-        If fstart or fstop don't fit in the frequency range.
-
-    """
-    n = x.shape[axis]
-    f = freq_vector(n, fs)
-
-    # corresponding indices
-    _, start = _find_nearest(f, fstart)
-    _, stop = _find_nearest(f, fstop)
-
-    if not (start and stop):
-        raise ValueError("Frequencies are to large.")
-
-    # the window
-    window_width = stop - start
-    windowed_samples = np.arange(start, stop)
-
-    symmetric_window = get_window(window, 2 * window_width, fftbins=False)
-    half_window = symmetric_window[window_width:]
-
-    # frequency domain
-    X_windowed = np.fft.rfft(x, axis=axis)
-    X_windowed = np.moveaxis(X_windowed, axis, 0)
-    X_windowed[windowed_samples] = (
-        X_windowed[windowed_samples].T * half_window.T
-    ).T  # broadcasting
-    X_windowed[stop:] = 0
-    X_windowed = np.moveaxis(X_windowed, 0, axis)
-
-    return np.fft.irfft(X_windowed, axis=axis, n=n)
-
-
 def delay_between(h1, h2):
     """Estimate delay of h2 relative to h1 using cross correlation.
 
@@ -1399,8 +1387,8 @@ def delay_between(h1, h2):
     --------
     >>> a = [1, 0, 0, 0]
     >>> b = [0, 0, 1, 0]
-    >>> response.delay_between(a, b)
-    array(2.)
+    >>> delay_between(a, b)
+    array(2)
 
     """
     h1 = np.atleast_2d(h1)
@@ -1442,6 +1430,85 @@ def align(h, href, upsample=1):
     h = np.roll(h, -int(delay))
     h = resample_poly(h, 1, upsample)
     return h
+
+
+#####################
+# Utility functions #
+#####################
+
+
+def _sample_window(n, startwindow, stopwindow, window="hann"):
+    """Create a sample domain window."""
+    swindow = np.ones(n)
+
+    if startwindow is not None:
+        length = startwindow[1] - startwindow[0]
+        w = get_window(window, 2 * length, fftbins=False)[:length]
+        swindow[: startwindow[0]] = 0
+        swindow[startwindow[0] : startwindow[1]] = w
+
+    if stopwindow is not None:
+        # stop window
+        length = stopwindow[1] - stopwindow[0]
+        w = get_window(window, 2 * length, fftbins=False)[length:]
+        swindow[stopwindow[0] + 1 : stopwindow[1] + 1] = w
+        swindow[stopwindow[1] + 1 :] = 0
+
+    return swindow
+
+
+def _time_window(fs, n, startwindow_t, stopwindow_t, window="hann"):
+    """Create a time domain window.
+
+    Negative times are relative to the end. Short cut for end time is `None`.
+    """
+    times = time_vector(n, fs)
+    T = times[-1] + times[1]  # total time length
+
+    if startwindow_t is None:
+        startwindow_n = None
+    else:
+        startwindow_n = []
+        for t in startwindow_t:
+            if t < 0:
+                t += T
+            assert 0 <= t or t <= T
+            startwindow_n.append(_find_nearest(times, t)[1])
+
+    if stopwindow_t is None:
+        stopwindow_n = None
+    else:
+        stopwindow_n = []
+        for t in stopwindow_t:
+            if t is None:
+                t = times[-1]
+            elif t < 0:
+                t += T
+            assert 0 <= t or t <= T
+            stopwindow_n.append(_find_nearest(times, t)[1])
+
+    twindow = _sample_window(n, startwindow_n, stopwindow_n, window=window)
+
+    return twindow
+
+
+def _freq_window(fs, n, startwindow_f, stopwindow_f, window="hann"):
+    """Create a frequency domain window."""
+    freqs = freq_vector(n, fs)
+
+    if startwindow_f is not None:
+        startwindow_n = [_find_nearest(freqs, f)[1] for f in startwindow_f]
+    else:
+        startwindow_n = None
+
+    if stopwindow_f is not None:
+        stopwindow_n = [_find_nearest(freqs, f)[1] for f in stopwindow_f]
+    else:
+        stopwindow_n = None
+
+    fwindow = _sample_window(len(freqs), startwindow_n, stopwindow_n, window=window)
+
+    return fwindow
 
 
 def _rescale(x, xlim, ylim):
@@ -1488,6 +1555,8 @@ def _construct_window_around_peak(fs, irs, tleft, tright, alpha=0.5):
 
     Parameters
     ----------
+    fs : int
+        Sample rate.
     irs : array_like
         Input response.
     tleft : float
@@ -1524,80 +1593,18 @@ def _construct_window_around_peak(fs, irs, tleft, tright, alpha=0.5):
     return windows.reshape(orig_shape)
 
 
-def window_around_peak(fs, irs, tleft, tright, alpha=0.5):
-    """Time window responses around their maximum value.
-
-    Parameters
-    ----------
-    irs : array_like
-        Input response.
-    tleft : float
-        Start of time window relative to impulse response peak.
-    tright : float
-        End of time window relative to impulse response peak.
-    alpha : float, optional
-        Alpha parameter of Tukey window.
-
-    Returns
-    -------
-    ndarray
-        Time windowed response object.
-
-    """
-    window = _construct_window_around_peak(fs, irs, tleft, tright, alpha)
-    return irs * window
-
-
-def _window_around_peak_old(fs, irs, tleft, tright, alpha=0.5):
-    """Time window responses around their maximum value.
-
-    Parameters
-    ----------
-    irs : array_like
-        Input response.
-    tleft : float
-        Start of time window relative to impulse response peak.
-    tright : float
-        End of time window relative to impulse response peak.
-    alpha : float, optional
-        Alpha parameter of Tukey window.
-
-    Returns
-    -------
-    ndarray
-        Time windowed response object.
-
-    """
-    irs = irs.copy()
-    sleft = int(fs * tleft)
-    sright = int(fs * tright)
-    orig_shape = irs.shape
-
-    flat = irs.reshape(-1, orig_shape[-1])
-    for i in range(flat.shape[0]):
-        ipeak = np.argmax(np.abs(flat[i]))
-        iwstart = max(ipeak - sleft, 0)
-        iwend = min(ipeak + sright, flat.shape[-1])
-
-        window = tukey(iwend - iwstart, alpha=alpha)
-
-        flat[i, iwstart:iwend] *= window
-        flat[i, :iwstart] = 0
-        flat[i, iwend:] = 0
-
-    return irs.reshape(orig_shape)
-
-
 def _aroll(x, n, circular=False, axis=-1, copy=True):
-    """Roll axes individually by sample vector.
+    """Roll each entry along axis individually.
+
+    Can be used to delay / shift each response by its own shift.
 
     Parameters
     ----------
-    x : ndarray, shape
+    x : ndarray (Ni...,M,Nj...)
         Input array
-    n : ndarray
+    n : ndarray (Ni...,Nj...)
         Delay times of each entry along axis.
-    circular: bool
+    circular: bool, optional
         If True, wrap around ends. Else replace with zeros.
     axis : int, optional
         Axis along which is rolled.
@@ -1606,22 +1613,21 @@ def _aroll(x, n, circular=False, axis=-1, copy=True):
 
     Returns
     -------
-    ndarray
-        Delayed array.
+    ndarray (Ni...,M,Nj...)
+        Array with rolled entries
 
     """
-    # TODO: remove as not used here?
     n = n.astype(int)
 
     if copy:
         x = x.copy()
 
-    # move time axis to first dim and reshape to 2D
+    # move axis to first dim and reshape to 2D
     xview = np.rollaxis(x, axis)
     xview = xview.reshape(xview.shape[0], -1)
     n = n.reshape(-1)
 
-    assert n.shape[0] == xview.shape[1]
+    assert n.shape[0] == xview.shape[1], 'Shapes of x and n do not match.'
 
     for i in range(n.shape[0]):
         xview[:, i] = np.roll(xview[:, i], n[i])

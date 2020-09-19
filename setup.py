@@ -82,6 +82,7 @@ setup(
     url=URL,
     py_modules=["response"],
     install_requires=REQUIRED,
+    extras_require={'dev': ['pytest', 'pycodestyle', 'pydocstyle', 'pdoc3']},
     include_package_data=True,
     license="MIT",
     classifiers=[

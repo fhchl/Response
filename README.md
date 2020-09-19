@@ -1,13 +1,22 @@
 Response
 ========
 
+_Your handy frequency and impulse response processing object!_
+
 [![](https://img.shields.io/pypi/l/response.svg?style=flat)](https://pypi.org/project/response/)
 [![](https://img.shields.io/pypi/v/response.svg?style=flat)](https://pypi.org/project/response/)
 [![travis-ci](https://travis-ci.org/fhchl/Response.svg?branch=master)](https://travis-ci.org/fhchl/Response)
 [![codecov](https://codecov.io/gh/fhchl/Response/branch/master/graph/badge.svg)](https://codecov.io/gh/fhchl/Response)
 
-The response module defines the `Response` class as an abstraction of frequency and
-impulse responses.
+This module supplies the `Response` class: an abstraction of frequency and
+impulse responses and a set of handy methods their its processing. It implements a
+[fluent interface][1] for chaining the processing commands.
+
+Find the documentation [here][2] and the source code on [GitHub][3].
+
+[1]: https://en.wikipedia.org/wiki/Fluent_interface
+[2]: https://fhchl.github.io/Response/
+[3]: https://github.com/fhchl/Response
 
 ```python
 import numpy as np
@@ -34,7 +43,7 @@ r = (
     # apply frequency domain window
     .freq_window((0, 90), (110, 500))
 )
-# plot result
+# plot magnitude, phase and time response
 r.plot(show=True)
 # real impulse response
 r.in_time
@@ -42,8 +51,3 @@ r.in_time
 r.in_freq
 # and much more ...
 ```
-
-Implements a [fluent interface][1] for chaining processing commands. Find the API documentation [here][2].
-
-[1]: https://en.wikipedia.org/wiki/Fluent_interface
-[2]: https://fhchl.github.io/Response/
