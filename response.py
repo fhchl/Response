@@ -1,6 +1,4 @@
-"""
-
-_Your handy frequency and impulse response processing object!_
+"""Your handy frequency and impulse response processing object.
 
 [![](https://img.shields.io/pypi/l/response.svg?style=flat)](https://pypi.org/project/response/)
 [![](https://img.shields.io/pypi/v/response.svg?style=flat)](https://pypi.org/project/response/)
@@ -8,14 +6,10 @@ _Your handy frequency and impulse response processing object!_
 [![codecov](https://codecov.io/gh/fhchl/Response/branch/master/graph/badge.svg)](https://codecov.io/gh/fhchl/Response)
 
 This module supplies the `Response` class: an abstraction of frequency and
-impulse responses and a set of handy methods their its processing. It implements a
+impulse responses and a set of handy methods for their processing. It implements a
 [fluent interface][1] for chaining the processing commands.
 
 Find the documentation [here][2] and the source code on [GitHub][3].
-
-[1]: https://en.wikipedia.org/wiki/Fluent_interface
-[2]: https://fhchl.github.io/Response/
-[3]: https://github.com/fhchl/Response
 
 ```python
 import numpy as np
@@ -50,6 +44,10 @@ r.in_time
 r.in_freq
 # and much more ...
 ```
+
+[1]: https://en.wikipedia.org/wiki/Fluent_interface
+[2]: https://fhchl.github.io/Response/
+[3]: https://github.com/fhchl/Response
 
 """
 

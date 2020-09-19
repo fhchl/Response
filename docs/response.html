@@ -1,0 +1,5206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.1" />
+<title>response API documentation</title>
+<meta name="description" content="Your handy frequency and impulse response processing object …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>response</code></h1>
+</header>
+<section id="section-intro">
+<p>Your handy frequency and impulse response processing object.</p>
+<p><a href="https://pypi.org/project/response/"><img alt="" src="https://img.shields.io/pypi/l/response.svg?style=flat"></a>
+<a href="https://pypi.org/project/response/"><img alt="" src="https://img.shields.io/pypi/v/response.svg?style=flat"></a>
+<a href="https://travis-ci.org/fhchl/Response"><img alt="travis-ci" src="https://travis-ci.org/fhchl/Response.svg?branch=master"></a>
+<a href="https://codecov.io/gh/fhchl/Response"><img alt="codecov" src="https://codecov.io/gh/fhchl/Response/branch/master/graph/badge.svg"></a></p>
+<p>This module supplies the <code><a title="response.Response" href="#response.Response">Response</a></code> class: an abstraction of frequency and
+impulse responses and a set of handy methods for their processing. It implements a
+<a href="https://en.wikipedia.org/wiki/Fluent_interface">fluent interface</a> for chaining the processing commands.</p>
+<p>Find the documentation <a href="https://fhchl.github.io/Response/">here</a> and the source code on <a href="https://github.com/fhchl/Response">GitHub</a>.</p>
+<pre><code class="python">import numpy as np
+from response import Response
+
+fs = 48000  # sampling rate
+T = 0.5     # length of signal
+# a sine at 100 Hz
+t = np.arange(int(T * fs)) / fs
+x = np.sin(2 * np.pi * 100 * t)
+# Do chain of processing
+r = (
+    Response.from_time(fs, x)
+    # time window at the end and beginning
+    .time_window((0, 0.1), (-0.1, None), window=&quot;hann&quot;)  # equivalent to Tukey window
+    # zeropad to one second length
+    .zeropad_to_length(fs * 1)
+    # circular shift to center
+    .circdelay(T / 2)
+    # resample with polyphase filter, keep gain of filter
+    .resample_poly(500, window=(&quot;kaiser&quot;, 0.5), normalize=&quot;same_amplitude&quot;)
+    # cut 0.2s at beginning and end
+    .timecrop(0.2, -0.2)
+    # apply frequency domain window
+    .freq_window((0, 90), (110, 500))
+)
+# plot magnitude, phase and time response
+r.plot(show=True)
+# real impulse response
+r.in_time
+# complex frequency response
+r.in_freq
+# and much more ...
+</code></pre>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;Your handy frequency and impulse response processing object.
+
+[![](https://img.shields.io/pypi/l/response.svg?style=flat)](https://pypi.org/project/response/)
+[![](https://img.shields.io/pypi/v/response.svg?style=flat)](https://pypi.org/project/response/)
+[![travis-ci](https://travis-ci.org/fhchl/Response.svg?branch=master)](https://travis-ci.org/fhchl/Response)
+[![codecov](https://codecov.io/gh/fhchl/Response/branch/master/graph/badge.svg)](https://codecov.io/gh/fhchl/Response)
+
+This module supplies the `Response` class: an abstraction of frequency and
+impulse responses and a set of handy methods for their processing. It implements a
+[fluent interface][1] for chaining the processing commands.
+
+Find the documentation [here][2] and the source code on [GitHub][3].
+
+```python
+import numpy as np
+from response import Response
+
+fs = 48000  # sampling rate
+T = 0.5     # length of signal
+# a sine at 100 Hz
+t = np.arange(int(T * fs)) / fs
+x = np.sin(2 * np.pi * 100 * t)
+# Do chain of processing
+r = (
+    Response.from_time(fs, x)
+    # time window at the end and beginning
+    .time_window((0, 0.1), (-0.1, None), window=&#34;hann&#34;)  # equivalent to Tukey window
+    # zeropad to one second length
+    .zeropad_to_length(fs * 1)
+    # circular shift to center
+    .circdelay(T / 2)
+    # resample with polyphase filter, keep gain of filter
+    .resample_poly(500, window=(&#34;kaiser&#34;, 0.5), normalize=&#34;same_amplitude&#34;)
+    # cut 0.2s at beginning and end
+    .timecrop(0.2, -0.2)
+    # apply frequency domain window
+    .freq_window((0, 90), (110, 500))
+)
+# plot magnitude, phase and time response
+r.plot(show=True)
+# real impulse response
+r.in_time
+# complex frequency response
+r.in_freq
+# and much more ...
+```
+
+[1]: https://en.wikipedia.org/wiki/Fluent_interface
+[2]: https://fhchl.github.io/Response/
+[3]: https://github.com/fhchl/Response
+
+&#34;&#34;&#34;
+
+import warnings
+from fractions import Fraction
+from pathlib import Path
+
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.io import wavfile
+from scipy.signal import get_window, lfilter, resample, resample_poly, tukey, welch
+
+
+class Response(object):
+    &#34;&#34;&#34;Representation of a linear response in time and frequency domain.&#34;&#34;&#34;
+
+    def __init__(self, fs, fdata=None, tdata=None, isEvenSampled=True):
+        &#34;&#34;&#34;Create Response from time or frequency data.
+
+        Use `from_time` or `from_freq methods` to create objects of this class!
+
+        Parameters
+        ----------
+        fs : int
+            Sampling frequency in Hertz
+        fdata : (..., nt) complex ndarray, optional
+            Single sided frequency spectra with nt from ns to nr points.
+        tdata : (..., nf) real ndarray, optional
+            Time responses with nt from ns to nr points.
+        isEvenSampled : bool or None, optional
+            If fdata is given, this tells us if the last entry of fdata is the
+            Nyquist frequency or not. Must be `None` if tdata is given.
+
+        Raises
+        ------
+        ValueError
+            if neither fdata or tdata are given.
+
+        &#34;&#34;&#34;
+        assert float(fs).is_integer()
+
+        if fdata is not None and tdata is None:
+            fdata = np.atleast_1d(fdata)
+            self._nf = fdata.shape[-1]
+
+            if isEvenSampled:
+                self._nt = 2 * (self._nf - 1)
+            else:
+                self._nt = 2 * self._nf - 1
+            self._isEvenSampled = isEvenSampled
+
+            self.__set_frequency_data(fdata)
+        elif tdata is not None and fdata is None:
+            assert np.all(np.imag(tdata) == 0), &#34;Time data must be real.&#34;
+            tdata = np.atleast_1d(tdata)
+            self._nt = tdata.shape[-1]
+            self._nf = self._nt // 2 + 1
+            self._isEvenSampled = self._nt % 2 == 0
+
+            self.__set_time_data(tdata)
+        else:
+            raise ValueError(&#34;One and only one of fdata and tdata must be given.&#34;)
+
+        self._fs = int(fs)
+        self._freqs = freq_vector(self._nt, fs)
+        self._times = time_vector(self._nt, fs)
+        self._time_length = self._nt * 1 / fs
+        self.df = self._freqs[1]  # frequency resolution
+        self.dt = self._times[1]  # time resolution
+
+    @classmethod
+    def from_time(cls, fs, tdata, **kwargs):
+        &#34;&#34;&#34;Generate Response obj from time response data.&#34;&#34;&#34;
+        tf = cls(fs, tdata=tdata, **kwargs)
+        return tf
+
+    @classmethod
+    def from_freq(cls, fs, fdata, **kwargs):
+        &#34;&#34;&#34;Generate Response obj from frequency response data.&#34;&#34;&#34;
+        tf = cls(fs, fdata=fdata, **kwargs)
+        return tf
+
+    @classmethod
+    def from_wav(cls, fps):
+        &#34;&#34;&#34;Import responses from wav files.
+
+        Parameters
+        ----------
+        fps : list
+            File paths of all wav files.
+
+        Returns
+        -------
+        Response
+            New Response object with imported time responses.
+
+        &#34;&#34;&#34;
+        fpi = iter(fps)
+        fs, data = wavfile.read(next(fpi))
+        hlist = [data] + [wavfile.read(fp)[1] for fp in fpi]
+
+        h = np.array(hlist)
+        if data.dtype in [np.uint8, np.int16, np.int32]:
+            lim_orig = (np.iinfo(data.dtype).min, np.iinfo(data.dtype).max)
+            lim_new = (-1.0, 1.0)
+            h = _rescale(h, lim_orig, lim_new).astype(np.double)
+
+        return cls.from_time(fs, h)
+
+    @classmethod
+    def new_dirac(cls, fs, T=None, n=None, nch=(1,)):
+        &#34;&#34;&#34;Generate new allpass / dirac response.&#34;&#34;&#34;
+        nch = np.atleast_1d(nch)
+        if T is not None:
+            nt = round(fs * T)
+        else:
+            nt = n
+        h = np.zeros((*nch, nt))
+        h[..., 0] = 1
+        return cls.from_time(fs, h)
+
+    @classmethod
+    def join(cls, tfs, axis=0, newaxis=True):
+        &#34;&#34;&#34;Concat or stack a set of Responses along a given axis.
+
+        Parameters
+        ----------
+        tfs : array_like
+            List of Responses
+        axis : int, optional
+            Indice of axis along wich to concatenate / stack TFs.
+        newaxis : bool, optional
+            If True, do not concatenate but stack arrays along a new axis.
+
+        Returns
+        -------
+        Response
+
+        Note
+        ----
+        Transfer functions need to have same sampling rate, length etc.
+
+        &#34;&#34;&#34;
+        joinfunc = np.stack if newaxis else np.concatenate
+        tdata = joinfunc([tf.in_time for tf in tfs], axis=axis)
+        return cls.from_time(tfs[0].fs, tdata)
+
+    @property
+    def time_length(self):
+        &#34;&#34;&#34;Length of time response in seconds.&#34;&#34;&#34;
+        return self._time_length
+
+    @property
+    def nf(self):  # noqa: D401
+        &#34;&#34;&#34;Number of frequencies in frequency representation.&#34;&#34;&#34;
+        return len(self._freqs)
+
+    @property
+    def nt(self):  # noqa: D401
+        &#34;&#34;&#34;Number of taps.&#34;&#34;&#34;
+        return len(self._times)
+
+    @property
+    def fs(self):  # noqa: D401
+        &#34;&#34;&#34;Sampling frequency.&#34;&#34;&#34;
+        return self._fs
+
+    @property
+    def freqs(self):  # noqa: D401
+        &#34;&#34;&#34;Frequencies.&#34;&#34;&#34;
+        return self._freqs
+
+    @property
+    def times(self):  # noqa: D401
+        &#34;&#34;&#34;Times.&#34;&#34;&#34;
+        return self._times
+
+    @property
+    def in_time(self):
+        &#34;&#34;&#34;Time domain response.
+
+        Returns
+        -------
+        (... , n) ndarray
+            Real FIR filters.
+
+        &#34;&#34;&#34;
+        if self._in_time is None:
+            self._in_time = np.fft.irfft(self._in_freq, n=self._times.size)
+        return self._in_time
+
+    @property
+    def in_freq(self):
+        &#34;&#34;&#34;Single sided frequency spectrum.
+
+        Returns
+        -------
+        (... , n) ndarray
+            Complex frequency response.
+
+        &#34;&#34;&#34;
+        if self._in_freq is None:
+            self._in_freq = np.fft.rfft(self._in_time)
+        return self._in_freq
+
+    @property
+    def amplitude_spectrum(self):
+        &#34;&#34;&#34;Amplitude spectrum.&#34;&#34;&#34;
+        X = self.in_freq / self.nt
+
+        if self.nt % 2 == 0:
+            # zero and nyquist element only appear once in complex spectrum
+            X[..., 1:-1] *= 2
+        else:
+            # there is no nyquist element
+            X[..., 1:] *= 2
+
+        return X
+
+    def __set_time_data(self, tdata):
+        &#34;&#34;&#34;Set time data without creating new object.&#34;&#34;&#34;
+        assert tdata.shape[-1] == self._nt
+        self._in_time = tdata
+        self._in_freq = None
+
+    def __set_frequency_data(self, fdata):
+        &#34;&#34;&#34;Set frequency data without creating new object.&#34;&#34;&#34;
+        assert fdata.shape[-1] == self._nf
+        self._in_freq = fdata
+        self._in_time = None
+
+    def plot(
+        self,
+        group_delay=False,
+        slce=None,
+        flim=None,
+        dblim=None,
+        tlim=None,
+        grpdlim=None,
+        dbref=1,
+        show=False,
+        use_fig=None,
+        label=None,
+        unwrap_phase=False,
+        logf=True,
+        third_oct_f=True,
+        plot_kw={},
+        **fig_kw,
+    ):
+        &#34;&#34;&#34;Plot the response in both domains.
+
+        Parameters
+        ----------
+        group_delay : bool, optional
+            Display group delay instead of phase.
+        slce : numpy.lib.index_tricks.IndexExpression
+            only plot subset of responses defined by a slice. Last
+            dimension (frequency or time) is always completely taken.
+        flim : tuple or None, optional
+            Frequency axis limits as tuple `(lower, upper)`
+        dblim : tuple or None, optional
+            Magnitude axis limits as tuple `(lower, upper)`
+        tlim : tuple or None, optional
+            Time axis limits as tuple `(lower, upper)`
+        grpdlim: tuple or None, optional
+            Group delay axis limit as tuple `(lower, upper)`
+        dbref : float
+            dB reference in magnitude plot
+        show : bool, optional
+            Run `matplotlib.pyplot.show()`
+        use_fig : matplotlib.pyplot.Figure
+            Reuse an existing figure.
+        label : None, optional
+            Description
+        unwrap_phase : bool, optional
+            unwrap phase in phase plot
+        logf : bool, optional
+            If `True`, use logarithmic frequency axis.
+        third_oct_f: bool, optional
+            Label frequency axis with third octave bands.
+        plot_kw : dictionary, optional
+            Keyword arguments passed to the `plt.plot` commands.
+        **fig_kw
+            Additional options passe to figure creation.
+
+        &#34;&#34;&#34;
+        if use_fig is None:
+            fig_kw = {**{&#34;figsize&#34;: (10, 10)}, **fig_kw}
+            fig, axes = plt.subplots(nrows=3, constrained_layout=True, **fig_kw)
+        else:
+            fig = use_fig
+            axes = fig.axes
+
+        self.plot_magnitude(
+            use_ax=axes[0],
+            slce=slce,
+            dblim=dblim,
+            flim=flim,
+            dbref=dbref,
+            label=label,
+            plot_kw=plot_kw,
+            logf=logf,
+            third_oct_f=third_oct_f,
+        )
+        if group_delay:
+            self.plot_group_delay(
+                use_ax=axes[1],
+                slce=slce,
+                flim=flim,
+                ylim=grpdlim,
+                plot_kw=plot_kw,
+                logf=logf,
+                third_oct_f=third_oct_f,
+            )
+        else:
+            self.plot_phase(
+                use_ax=axes[1],
+                slce=slce,
+                flim=flim,
+                plot_kw=plot_kw,
+                unwrap=unwrap_phase,
+                logf=logf,
+                third_oct_f=third_oct_f,
+            )
+        self.plot_time(
+            use_ax=axes[2], tlim=tlim, slce=slce, plot_kw=plot_kw
+        )
+
+        if show:
+            plt.show()
+
+        return fig
+
+    def plot_magnitude(
+        self,
+        use_ax=None,
+        slce=None,
+        dblim=None,
+        flim=None,
+        dbref=1,
+        label=None,
+        plot_kw={},
+        logf=True,
+        third_oct_f=True,
+        **fig_kw,
+    ):
+        &#34;&#34;&#34;Plot magnitude response.&#34;&#34;&#34;
+        # TODO: compute db limits similar to librosa.amplitude_to_db / power_to_db
+        if use_ax is None:
+            fig_kw = {**{&#34;figsize&#34;: (10, 5)}, **fig_kw}
+            fig, ax = plt.subplots(nrows=1, constrained_layout=True, **fig_kw)
+        else:
+            ax = use_ax
+            fig = ax.get_figure()
+
+        # append frequency/time dimension to slice
+        if slce is None:
+            slce = [np.s_[:] for n in range(len(self.in_time.shape))]
+        elif isinstance(slce, tuple):
+            slce = slce + (np.s_[:],)
+        else:
+            slce = (slce, np.s_[:])
+
+        # move time / frequency axis to first dimension
+        freq_plotready = np.rollaxis(self.in_freq[tuple(slce)], -1).reshape(
+            (self.nf, -1)
+        )
+
+        plotf = ax.semilogx if logf else ax.plot
+        plotf(
+            self.freqs,
+            20 * np.log10(np.abs(freq_plotready / dbref)),
+            label=label,
+            **plot_kw,
+        )
+        ax.set_xlabel(&#34;Frequency [Hz]&#34;)
+        ax.set_ylabel(&#34;Magnitude [dB]&#34;)
+        ax.set_title(&#34;Frequency response&#34;)
+        ax.grid(True)
+
+        if flim is None:
+            lowlim = min(10, self.fs / 2 / 100)
+            flim = (lowlim, self.fs / 2)
+        ax.set_xlim(flim)
+
+        if dblim is not None:
+            ax.set_ylim(dblim)
+
+        if label is not None:
+            ax.legend()
+
+        if third_oct_f:
+            _add_octave_band_xticks(ax)
+
+        return fig
+
+    def plot_phase(
+        self,
+        use_ax=None,
+        slce=None,
+        flim=None,
+        label=None,
+        unwrap=False,
+        ylim=None,
+        plot_kw={},
+        logf=True,
+        third_oct_f=True,
+        **fig_kw,
+    ):
+        &#34;&#34;&#34;Plot phase response.&#34;&#34;&#34;
+        if use_ax is None:
+            fig_kw = {**{&#34;figsize&#34;: (10, 5)}, **fig_kw}
+            fig, ax = plt.subplots(nrows=1, constrained_layout=True, **fig_kw)
+        else:
+            ax = use_ax
+            fig = ax.get_figure()
+
+        # append frequency/time dimension to slice
+        if slce is None:
+            slce = [np.s_[:] for n in range(len(self.in_time.shape))]
+        elif isinstance(slce, tuple):
+            slce = slce + (np.s_[:],)
+        else:
+            slce = (slce, np.s_[:])
+
+        # move time / frequency axis to first dimension
+        freq_plotready = np.rollaxis(self.in_freq[tuple(slce)], -1).reshape(
+            (self.nf, -1)
+        )
+        phase = (
+            np.unwrap(np.angle(freq_plotready)) if unwrap else np.angle(freq_plotready)
+        )
+
+        plotf = ax.semilogx if logf else ax.plot
+        plotf(self.freqs, phase, label=label, **plot_kw)
+        ax.set_xlabel(&#34;Frequency [Hz]&#34;)
+        ax.set_ylabel(&#34;Phase [rad]&#34;)
+        ax.set_title(&#34;Phase response&#34;)
+        ax.grid(True)
+
+        if flim is None:
+            lowlim = min(10, self.fs / 2 / 100)
+            flim = (lowlim, self.fs / 2)
+        ax.set_xlim(flim)
+        if ylim:
+            ax.set_ylim(ylim)
+
+        if label is not None:
+            ax.legend()
+
+        if third_oct_f:
+            _add_octave_band_xticks(ax)
+
+        return fig
+
+    def plot_time(
+        self,
+        use_ax=None,
+        slce=None,
+        tlim=None,
+        ylim=None,
+        label=None,
+        plot_kw={},
+        **fig_kw,
+    ):
+        &#34;&#34;&#34;Plot time response.&#34;&#34;&#34;
+        if use_ax is None:
+            fig_kw = {**{&#34;figsize&#34;: (10, 5)}, **fig_kw}
+            fig, ax = plt.subplots(nrows=1, constrained_layout=True, **fig_kw)
+        else:
+            ax = use_ax
+            fig = ax.get_figure()
+
+        # append frequency/time dimension to slice
+        if slce is None:
+            slce = [np.s_[:] for n in range(len(self.in_time.shape))]
+        elif isinstance(slce, tuple):
+            slce = slce + (np.s_[:],)
+        else:
+            slce = (slce, np.s_[:])
+
+        time_plotready = np.rollaxis(self.in_time[tuple(slce)], -1).reshape(
+            (self.nt, -1)
+        )
+
+        ax.plot(self.times, time_plotready, label=label, **plot_kw)
+        ax.set_xlabel(&#34;Time [s]&#34;)
+        ax.set_ylabel(&#34;&#34;)
+        ax.set_title(&#34;Time response&#34;)
+        ax.grid(True)
+
+        if tlim:
+            ax.set_xlim(tlim)
+        if ylim:
+            ax.set_ylim(ylim)
+
+        if label is not None:
+            ax.legend()
+
+        return fig
+
+    def plot_group_delay(
+        self,
+        use_ax=None,
+        slce=None,
+        flim=None,
+        label=None,
+        ylim=None,
+        plot_kw={},
+        logf=True,
+        third_oct_f=True,
+        **fig_kw,
+    ):
+        &#34;&#34;&#34;Plot group delay.&#34;&#34;&#34;
+        if use_ax is None:
+            fig_kw = {**{&#34;figsize&#34;: (10, 5)}, **fig_kw}
+            fig, ax = plt.subplots(nrows=1, constrained_layout=True, **fig_kw)
+        else:
+            ax = use_ax
+            fig = ax.get_figure()
+
+        # append frequency/time dimension to slice
+        if slce is None:
+            slce = [np.s_[:] for n in range(len(self.in_time.shape))]
+        elif isinstance(slce, tuple):
+            slce = slce + (np.s_[:],)
+        else:
+            slce = (slce, np.s_[:])
+
+        # move time / frequency axis to first dimension
+        freq_plotready = np.rollaxis(self.in_freq[tuple(slce)], -1).reshape(
+            (self.nf, -1)
+        )
+
+        df = self.freqs[1] - self.freqs[0]
+        # TODO: use scipy.signal.group_delay here as below has problem at larger delays
+        grpd = -np.gradient(np.unwrap(np.angle(freq_plotready)), df, axis=0)
+
+        plotf = ax.semilogx if logf else ax.plot
+        plotf(self.freqs, grpd, label=label, **plot_kw)
+        ax.set_xlabel(&#34;Frequency [Hz]&#34;)
+        ax.set_ylabel(&#34;Delay [s]&#34;)
+        ax.set_title(&#34;Group Delay&#34;)
+        ax.grid(True)
+
+        if flim is None:
+            lowlim = min(10, self.fs / 2 / 100)
+            flim = (lowlim, self.fs / 2)
+        ax.set_xlim(flim)
+
+        if ylim:
+            ax.set_ylim(ylim)
+
+        if label is not None:
+            ax.legend()
+
+        if third_oct_f:
+            _add_octave_band_xticks(ax)
+
+        return fig
+
+    def plot_power_in_bands(
+        self, bands=None, use_ax=None, barkwargs={}, avgaxis=None, dbref=1, **figkwargs
+    ):
+        &#34;&#34;&#34;Plot signal&#39;s power in bands.
+
+        Parameters
+        ----------
+        bands : list or None, optional
+            List of tuples (f_center, f_lower, f_upper). If `None`, use third octave
+            bands.
+        use_ax : matplotlib.axis.Axis or None, optional
+            Plot into this axis.
+        barkwargs : dict
+            Keyword arguments to `axis.bar`
+        avgaxis : int, tuple or None
+            Average power over these axes.
+        dbref : float
+            dB reference.
+        **figkwargs
+            Keyword arguments passed to plt.subplots
+
+        Returns
+        -------
+        P : ndarray
+            Power in bands
+        fc : ndarray
+            Band frequencies
+        fig : matplotlib.figure.Figure
+            Figure
+
+        &#34;&#34;&#34;
+        P, fc = self.power_in_bands(bands=bands, avgaxis=avgaxis)
+
+        nbands = P.shape[-1]
+        P = np.atleast_2d(P).reshape((-1, nbands))
+
+        if use_ax is None:
+            fig, ax = plt.subplots(**figkwargs)
+        else:
+            ax = use_ax
+            fig = ax.get_figure()
+
+        xticks = range(1, nbands + 1)
+        for i in range(P.shape[0]):
+            ax.bar(xticks, 10 * np.log10(P[i] / dbref ** 2), **barkwargs)
+        ax.set_xticks(xticks)
+        ax.set_xticklabels([&#34;{:.0f}&#34;.format(f) for f in fc], rotation=&#34;vertical&#34;)
+        ax.grid(True)
+        ax.set_xlabel(&#34;Band&#39;s center frequencies [Hz]&#34;)
+        ax.set_ylabel(&#34;Power [dB]&#34;)
+
+        return (P, fc, fig)
+
+    def time_window(self, startwindow, stopwindow, window=&#34;hann&#34;):
+        &#34;&#34;&#34;Apply time domain windows.
+
+        Parameters
+        ----------
+        startwindow : None or tuple
+            Tuple (t1, t2) with beginning and end times of window opening.
+        stopwindow : None or tuple
+            Tuple (t1, t2) with beginning and end times of window closing.
+        window : string or tuple of string and parameter values, optional
+            Desired window to use. See scipy.signal.get_window for a list of
+            windows and required parameters.
+
+        Returns
+        -------
+        Response
+            Time windowed response object
+
+        &#34;&#34;&#34;
+        n = self.times.size
+        twindow = _time_window(self.fs, n, startwindow, stopwindow, window=window)
+        new_response = self.from_time(self.fs, self.in_time * twindow)
+
+        return new_response
+
+    def freq_window(self, startwindow, stopwindow, window=&#34;hann&#34;):
+        &#34;&#34;&#34;Apply frequency domain window.
+
+        Parameters
+        ----------
+        startwindow : None or tuple
+            Tuple (t1, t2) with beginning and end frequencies of window opening.
+        stopwindow : None or tuple
+            Tuple (t1, t2) with beginning and end frequencies of window closing.
+        window : string or tuple of string and parameter values, optional
+            Desired window to use. See scipy.signal.get_window for a list of
+            windows and required parameters.
+
+        Returns
+        -------
+        Response
+            Frequency windowed response object
+
+        &#34;&#34;&#34;
+        n = self.times.size
+        fwindow = _freq_window(self.fs, n, startwindow, stopwindow, window=window)
+        new_response = self.from_freq(self.fs, self.in_freq * fwindow)
+
+        return new_response
+
+    def window_around_peak(self, tleft, tright, alpha, return_window=False):
+        &#34;&#34;&#34;Time window each impulse response around its peak value.
+
+        Parameters
+        ----------
+        tleft, tright : float
+            Window starts `tleft` seconds before and ends `tright` seconds after maximum
+            of impulse response.
+        alpha : float
+            `alpha` parameter of `scipy.signal.tukey` window.
+        return_window : bool, optional
+            Also return used time window
+
+        Returns
+        -------
+        Response
+            Time windowed response object.
+        ndarray
+            Time window, if `return_window` is `True`.
+
+        &#34;&#34;&#34;
+        window = _construct_window_around_peak(
+            self.fs, self.in_time, tleft, tright, alpha=alpha
+        )
+
+        if return_window:
+            return self.from_time(self.fs, self.in_time * window), window
+
+        return self.from_time(self.fs, self.in_time * window)
+
+    def delay(self, dt, keep_length=True):
+        &#34;&#34;&#34;Delay time response by dt seconds.
+
+        Rounds of to closest integer delay.
+        &#34;&#34;&#34;
+        x = delay(self.fs, self.in_time, dt, keep_length=keep_length)
+        return self.from_time(self.fs, x)
+
+    def circdelay(self, dt):
+        &#34;&#34;&#34;Delay by circular shift.
+
+        Rounds of to closest integer delay.
+        &#34;&#34;&#34;
+        x = self.in_time
+        n = int(round(dt * self.fs))
+        shifted = np.roll(x, n, axis=-1)
+
+        return self.from_time(self.fs, shifted)
+
+    def timecrop(self, start, end):
+        &#34;&#34;&#34;Crop time response.
+
+        Parameters
+        ----------
+        start, end : float
+            Start and end times in seconds. Does not include sample at t=end. Use
+            end=None to force inclusion of last sample.
+
+        Returns
+        -------
+        Response
+            New Response object with cropped time.
+
+        Notes
+        -----
+        Creates new Response object.
+
+        Examples
+        --------
+        &gt;&gt;&gt; import numpy as np
+        &gt;&gt;&gt; from response import Response
+        &gt;&gt;&gt; r = Response.from_time(100, np.random.normal(size=100))
+        &gt;&gt;&gt; split = 0.2
+
+        The following holds:
+
+        &gt;&gt;&gt; np.all(np.concatenate(
+        ...     (
+        ...         r.timecrop(0, split).in_time,
+        ...         r.timecrop(split, None).in_time,
+        ...     ),
+        ...     axis=-1,
+        ... ) == r.in_time)
+        True
+
+        &#34;&#34;&#34;
+        if start &lt; 0:
+            start += self.time_length
+        if end is not None and end &lt; 0:
+            end += self.time_length
+        assert 0 &lt;= start &lt; self.time_length
+        assert end is None or (0 &lt; end &lt;= self.time_length)
+
+        _, i_start = _find_nearest(self.times, start)
+        if end is None:
+            i_end = None
+        else:
+            _, i_end = _find_nearest(self.times, end)
+
+        h = self.in_time[..., i_start:i_end]
+
+        new_response = self.from_time(self.fs, h)
+
+        return new_response
+
+    def non_causal_timecrop(self, length):
+        &#34;&#34;&#34;Cut length of non-causal impulse response.
+
+        &#34;FFT shift, cropping on both ends, iFFT shift&#34;
+
+        Parameters
+        ----------
+        length : float
+            final length in seconds
+
+        Returns
+        -------
+        Response
+            New Response object new length.
+
+        Note
+        ----
+        Can introduce delay pre-delay by a sample.
+
+        &#34;&#34;&#34;
+        assert length &lt; self.time_length
+
+        cut = (self.time_length - length) / 2
+
+        _, i_start = _find_nearest(self.times, cut)
+        _, i_end = _find_nearest(self.times, self.time_length - cut)
+
+        h = np.fft.ifftshift(np.fft.fftshift(self.in_time)[..., i_start:i_end])
+
+        new_response = self.from_time(self.fs, h)
+
+        if new_response.time_length != length:
+            w = f&#34;Could not precisely shrink to {length}s with fs = {self.fs}&#34;
+            warnings.warn(w)
+
+        return new_response
+
+    def zeropad(self, before, after):
+        &#34;&#34;&#34;Zeropad time response.
+
+        Parameters
+        ----------
+        before, after : int
+            Number of zero samples inserted before and after response.
+
+        Returns
+        -------
+        Response
+            Zeropadded response
+
+        &#34;&#34;&#34;
+        assert before % 1 == 0
+        assert after % 1 == 0
+        dims = self.in_time.ndim
+
+        pad_width = [(0, 0) for n in range(dims)]
+        pad_width[-1] = (int(before), int(after))
+
+        h = np.pad(self.in_time, pad_width, &#34;constant&#34;)
+
+        return self.from_time(self.fs, h)
+
+    def zeropad_to_power_of_2(self):
+        &#34;&#34;&#34;Pad time response for length of power of 2.
+
+        Returns
+        -------
+        Response
+            New response object with larger, power of 2 length.
+
+        &#34;&#34;&#34;
+        # https://stackoverflow.com/questions/14267555/find-the-smallest-power-of-2-greater-than-n-in-python
+        n = 2 ** (self.nt - 1).bit_length()
+        return self.zeropad(0, n - self.nt)
+
+    def zeropad_to_length(self, n):
+        &#34;&#34;&#34;Zeropad time response to specific length.
+
+        Returns
+        -------
+        Response
+            New response object with new length n.
+
+        &#34;&#34;&#34;
+        oldn = self.nt
+        assert n &gt;= oldn
+        return self.zeropad(0, n - oldn)
+
+    def resample(self, fs_new, normalize=&#34;same_gain&#34;, window=None):
+        &#34;&#34;&#34;Resample using Fourier method.
+
+        Parameters
+        ----------
+        fs_new : int
+            New sample rate
+        normalize : str, optional
+            If &#39;same_gain&#39;, normalize such that the gain is the same
+            as the original signal. If &#39;same_amplitude&#39;, amplitudes will be preserved.
+        window : None, optional
+            Passed to scipy.signal.resample.
+
+        Returns
+        -------
+        Response
+            New resampled response object.
+
+        Raises
+        ------
+        ValueError
+            If resulting number of samples would be a non-integer.
+
+        &#34;&#34;&#34;
+        if fs_new == self.fs:
+            return self
+
+        nt_new = fs_new * self.time_length
+
+        if nt_new % 1 != 0:
+            raise ValueError(
+                &#34;New number of samples must be integer, but is {}&#34;.format(nt_new)
+            )
+
+        nt_new = int(nt_new)
+
+        h_new = resample(self.in_time, nt_new, axis=-1, window=window)
+
+        if normalize == &#34;same_gain&#34;:
+            h_new *= self.nt / nt_new
+        elif normalize == &#34;same_amplitude&#34;:
+            pass
+        else:
+            raise ValueError(
+                &#34;Expected &#39;same_gain&#39; or &#39;same_amplitude&#39;, got %s&#34; % (normalize,)
+            )
+
+        return self.from_time(fs_new, h_new)
+
+    def resample_poly(self, fs_new, normalize=&#34;same_gain&#34;, window=(&#34;kaiser&#34;, 5.0)):
+        &#34;&#34;&#34;Resample using polyphase filtering.
+
+        Parameters
+        ----------
+        fs_new : int
+            New sample rate
+        normalize : str, optional
+            If &#39;same_gain&#39;, normalize such that the gain is the same
+            as the original signal. If &#39;same_amplitude&#39;, amplitudes will be preserved.
+        window : None, optional
+            Passed to scipy.signal.resample_poly.
+
+        Returns
+        -------
+        Response
+            New resampled response object.
+
+        &#34;&#34;&#34;
+        if fs_new == self.fs:
+            return self
+
+        ratio = Fraction(fs_new, self.fs)
+        up = ratio.numerator
+        down = ratio.denominator
+
+        if up &gt; 1000 or down &gt; 1000:
+            print(&#34;Warning: resampling with high ratio {}/{}&#34;.format(up, down))
+
+        h_new = resample_poly(self.in_time, up, down, axis=-1, window=window)
+
+        if normalize == &#34;same_gain&#34;:
+            h_new *= down / up
+        elif normalize == &#34;same_amplitude&#34;:
+            pass
+        else:
+            raise ValueError(
+                &#34;Expected &#39;same_gain&#39; or &#39;same_amplitude&#39;, got %s&#34; % (normalize,)
+            )
+
+        return self.from_time(fs_new, h_new)
+
+    def normalize(self, maxval=1):
+        &#34;&#34;&#34;Normalize time response.
+
+        Parameters
+        ----------
+        maxval: float, optional
+            Maximum amplitude in resulting time response.
+
+        Returns
+        -------
+        Response
+
+        &#34;&#34;&#34;
+        h = self.in_time
+        h /= np.abs(self.in_time).max()
+        h *= maxval
+        return self.from_time(self.fs, h)
+
+    def export_wav(self, folder, name_fmt=&#34;{:02d}.wav&#34;, dtype=np.int16):
+        &#34;&#34;&#34;Export impulse response to wave files.
+
+        Dimension of data must 2.
+
+        Parameters
+        ----------
+        folder : file path
+            Save in this folder
+        name_fmt : str, optional
+            Format string for file names with one placeholder, e.g. &#39;filt1{:02d}.wav&#39;.
+        dtype : one of np.float32, np.int32, np.int16, np.uint8
+            Data is converted to this type.
+
+        &#34;&#34;&#34;
+        data = np.atleast_2d(self.in_time)
+
+        assert data.ndim == 2
+        assert np.all(np.abs(data) &lt;= 1.0)
+
+        # convert and scale to new output datatype
+        if dtype in [np.uint8, np.int16, np.int32]:
+            lim_orig = (-1.0, 1.0)
+            lim_new = (np.iinfo(dtype).min, np.iinfo(dtype).max)
+            data = _rescale(data, lim_orig, lim_new).astype(dtype)
+        elif dtype != np.float32:
+            raise TypeError(f&#34;dtype {dtype} is not supported by scipy.wavfile.write.&#34;)
+
+        path = Path(folder)
+        if not path.is_dir():
+            path.mkdir(parents=True, exist_ok=False)
+
+        for i in range(data.shape[0]):
+            wavfile.write(path / name_fmt.format(i + 1), self.fs, data[i])
+
+    def export_npz(self, filename, dtype=np.float32):
+        &#34;&#34;&#34;Export impulse response as npz file.
+
+        Parameters
+        ----------
+        filename: str or Path
+            File path
+        dtype: numpy dtype
+            Convert to this type before saving
+
+        &#34;&#34;&#34;
+        np.savez(
+            filename, impulse_response=self.in_time.astype(dtype), samplerate=self.fs
+        )
+
+    def power_in_bands(self, bands=None, avgaxis=None):
+        &#34;&#34;&#34;Compute power of signal in third octave bands.
+
+        Power(band) =   1/T  integral  |X(f)| ** 2 df
+                            f in band
+
+        Parameters
+        ----------
+        bands : list of tuples, length nbands optional
+            Center, lower and upper frequencies of bands.
+        avgaxis: int, tuple or None
+            Average result over these axis
+
+        Returns
+        -------
+        P: ndarray, shape (..., nbands)
+            Power in bands
+        fcs: list, length nbands
+            Center frequencies of bands
+
+        &#34;&#34;&#34;
+        if bands is None:
+            bands = _third_octave_bands
+
+        # center frequencies
+        fcs = np.asarray([b[0] for b in bands])
+        Npow2 = 2 ** (self.nt - 1).bit_length()
+        f = np.fft.fftfreq(Npow2, d=1 / self.fs)
+
+        shape = list(self.in_freq.shape)
+        shape[-1] = len(bands)
+        P = np.zeros(shape)
+        for i, (fc, fl, fu) in enumerate(bands):
+            if fu &lt; self.fs / 2:  # include only bands in frequency range
+                iband = np.logical_and(fl &lt;= f, f &lt; fu)
+                P[..., i] = np.sum(
+                    np.abs(np.fft.fft(self.in_time, n=Npow2, axis=-1)[..., iband]) ** 2
+                    * 2  # energy from negative and positive frequencies
+                    * self.dt
+                    / self.nt
+                    / self.time_length,
+                    axis=-1,
+                )
+            else:
+                P[..., i] = 0
+
+        if avgaxis is not None:
+            P = P.mean(axis=avgaxis)
+
+        return P, fcs
+
+    @classmethod
+    def time_vector(cls, n, fs):
+        &#34;&#34;&#34;Time values of filter with n taps sampled at fs.
+
+        Parameters
+        ----------
+        n : int
+            number of taps in FIR filter
+        fs : int
+            sampling frequency in Hertz
+
+        Returns
+        -------
+        (n) ndarray
+            times in seconds
+
+        &#34;&#34;&#34;
+        return time_vector(n, fs)
+
+    @classmethod
+    def freq_vector(cls, n, fs):
+        &#34;&#34;&#34;Frequency values of filter with n taps sampled at fs up to Nyquist.
+
+        Parameters
+        ----------
+        n : int
+            Number of taps in FIR filter
+        fs : int
+            Sampling frequency in Hertz
+
+        Returns
+        -------
+        (n // 2 + 1) ndarray
+            Frequencies in Hz
+
+        &#34;&#34;&#34;
+        return freq_vector(n, fs, sided=&#39;single&#39;)
+
+    def filter(self, b, a=[1]):
+        &#34;&#34;&#34;Filter response along one-dimension with an IIR or FIR filter.
+
+        Parameters
+        ----------
+        b : array_like
+            The numerator coefficient vector in a 1-D sequence.
+        a : array_like, optional
+            The denominator coefficient vector in a 1-D sequence.  If ``a[0]``
+            is not 1, then both `a` and `b` are normalized by ``a[0]``.
+
+        &#34;&#34;&#34;
+        return self.from_time(self.fs, lfilter(b, a, self.in_time, axis=-1))
+
+    def add_noise(self, snr, unit=None):
+        &#34;&#34;&#34;Add noise to x with relative noise level SNR.
+
+        Parameters
+        ----------
+        snr : float
+            relative magnitude of noise, i.e. snr = Ex/En
+        unit : None or str, optional
+            if &#34;dB&#34;, SNR is specified in dB, i.e. SNR = 10*log(Ex/En).
+
+        Returns
+        -------
+        Response
+
+        &#34;&#34;&#34;
+        return self.from_time(self.fs, noisify(self.in_time, snr, unit=unit))
+
+    def psd(self, **kwargs):
+        &#34;&#34;&#34;Compute the power spectral density of the signal.
+
+        Parameters
+        ----------
+        kwargs
+            keword arguments passed to scipy.signal.welch
+
+        Returns
+        -------
+        f : ndarray
+            Array of sample frequencies.
+        Pxx : ndarray
+            Power spectral density of time signal.
+
+        Notes
+        -----
+        Use scaling=&#39;density&#39; for power per bin bandwidth and scaling=&#39;spectrum&#39; for
+        power per bin.
+
+        &#34;&#34;&#34;
+        return welch(self.in_time, fs=self.fs, **kwargs)
+
+
+####################
+# Module functions #
+####################
+
+
+def noisify(x, snr, unit=None):
+    &#34;&#34;&#34;Add noise to x with relative noise level SNR.
+
+    Parameters
+    ----------
+    x : ndarray
+        data
+    snr : float
+        relative energy of noise, snr = Energy(x)/Energy(n).
+    unit : None or str, optional
+        if &#34;dB&#34;, snr is specified in dB, i.e. snr = 10*log(Ex/En).
+
+    Returns
+    -------
+    ndarray
+        data with noise
+
+    Examples
+    --------
+    Create signal
+
+    &gt;&gt;&gt; import numpy as np
+    &gt;&gt;&gt; t = np.linspace(0, 1, 1000000, endpoint=False)
+    &gt;&gt;&gt; x = np.sin(2*np.pi*10*t)  # signal
+
+    Add noise with 6 dB SNR to a sinusoidal signal:
+
+    &gt;&gt;&gt; snrdB = 6
+    &gt;&gt;&gt; xn = noisify(x, snrdB, &#34;dB&#34;)  # signal plus noise
+
+    &gt;&gt;&gt; energy_x = np.linalg.norm(x)**2
+    &gt;&gt;&gt; energy_xn = np.linalg.norm(xn)**2
+    &gt;&gt;&gt; snr = 10 ** (snrdB / 20)
+    &gt;&gt;&gt; np.allclose((1 + 1/snr) * energy_x, energy_xn, rtol=1e-2)
+    True
+
+    &#34;&#34;&#34;
+    if unit == &#34;dB&#34;:
+        snr = 10 ** (snr / 20)
+
+    if np.iscomplexobj(x):
+        n = np.random.standard_normal(x.shape) + 1j * np.random.standard_normal(x.shape)
+    else:
+        n = np.random.standard_normal(x.shape)
+
+    n *= 1 / np.sqrt(snr) * np.linalg.norm(x) / np.linalg.norm(n)
+
+    return x + n
+
+
+def time_vector(n, fs):
+    &#34;&#34;&#34;Time values of filter with n taps sampled at fs.
+
+    Parameters
+    ----------
+    n : int
+        number of taps in FIR filter
+    fs : int
+        sampling frequency in Hertz
+
+    Returns
+    -------
+    (n) ndarray
+        times in seconds
+
+    &#34;&#34;&#34;
+    T = 1 / fs
+    return np.arange(n, dtype=float) * T  # float against int wrapping
+
+
+def freq_vector(n, fs, sided=&#34;single&#34;):
+    &#34;&#34;&#34;Frequency values of filter with n taps sampled at fs up to Nyquist.
+
+    Parameters
+    ----------
+    n : int
+        Number of taps in FIR filter
+    fs : int
+        Sampling frequency in Hertz
+    sided: str
+        Generate frequencies for a &#34;single&#34; or &#34;double&#34; sided spectrum
+
+    Returns
+    -------
+    (n // 2 + 1) ndarray
+        Frequencies in Hz
+
+    &#34;&#34;&#34;
+    # use float against int wrapping
+    if sided == &#34;single&#34;:
+        f = np.arange(n // 2 + 1, dtype=float) * fs / n
+    elif sided == &#34;double&#34;:
+        f = np.arange(n, dtype=float) * fs / n
+    else:
+        raise ValueError(&#34;Invalid value for sided.&#34;)
+
+    return f
+
+
+def delay(fs, x, dt, keep_length=True, axis=-1):
+    &#34;&#34;&#34;Delay time signal by dt seconds by inserting zeros.
+
+    Examples
+    --------
+    &gt;&gt;&gt; delay(1, [1, 2, 3], 1)
+    array([0., 1., 2.])
+
+    &gt;&gt;&gt; delay(1, [1, 2, 3], 1, keep_length=False)
+    array([0., 1., 2., 3.])
+
+    &gt;&gt;&gt; delay(1, [1, 0, 0], -1)
+    array([0., 0., 0.])
+
+    &gt;&gt;&gt; delay(1, [1, 0, 0], -1, keep_length=False)
+    array([0, 0])
+
+    &#34;&#34;&#34;
+    dn = int(round(dt * fs))
+    x = np.asarray(x)
+    n = x.shape[axis]
+
+    if dn &gt; 0:
+        # delay
+        zeros_shape = list(x.shape)
+        zeros_shape[axis] = dn
+        zeros = np.zeros(zeros_shape)
+
+        delayed = np.concatenate((zeros, x), axis=axis)
+
+        if keep_length:
+            # slice that takes 0 to ntaps samples along axis
+            slc = [slice(None)] * len(x.shape)
+            slc[axis] = slice(0, n)
+            delayed = delayed[tuple(slc)]
+
+    elif dn &lt; 0:
+        # pre-delay
+        slc = [slice(None)] * len(x.shape)
+        slc[axis] = slice(-dn, n)
+        delayed = x[tuple(slc)]
+
+        if keep_length:
+            zeros_shape = list(x.shape)
+            zeros_shape[axis] = -dn
+            zeros = np.zeros(zeros_shape)
+            delayed = np.concatenate((delayed, zeros), axis=axis)
+    else:
+        # no delay
+        delayed = x
+
+    return delayed
+
+
+def delay_between(h1, h2):
+    &#34;&#34;&#34;Estimate delay of h2 relative to h1 using cross correlation.
+
+    Parameters
+    ----------
+    h1 : ((N,) L) array_like
+        Reference signals.
+    h2 : ((M,) L) array_like
+        Delayed signals.
+
+    Returns
+    -------
+    delay : (N, M) ndarray
+        Delays in samples. `h2[j]` is delayed relative to `h1[i]` by `delay[i, j]`.
+
+    Examples
+    --------
+    &gt;&gt;&gt; a = [1, 0, 0, 0]
+    &gt;&gt;&gt; b = [0, 0, 1, 0]
+    &gt;&gt;&gt; delay_between(a, b)
+    array(2)
+
+    &#34;&#34;&#34;
+    h1 = np.atleast_2d(h1)
+    h2 = np.atleast_2d(h2)
+    assert h1.shape[-1] == h2.shape[-1], &#34;h1 and h2 must have same number of samples&#34;
+
+    L = h1.shape[-1]
+
+    delay = np.zeros((h1.shape[0], h2.shape[0]), dtype=int)
+    for i in range(h1.shape[0]):
+        for j in range(h2.shape[0]):
+            xcorrmax = np.argmax(np.correlate(h2[j], h1[i], mode=&#34;full&#34;))
+            delay[i, j] = xcorrmax - L + 1
+
+    return delay.squeeze()
+
+
+def align(h, href, upsample=1):
+    &#34;&#34;&#34;Align two impulse responses using cross correlation.
+
+    Parameters
+    ----------
+    h : array_like
+        Response that will be aligned.
+    href : array_like
+        Response to which will be aligned.
+    upsample : int, optional
+        Upsample both responses before alignment by this factor.
+
+    Returns
+    -------
+    ndarray
+        Time aligned version of `h`.
+
+    &#34;&#34;&#34;
+    href = resample_poly(href, upsample, 1)
+    h = resample_poly(h, upsample, 1)
+    delay = delay_between(href, h).squeeze()
+    h = np.roll(h, -int(delay))
+    h = resample_poly(h, 1, upsample)
+    return h
+
+
+#####################
+# Utility functions #
+#####################
+
+
+def _sample_window(n, startwindow, stopwindow, window=&#34;hann&#34;):
+    &#34;&#34;&#34;Create a sample domain window.&#34;&#34;&#34;
+    swindow = np.ones(n)
+
+    if startwindow is not None:
+        length = startwindow[1] - startwindow[0]
+        w = get_window(window, 2 * length, fftbins=False)[:length]
+        swindow[: startwindow[0]] = 0
+        swindow[startwindow[0] : startwindow[1]] = w
+
+    if stopwindow is not None:
+        # stop window
+        length = stopwindow[1] - stopwindow[0]
+        w = get_window(window, 2 * length, fftbins=False)[length:]
+        swindow[stopwindow[0] + 1 : stopwindow[1] + 1] = w
+        swindow[stopwindow[1] + 1 :] = 0
+
+    return swindow
+
+
+def _time_window(fs, n, startwindow_t, stopwindow_t, window=&#34;hann&#34;):
+    &#34;&#34;&#34;Create a time domain window.
+
+    Negative times are relative to the end. Short cut for end time is `None`.
+    &#34;&#34;&#34;
+    times = time_vector(n, fs)
+    T = times[-1] + times[1]  # total time length
+
+    if startwindow_t is None:
+        startwindow_n = None
+    else:
+        startwindow_n = []
+        for t in startwindow_t:
+            if t &lt; 0:
+                t += T
+            assert 0 &lt;= t or t &lt;= T
+            startwindow_n.append(_find_nearest(times, t)[1])
+
+    if stopwindow_t is None:
+        stopwindow_n = None
+    else:
+        stopwindow_n = []
+        for t in stopwindow_t:
+            if t is None:
+                t = times[-1]
+            elif t &lt; 0:
+                t += T
+            assert 0 &lt;= t or t &lt;= T
+            stopwindow_n.append(_find_nearest(times, t)[1])
+
+    twindow = _sample_window(n, startwindow_n, stopwindow_n, window=window)
+
+    return twindow
+
+
+def _freq_window(fs, n, startwindow_f, stopwindow_f, window=&#34;hann&#34;):
+    &#34;&#34;&#34;Create a frequency domain window.&#34;&#34;&#34;
+    freqs = freq_vector(n, fs)
+
+    if startwindow_f is not None:
+        startwindow_n = [_find_nearest(freqs, f)[1] for f in startwindow_f]
+    else:
+        startwindow_n = None
+
+    if stopwindow_f is not None:
+        stopwindow_n = [_find_nearest(freqs, f)[1] for f in stopwindow_f]
+    else:
+        stopwindow_n = None
+
+    fwindow = _sample_window(len(freqs), startwindow_n, stopwindow_n, window=window)
+
+    return fwindow
+
+
+def _rescale(x, xlim, ylim):
+    &#34;&#34;&#34;Rescale values to new bounds.
+
+    Parameters
+    ----------
+    x : ndarray
+        Values to rescale
+    xlim : tuple
+        Original value bounds (xmin, xmax)
+    ylim : float
+        New value bounds (ymin, ymax)
+
+    Returns
+    -------
+    ndarray
+        Rescaled values
+
+    &#34;&#34;&#34;
+    m = (ylim[1] - ylim[0]) / (xlim[1] - xlim[0])
+    c = ylim[1] - m * xlim[1]
+    y = m * x + c
+    return y
+
+
+def _find_nearest(array, value):
+    &#34;&#34;&#34;Find nearest value in an array and its index.
+
+    Returns
+    -------
+    value
+        Value of nearest entry in array
+    idx
+        Index of that value
+
+    &#34;&#34;&#34;
+    idx = (np.abs(array - value)).argmin()
+    return array[idx], idx
+
+
+def _construct_window_around_peak(fs, irs, tleft, tright, alpha=0.5):
+    &#34;&#34;&#34;Create time window around maximum of response.
+
+    Parameters
+    ----------
+    fs : int
+        Sample rate.
+    irs : array_like
+        Input response.
+    tleft : float
+        Start of time window relative to impulse response peak.
+    tright : float
+        End of time window relative to impulse response peak.
+    alpha : float, optional
+        Alpha parameter of Tukey window.
+
+    Returns
+    -------
+    ndarray
+        Time windows.
+
+    &#34;&#34;&#34;
+    orig_shape = irs.shape
+    flat_irs = irs.reshape(-1, irs.shape[-1])
+
+    sleft = int(fs * tleft)
+    sright = int(fs * tright)
+
+    windows = np.ones(flat_irs.shape)
+    for i in range(flat_irs.shape[0]):
+        ipeak = np.argmax(np.abs(flat_irs[i]))
+        iwstart = max(ipeak - sleft, 0)
+        iwend = min(ipeak + sright, flat_irs.shape[-1])
+
+        window = tukey(iwend - iwstart, alpha=alpha)
+
+        windows[i, iwstart:iwend] *= window
+        windows[i, :iwstart] = 0
+        windows[i, iwend:] = 0
+
+    return windows.reshape(orig_shape)
+
+
+def _aroll(x, n, circular=False, axis=-1, copy=True):
+    &#34;&#34;&#34;Roll each entry along axis individually.
+
+    Can be used to delay / shift each response by its own shift.
+
+    Parameters
+    ----------
+    x : ndarray (Ni...,M,Nj...)
+        Input array
+    n : ndarray (Ni...,Nj...)
+        Delay times of each entry along axis.
+    circular: bool, optional
+        If True, wrap around ends. Else replace with zeros.
+    axis : int, optional
+        Axis along which is rolled.
+    copy : bool, optional
+        If True, operate on copy of `x`. Else roll inplace.
+
+    Returns
+    -------
+    ndarray (Ni...,M,Nj...)
+        Array with rolled entries
+
+    &#34;&#34;&#34;
+    n = n.astype(int)
+
+    if copy:
+        x = x.copy()
+
+    # move axis to first dim and reshape to 2D
+    xview = np.rollaxis(x, axis)
+    xview = xview.reshape(xview.shape[0], -1)
+    n = n.reshape(-1)
+
+    assert n.shape[0] == xview.shape[1], &#39;Shapes of x and n do not match.&#39;
+
+    for i in range(n.shape[0]):
+        xview[:, i] = np.roll(xview[:, i], n[i])
+
+        if not circular:
+            if n[i] &gt; 0:
+                xview[: n[i], i] = 0
+            elif n[i] &lt; 0:
+                xview[n[i] :, i] = 0
+
+    return x
+
+
+# center, lower, upper frequency of third octave bands
+_third_octave_bands = (
+    (16, 13.920_292_470_942_801, 17.538_469_504_833_955),
+    (20, 17.538_469_504_833_95, 22.097_086_912_079_607),
+    (25, 22.097_086_912_079_615, 27.840_584_941_885_613),
+    (31, 27.840_584_941_885_602, 35.076_939_009_667_91),
+    (40, 35.076_939_009_667_9, 44.194_173_824_159_215),
+    (50, 44.194_173_824_159_23, 55.681_169_883_771_226),
+    (63, 55.681_169_883_771_204, 70.153_878_019_335_82),
+    (80, 70.153_878_019_335_82, 88.388_347_648_318_44),
+    (100, 88.388_347_648_318_43, 111.362_339_767_542_41),
+    (125, 111.362_339_767_542_41, 140.307_756_038_671_64),
+    (160, 140.307_756_038_671_64, 176.776_695_296_636_9),
+    (200, 176.776_695_296_636_86, 222.724_679_535_084_82),
+    (250, 222.724_679_535_084_82, 280.615_512_077_343_3),
+    (315, 280.615_512_077_343_3, 353.553_390_593_273_8),
+    (400, 353.553_390_593_273_8, 445.449_359_070_169_75),
+    (500, 445.449_359_070_169_63, 561.231_024_154_686_6),
+    (630, 561.231_024_154_686_6, 707.106_781_186_547_6),
+    (800, 707.106_781_186_547_6, 890.898_718_140_339_5),
+    (1000, 890.898_718_140_339_3, 1122.462_048_309_373_1),
+    (1260, 1122.462_048_309_373_1, 1414.213_562_373_095),
+    (1600, 1414.213_562_373_094_9, 1781.797_436_280_678_5),
+    (2000, 1781.797_436_280_678_5, 2244.924_096_618_746_3),
+    (2500, 2244.924_096_618_746_3, 2828.427_124_746_19),
+    (3200, 2828.427_124_746_19, 3563.594_872_561_358),
+    (4000, 3563.594_872_561_357, 4489.848_193_237_492_5),
+    (5000, 4489.848_193_237_492_5, 5656.854_249_492_38),
+    (6300, 5656.854_249_492_379_5, 7127.189_745_122_714),
+    (8000, 7127.189_745_122_714, 8979.696_386_474_985),
+    (10000, 8979.696_386_474_985, 11313.708_498_984_76),
+    (12600, 11313.708_498_984_759, 14254.379_490_245_428),
+    (16000, 14254.379_490_245_428, 17959.392_772_949_97),
+    (20000, 17959.392_772_949_966, 22627.416_997_969_518),
+)
+
+
+def _add_octave_band_xticks(ax, bands=np.array(_third_octave_bands)[:, 0]):
+    &#34;&#34;&#34;Add band ticks to axis.&#34;&#34;&#34;
+    left, right = ax.get_xlim()
+    b = bands[np.logical_and(left &lt;= bands, bands &lt;= right)]
+    ax.set_xticks(b)
+    ax.set_xticks([], minor=True)
+    ax.set_xticklabels([int(round(bs)) for bs in b], minor=False)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="response.align"><code class="name flex">
+<span>def <span class="ident">align</span></span>(<span>h, href, upsample=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Align two impulse responses using cross correlation.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>h</code></strong> :&ensp;<code>array_like</code></dt>
+<dd>Response that will be aligned.</dd>
+<dt><strong><code>href</code></strong> :&ensp;<code>array_like</code></dt>
+<dd>Response to which will be aligned.</dd>
+<dt><strong><code>upsample</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Upsample both responses before alignment by this factor.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>ndarray</code></dt>
+<dd>Time aligned version of <code>h</code>.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def align(h, href, upsample=1):
+    &#34;&#34;&#34;Align two impulse responses using cross correlation.
+
+    Parameters
+    ----------
+    h : array_like
+        Response that will be aligned.
+    href : array_like
+        Response to which will be aligned.
+    upsample : int, optional
+        Upsample both responses before alignment by this factor.
+
+    Returns
+    -------
+    ndarray
+        Time aligned version of `h`.
+
+    &#34;&#34;&#34;
+    href = resample_poly(href, upsample, 1)
+    h = resample_poly(h, upsample, 1)
+    delay = delay_between(href, h).squeeze()
+    h = np.roll(h, -int(delay))
+    h = resample_poly(h, 1, upsample)
+    return h</code></pre>
+</details>
+</dd>
+<dt id="response.delay"><code class="name flex">
+<span>def <span class="ident">delay</span></span>(<span>fs, x, dt, keep_length=True, axis=-1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Delay time signal by dt seconds by inserting zeros.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="python-repl">&gt;&gt;&gt; delay(1, [1, 2, 3], 1)
+array([0., 1., 2.])
+</code></pre>
+<pre><code class="python-repl">&gt;&gt;&gt; delay(1, [1, 2, 3], 1, keep_length=False)
+array([0., 1., 2., 3.])
+</code></pre>
+<pre><code class="python-repl">&gt;&gt;&gt; delay(1, [1, 0, 0], -1)
+array([0., 0., 0.])
+</code></pre>
+<pre><code class="python-repl">&gt;&gt;&gt; delay(1, [1, 0, 0], -1, keep_length=False)
+array([0, 0])
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def delay(fs, x, dt, keep_length=True, axis=-1):
+    &#34;&#34;&#34;Delay time signal by dt seconds by inserting zeros.
+
+    Examples
+    --------
+    &gt;&gt;&gt; delay(1, [1, 2, 3], 1)
+    array([0., 1., 2.])
+
+    &gt;&gt;&gt; delay(1, [1, 2, 3], 1, keep_length=False)
+    array([0., 1., 2., 3.])
+
+    &gt;&gt;&gt; delay(1, [1, 0, 0], -1)
+    array([0., 0., 0.])
+
+    &gt;&gt;&gt; delay(1, [1, 0, 0], -1, keep_length=False)
+    array([0, 0])
+
+    &#34;&#34;&#34;
+    dn = int(round(dt * fs))
+    x = np.asarray(x)
+    n = x.shape[axis]
+
+    if dn &gt; 0:
+        # delay
+        zeros_shape = list(x.shape)
+        zeros_shape[axis] = dn
+        zeros = np.zeros(zeros_shape)
+
+        delayed = np.concatenate((zeros, x), axis=axis)
+
+        if keep_length:
+            # slice that takes 0 to ntaps samples along axis
+            slc = [slice(None)] * len(x.shape)
+            slc[axis] = slice(0, n)
+            delayed = delayed[tuple(slc)]
+
+    elif dn &lt; 0:
+        # pre-delay
+        slc = [slice(None)] * len(x.shape)
+        slc[axis] = slice(-dn, n)
+        delayed = x[tuple(slc)]
+
+        if keep_length:
+            zeros_shape = list(x.shape)
+            zeros_shape[axis] = -dn
+            zeros = np.zeros(zeros_shape)
+            delayed = np.concatenate((delayed, zeros), axis=axis)
+    else:
+        # no delay
+        delayed = x
+
+    return delayed</code></pre>
+</details>
+</dd>
+<dt id="response.delay_between"><code class="name flex">
+<span>def <span class="ident">delay_between</span></span>(<span>h1, h2)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Estimate delay of h2 relative to h1 using cross correlation.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>h1</code></strong> :&ensp;<code>((N,) L) array_like</code></dt>
+<dd>Reference signals.</dd>
+<dt><strong><code>h2</code></strong> :&ensp;<code>((M,) L) array_like</code></dt>
+<dd>Delayed signals.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>delay</code></strong> :&ensp;<code>(N, M) ndarray</code></dt>
+<dd>Delays in samples. <code>h2[j]</code> is delayed relative to <code>h1[i]</code> by <code><a title="response.delay" href="#response.delay">delay()</a>[i, j]</code>.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="python-repl">&gt;&gt;&gt; a = [1, 0, 0, 0]
+&gt;&gt;&gt; b = [0, 0, 1, 0]
+&gt;&gt;&gt; delay_between(a, b)
+array(2)
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def delay_between(h1, h2):
+    &#34;&#34;&#34;Estimate delay of h2 relative to h1 using cross correlation.
+
+    Parameters
+    ----------
+    h1 : ((N,) L) array_like
+        Reference signals.
+    h2 : ((M,) L) array_like
+        Delayed signals.
+
+    Returns
+    -------
+    delay : (N, M) ndarray
+        Delays in samples. `h2[j]` is delayed relative to `h1[i]` by `delay[i, j]`.
+
+    Examples
+    --------
+    &gt;&gt;&gt; a = [1, 0, 0, 0]
+    &gt;&gt;&gt; b = [0, 0, 1, 0]
+    &gt;&gt;&gt; delay_between(a, b)
+    array(2)
+
+    &#34;&#34;&#34;
+    h1 = np.atleast_2d(h1)
+    h2 = np.atleast_2d(h2)
+    assert h1.shape[-1] == h2.shape[-1], &#34;h1 and h2 must have same number of samples&#34;
+
+    L = h1.shape[-1]
+
+    delay = np.zeros((h1.shape[0], h2.shape[0]), dtype=int)
+    for i in range(h1.shape[0]):
+        for j in range(h2.shape[0]):
+            xcorrmax = np.argmax(np.correlate(h2[j], h1[i], mode=&#34;full&#34;))
+            delay[i, j] = xcorrmax - L + 1
+
+    return delay.squeeze()</code></pre>
+</details>
+</dd>
+<dt id="response.freq_vector"><code class="name flex">
+<span>def <span class="ident">freq_vector</span></span>(<span>n, fs, sided='single')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Frequency values of filter with n taps sampled at fs up to Nyquist.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>n</code></strong> :&ensp;<code>int</code></dt>
+<dd>Number of taps in FIR filter</dd>
+<dt><strong><code>fs</code></strong> :&ensp;<code>int</code></dt>
+<dd>Sampling frequency in Hertz</dd>
+<dt><strong><code>sided</code></strong> :&ensp;<code>str</code></dt>
+<dd>Generate frequencies for a "single" or "double" sided spectrum</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>(n // 2 + 1) ndarray
+Frequencies in Hz</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def freq_vector(n, fs, sided=&#34;single&#34;):
+    &#34;&#34;&#34;Frequency values of filter with n taps sampled at fs up to Nyquist.
+
+    Parameters
+    ----------
+    n : int
+        Number of taps in FIR filter
+    fs : int
+        Sampling frequency in Hertz
+    sided: str
+        Generate frequencies for a &#34;single&#34; or &#34;double&#34; sided spectrum
+
+    Returns
+    -------
+    (n // 2 + 1) ndarray
+        Frequencies in Hz
+
+    &#34;&#34;&#34;
+    # use float against int wrapping
+    if sided == &#34;single&#34;:
+        f = np.arange(n // 2 + 1, dtype=float) * fs / n
+    elif sided == &#34;double&#34;:
+        f = np.arange(n, dtype=float) * fs / n
+    else:
+        raise ValueError(&#34;Invalid value for sided.&#34;)
+
+    return f</code></pre>
+</details>
+</dd>
+<dt id="response.noisify"><code class="name flex">
+<span>def <span class="ident">noisify</span></span>(<span>x, snr, unit=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Add noise to x with relative noise level SNR.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>x</code></strong> :&ensp;<code>ndarray</code></dt>
+<dd>data</dd>
+<dt><strong><code>snr</code></strong> :&ensp;<code>float</code></dt>
+<dd>relative energy of noise, snr = Energy(x)/Energy(n).</dd>
+<dt><strong><code>unit</code></strong> :&ensp;<code>None</code> or <code>str</code>, optional</dt>
+<dd>if "dB", snr is specified in dB, i.e. snr = 10*log(Ex/En).</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>ndarray</code></dt>
+<dd>data with noise</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<p>Create signal</p>
+<pre><code class="python-repl">&gt;&gt;&gt; import numpy as np
+&gt;&gt;&gt; t = np.linspace(0, 1, 1000000, endpoint=False)
+&gt;&gt;&gt; x = np.sin(2*np.pi*10*t)  # signal
+</code></pre>
+<p>Add noise with 6 dB SNR to a sinusoidal signal:</p>
+<pre><code class="python-repl">&gt;&gt;&gt; snrdB = 6
+&gt;&gt;&gt; xn = noisify(x, snrdB, &quot;dB&quot;)  # signal plus noise
+</code></pre>
+<pre><code class="python-repl">&gt;&gt;&gt; energy_x = np.linalg.norm(x)**2
+&gt;&gt;&gt; energy_xn = np.linalg.norm(xn)**2
+&gt;&gt;&gt; snr = 10 ** (snrdB / 20)
+&gt;&gt;&gt; np.allclose((1 + 1/snr) * energy_x, energy_xn, rtol=1e-2)
+True
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def noisify(x, snr, unit=None):
+    &#34;&#34;&#34;Add noise to x with relative noise level SNR.
+
+    Parameters
+    ----------
+    x : ndarray
+        data
+    snr : float
+        relative energy of noise, snr = Energy(x)/Energy(n).
+    unit : None or str, optional
+        if &#34;dB&#34;, snr is specified in dB, i.e. snr = 10*log(Ex/En).
+
+    Returns
+    -------
+    ndarray
+        data with noise
+
+    Examples
+    --------
+    Create signal
+
+    &gt;&gt;&gt; import numpy as np
+    &gt;&gt;&gt; t = np.linspace(0, 1, 1000000, endpoint=False)
+    &gt;&gt;&gt; x = np.sin(2*np.pi*10*t)  # signal
+
+    Add noise with 6 dB SNR to a sinusoidal signal:
+
+    &gt;&gt;&gt; snrdB = 6
+    &gt;&gt;&gt; xn = noisify(x, snrdB, &#34;dB&#34;)  # signal plus noise
+
+    &gt;&gt;&gt; energy_x = np.linalg.norm(x)**2
+    &gt;&gt;&gt; energy_xn = np.linalg.norm(xn)**2
+    &gt;&gt;&gt; snr = 10 ** (snrdB / 20)
+    &gt;&gt;&gt; np.allclose((1 + 1/snr) * energy_x, energy_xn, rtol=1e-2)
+    True
+
+    &#34;&#34;&#34;
+    if unit == &#34;dB&#34;:
+        snr = 10 ** (snr / 20)
+
+    if np.iscomplexobj(x):
+        n = np.random.standard_normal(x.shape) + 1j * np.random.standard_normal(x.shape)
+    else:
+        n = np.random.standard_normal(x.shape)
+
+    n *= 1 / np.sqrt(snr) * np.linalg.norm(x) / np.linalg.norm(n)
+
+    return x + n</code></pre>
+</details>
+</dd>
+<dt id="response.time_vector"><code class="name flex">
+<span>def <span class="ident">time_vector</span></span>(<span>n, fs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Time values of filter with n taps sampled at fs.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>n</code></strong> :&ensp;<code>int</code></dt>
+<dd>number of taps in FIR filter</dd>
+<dt><strong><code>fs</code></strong> :&ensp;<code>int</code></dt>
+<dd>sampling frequency in Hertz</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>(n) ndarray
+times in seconds</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def time_vector(n, fs):
+    &#34;&#34;&#34;Time values of filter with n taps sampled at fs.
+
+    Parameters
+    ----------
+    n : int
+        number of taps in FIR filter
+    fs : int
+        sampling frequency in Hertz
+
+    Returns
+    -------
+    (n) ndarray
+        times in seconds
+
+    &#34;&#34;&#34;
+    T = 1 / fs
+    return np.arange(n, dtype=float) * T  # float against int wrapping</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="response.Response"><code class="flex name class">
+<span>class <span class="ident">Response</span></span>
+<span>(</span><span>fs, fdata=None, tdata=None, isEvenSampled=True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Representation of a linear response in time and frequency domain.</p>
+<p>Create Response from time or frequency data.</p>
+<p>Use <code>from_time</code> or <code>from_freq methods</code> to create objects of this class!</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>fs</code></strong> :&ensp;<code>int</code></dt>
+<dd>Sampling frequency in Hertz</dd>
+<dt><strong><code>fdata</code></strong> :&ensp;<code>(&hellip;, nt) complex ndarray</code>, optional</dt>
+<dd>Single sided frequency spectra with nt from ns to nr points.</dd>
+<dt><strong><code>tdata</code></strong> :&ensp;<code>(&hellip;, nf) real ndarray</code>, optional</dt>
+<dd>Time responses with nt from ns to nr points.</dd>
+<dt><strong><code>isEvenSampled</code></strong> :&ensp;<code>bool</code> or <code>None</code>, optional</dt>
+<dd>If fdata is given, this tells us if the last entry of fdata is the
+Nyquist frequency or not. Must be <code>None</code> if tdata is given.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>if neither fdata or tdata are given.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Response(object):
+    &#34;&#34;&#34;Representation of a linear response in time and frequency domain.&#34;&#34;&#34;
+
+    def __init__(self, fs, fdata=None, tdata=None, isEvenSampled=True):
+        &#34;&#34;&#34;Create Response from time or frequency data.
+
+        Use `from_time` or `from_freq methods` to create objects of this class!
+
+        Parameters
+        ----------
+        fs : int
+            Sampling frequency in Hertz
+        fdata : (..., nt) complex ndarray, optional
+            Single sided frequency spectra with nt from ns to nr points.
+        tdata : (..., nf) real ndarray, optional
+            Time responses with nt from ns to nr points.
+        isEvenSampled : bool or None, optional
+            If fdata is given, this tells us if the last entry of fdata is the
+            Nyquist frequency or not. Must be `None` if tdata is given.
+
+        Raises
+        ------
+        ValueError
+            if neither fdata or tdata are given.
+
+        &#34;&#34;&#34;
+        assert float(fs).is_integer()
+
+        if fdata is not None and tdata is None:
+            fdata = np.atleast_1d(fdata)
+            self._nf = fdata.shape[-1]
+
+            if isEvenSampled:
+                self._nt = 2 * (self._nf - 1)
+            else:
+                self._nt = 2 * self._nf - 1
+            self._isEvenSampled = isEvenSampled
+
+            self.__set_frequency_data(fdata)
+        elif tdata is not None and fdata is None:
+            assert np.all(np.imag(tdata) == 0), &#34;Time data must be real.&#34;
+            tdata = np.atleast_1d(tdata)
+            self._nt = tdata.shape[-1]
+            self._nf = self._nt // 2 + 1
+            self._isEvenSampled = self._nt % 2 == 0
+
+            self.__set_time_data(tdata)
+        else:
+            raise ValueError(&#34;One and only one of fdata and tdata must be given.&#34;)
+
+        self._fs = int(fs)
+        self._freqs = freq_vector(self._nt, fs)
+        self._times = time_vector(self._nt, fs)
+        self._time_length = self._nt * 1 / fs
+        self.df = self._freqs[1]  # frequency resolution
+        self.dt = self._times[1]  # time resolution
+
+    @classmethod
+    def from_time(cls, fs, tdata, **kwargs):
+        &#34;&#34;&#34;Generate Response obj from time response data.&#34;&#34;&#34;
+        tf = cls(fs, tdata=tdata, **kwargs)
+        return tf
+
+    @classmethod
+    def from_freq(cls, fs, fdata, **kwargs):
+        &#34;&#34;&#34;Generate Response obj from frequency response data.&#34;&#34;&#34;
+        tf = cls(fs, fdata=fdata, **kwargs)
+        return tf
+
+    @classmethod
+    def from_wav(cls, fps):
+        &#34;&#34;&#34;Import responses from wav files.
+
+        Parameters
+        ----------
+        fps : list
+            File paths of all wav files.
+
+        Returns
+        -------
+        Response
+            New Response object with imported time responses.
+
+        &#34;&#34;&#34;
+        fpi = iter(fps)
+        fs, data = wavfile.read(next(fpi))
+        hlist = [data] + [wavfile.read(fp)[1] for fp in fpi]
+
+        h = np.array(hlist)
+        if data.dtype in [np.uint8, np.int16, np.int32]:
+            lim_orig = (np.iinfo(data.dtype).min, np.iinfo(data.dtype).max)
+            lim_new = (-1.0, 1.0)
+            h = _rescale(h, lim_orig, lim_new).astype(np.double)
+
+        return cls.from_time(fs, h)
+
+    @classmethod
+    def new_dirac(cls, fs, T=None, n=None, nch=(1,)):
+        &#34;&#34;&#34;Generate new allpass / dirac response.&#34;&#34;&#34;
+        nch = np.atleast_1d(nch)
+        if T is not None:
+            nt = round(fs * T)
+        else:
+            nt = n
+        h = np.zeros((*nch, nt))
+        h[..., 0] = 1
+        return cls.from_time(fs, h)
+
+    @classmethod
+    def join(cls, tfs, axis=0, newaxis=True):
+        &#34;&#34;&#34;Concat or stack a set of Responses along a given axis.
+
+        Parameters
+        ----------
+        tfs : array_like
+            List of Responses
+        axis : int, optional
+            Indice of axis along wich to concatenate / stack TFs.
+        newaxis : bool, optional
+            If True, do not concatenate but stack arrays along a new axis.
+
+        Returns
+        -------
+        Response
+
+        Note
+        ----
+        Transfer functions need to have same sampling rate, length etc.
+
+        &#34;&#34;&#34;
+        joinfunc = np.stack if newaxis else np.concatenate
+        tdata = joinfunc([tf.in_time for tf in tfs], axis=axis)
+        return cls.from_time(tfs[0].fs, tdata)
+
+    @property
+    def time_length(self):
+        &#34;&#34;&#34;Length of time response in seconds.&#34;&#34;&#34;
+        return self._time_length
+
+    @property
+    def nf(self):  # noqa: D401
+        &#34;&#34;&#34;Number of frequencies in frequency representation.&#34;&#34;&#34;
+        return len(self._freqs)
+
+    @property
+    def nt(self):  # noqa: D401
+        &#34;&#34;&#34;Number of taps.&#34;&#34;&#34;
+        return len(self._times)
+
+    @property
+    def fs(self):  # noqa: D401
+        &#34;&#34;&#34;Sampling frequency.&#34;&#34;&#34;
+        return self._fs
+
+    @property
+    def freqs(self):  # noqa: D401
+        &#34;&#34;&#34;Frequencies.&#34;&#34;&#34;
+        return self._freqs
+
+    @property
+    def times(self):  # noqa: D401
+        &#34;&#34;&#34;Times.&#34;&#34;&#34;
+        return self._times
+
+    @property
+    def in_time(self):
+        &#34;&#34;&#34;Time domain response.
+
+        Returns
+        -------
+        (... , n) ndarray
+            Real FIR filters.
+
+        &#34;&#34;&#34;
+        if self._in_time is None:
+            self._in_time = np.fft.irfft(self._in_freq, n=self._times.size)
+        return self._in_time
+
+    @property
+    def in_freq(self):
+        &#34;&#34;&#34;Single sided frequency spectrum.
+
+        Returns
+        -------
+        (... , n) ndarray
+            Complex frequency response.
+
+        &#34;&#34;&#34;
+        if self._in_freq is None:
+            self._in_freq = np.fft.rfft(self._in_time)
+        return self._in_freq
+
+    @property
+    def amplitude_spectrum(self):
+        &#34;&#34;&#34;Amplitude spectrum.&#34;&#34;&#34;
+        X = self.in_freq / self.nt
+
+        if self.nt % 2 == 0:
+            # zero and nyquist element only appear once in complex spectrum
+            X[..., 1:-1] *= 2
+        else:
+            # there is no nyquist element
+            X[..., 1:] *= 2
+
+        return X
+
+    def __set_time_data(self, tdata):
+        &#34;&#34;&#34;Set time data without creating new object.&#34;&#34;&#34;
+        assert tdata.shape[-1] == self._nt
+        self._in_time = tdata
+        self._in_freq = None
+
+    def __set_frequency_data(self, fdata):
+        &#34;&#34;&#34;Set frequency data without creating new object.&#34;&#34;&#34;
+        assert fdata.shape[-1] == self._nf
+        self._in_freq = fdata
+        self._in_time = None
+
+    def plot(
+        self,
+        group_delay=False,
+        slce=None,
+        flim=None,
+        dblim=None,
+        tlim=None,
+        grpdlim=None,
+        dbref=1,
+        show=False,
+        use_fig=None,
+        label=None,
+        unwrap_phase=False,
+        logf=True,
+        third_oct_f=True,
+        plot_kw={},
+        **fig_kw,
+    ):
+        &#34;&#34;&#34;Plot the response in both domains.
+
+        Parameters
+        ----------
+        group_delay : bool, optional
+            Display group delay instead of phase.
+        slce : numpy.lib.index_tricks.IndexExpression
+            only plot subset of responses defined by a slice. Last
+            dimension (frequency or time) is always completely taken.
+        flim : tuple or None, optional
+            Frequency axis limits as tuple `(lower, upper)`
+        dblim : tuple or None, optional
+            Magnitude axis limits as tuple `(lower, upper)`
+        tlim : tuple or None, optional
+            Time axis limits as tuple `(lower, upper)`
+        grpdlim: tuple or None, optional
+            Group delay axis limit as tuple `(lower, upper)`
+        dbref : float
+            dB reference in magnitude plot
+        show : bool, optional
+            Run `matplotlib.pyplot.show()`
+        use_fig : matplotlib.pyplot.Figure
+            Reuse an existing figure.
+        label : None, optional
+            Description
+        unwrap_phase : bool, optional
+            unwrap phase in phase plot
+        logf : bool, optional
+            If `True`, use logarithmic frequency axis.
+        third_oct_f: bool, optional
+            Label frequency axis with third octave bands.
+        plot_kw : dictionary, optional
+            Keyword arguments passed to the `plt.plot` commands.
+        **fig_kw
+            Additional options passe to figure creation.
+
+        &#34;&#34;&#34;
+        if use_fig is None:
+            fig_kw = {**{&#34;figsize&#34;: (10, 10)}, **fig_kw}
+            fig, axes = plt.subplots(nrows=3, constrained_layout=True, **fig_kw)
+        else:
+            fig = use_fig
+            axes = fig.axes
+
+        self.plot_magnitude(
+            use_ax=axes[0],
+            slce=slce,
+            dblim=dblim,
+            flim=flim,
+            dbref=dbref,
+            label=label,
+            plot_kw=plot_kw,
+            logf=logf,
+            third_oct_f=third_oct_f,
+        )
+        if group_delay:
+            self.plot_group_delay(
+                use_ax=axes[1],
+                slce=slce,
+                flim=flim,
+                ylim=grpdlim,
+                plot_kw=plot_kw,
+                logf=logf,
+                third_oct_f=third_oct_f,
+            )
+        else:
+            self.plot_phase(
+                use_ax=axes[1],
+                slce=slce,
+                flim=flim,
+                plot_kw=plot_kw,
+                unwrap=unwrap_phase,
+                logf=logf,
+                third_oct_f=third_oct_f,
+            )
+        self.plot_time(
+            use_ax=axes[2], tlim=tlim, slce=slce, plot_kw=plot_kw
+        )
+
+        if show:
+            plt.show()
+
+        return fig
+
+    def plot_magnitude(
+        self,
+        use_ax=None,
+        slce=None,
+        dblim=None,
+        flim=None,
+        dbref=1,
+        label=None,
+        plot_kw={},
+        logf=True,
+        third_oct_f=True,
+        **fig_kw,
+    ):
+        &#34;&#34;&#34;Plot magnitude response.&#34;&#34;&#34;
+        # TODO: compute db limits similar to librosa.amplitude_to_db / power_to_db
+        if use_ax is None:
+            fig_kw = {**{&#34;figsize&#34;: (10, 5)}, **fig_kw}
+            fig, ax = plt.subplots(nrows=1, constrained_layout=True, **fig_kw)
+        else:
+            ax = use_ax
+            fig = ax.get_figure()
+
+        # append frequency/time dimension to slice
+        if slce is None:
+            slce = [np.s_[:] for n in range(len(self.in_time.shape))]
+        elif isinstance(slce, tuple):
+            slce = slce + (np.s_[:],)
+        else:
+            slce = (slce, np.s_[:])
+
+        # move time / frequency axis to first dimension
+        freq_plotready = np.rollaxis(self.in_freq[tuple(slce)], -1).reshape(
+            (self.nf, -1)
+        )
+
+        plotf = ax.semilogx if logf else ax.plot
+        plotf(
+            self.freqs,
+            20 * np.log10(np.abs(freq_plotready / dbref)),
+            label=label,
+            **plot_kw,
+        )
+        ax.set_xlabel(&#34;Frequency [Hz]&#34;)
+        ax.set_ylabel(&#34;Magnitude [dB]&#34;)
+        ax.set_title(&#34;Frequency response&#34;)
+        ax.grid(True)
+
+        if flim is None:
+            lowlim = min(10, self.fs / 2 / 100)
+            flim = (lowlim, self.fs / 2)
+        ax.set_xlim(flim)
+
+        if dblim is not None:
+            ax.set_ylim(dblim)
+
+        if label is not None:
+            ax.legend()
+
+        if third_oct_f:
+            _add_octave_band_xticks(ax)
+
+        return fig
+
+    def plot_phase(
+        self,
+        use_ax=None,
+        slce=None,
+        flim=None,
+        label=None,
+        unwrap=False,
+        ylim=None,
+        plot_kw={},
+        logf=True,
+        third_oct_f=True,
+        **fig_kw,
+    ):
+        &#34;&#34;&#34;Plot phase response.&#34;&#34;&#34;
+        if use_ax is None:
+            fig_kw = {**{&#34;figsize&#34;: (10, 5)}, **fig_kw}
+            fig, ax = plt.subplots(nrows=1, constrained_layout=True, **fig_kw)
+        else:
+            ax = use_ax
+            fig = ax.get_figure()
+
+        # append frequency/time dimension to slice
+        if slce is None:
+            slce = [np.s_[:] for n in range(len(self.in_time.shape))]
+        elif isinstance(slce, tuple):
+            slce = slce + (np.s_[:],)
+        else:
+            slce = (slce, np.s_[:])
+
+        # move time / frequency axis to first dimension
+        freq_plotready = np.rollaxis(self.in_freq[tuple(slce)], -1).reshape(
+            (self.nf, -1)
+        )
+        phase = (
+            np.unwrap(np.angle(freq_plotready)) if unwrap else np.angle(freq_plotready)
+        )
+
+        plotf = ax.semilogx if logf else ax.plot
+        plotf(self.freqs, phase, label=label, **plot_kw)
+        ax.set_xlabel(&#34;Frequency [Hz]&#34;)
+        ax.set_ylabel(&#34;Phase [rad]&#34;)
+        ax.set_title(&#34;Phase response&#34;)
+        ax.grid(True)
+
+        if flim is None:
+            lowlim = min(10, self.fs / 2 / 100)
+            flim = (lowlim, self.fs / 2)
+        ax.set_xlim(flim)
+        if ylim:
+            ax.set_ylim(ylim)
+
+        if label is not None:
+            ax.legend()
+
+        if third_oct_f:
+            _add_octave_band_xticks(ax)
+
+        return fig
+
+    def plot_time(
+        self,
+        use_ax=None,
+        slce=None,
+        tlim=None,
+        ylim=None,
+        label=None,
+        plot_kw={},
+        **fig_kw,
+    ):
+        &#34;&#34;&#34;Plot time response.&#34;&#34;&#34;
+        if use_ax is None:
+            fig_kw = {**{&#34;figsize&#34;: (10, 5)}, **fig_kw}
+            fig, ax = plt.subplots(nrows=1, constrained_layout=True, **fig_kw)
+        else:
+            ax = use_ax
+            fig = ax.get_figure()
+
+        # append frequency/time dimension to slice
+        if slce is None:
+            slce = [np.s_[:] for n in range(len(self.in_time.shape))]
+        elif isinstance(slce, tuple):
+            slce = slce + (np.s_[:],)
+        else:
+            slce = (slce, np.s_[:])
+
+        time_plotready = np.rollaxis(self.in_time[tuple(slce)], -1).reshape(
+            (self.nt, -1)
+        )
+
+        ax.plot(self.times, time_plotready, label=label, **plot_kw)
+        ax.set_xlabel(&#34;Time [s]&#34;)
+        ax.set_ylabel(&#34;&#34;)
+        ax.set_title(&#34;Time response&#34;)
+        ax.grid(True)
+
+        if tlim:
+            ax.set_xlim(tlim)
+        if ylim:
+            ax.set_ylim(ylim)
+
+        if label is not None:
+            ax.legend()
+
+        return fig
+
+    def plot_group_delay(
+        self,
+        use_ax=None,
+        slce=None,
+        flim=None,
+        label=None,
+        ylim=None,
+        plot_kw={},
+        logf=True,
+        third_oct_f=True,
+        **fig_kw,
+    ):
+        &#34;&#34;&#34;Plot group delay.&#34;&#34;&#34;
+        if use_ax is None:
+            fig_kw = {**{&#34;figsize&#34;: (10, 5)}, **fig_kw}
+            fig, ax = plt.subplots(nrows=1, constrained_layout=True, **fig_kw)
+        else:
+            ax = use_ax
+            fig = ax.get_figure()
+
+        # append frequency/time dimension to slice
+        if slce is None:
+            slce = [np.s_[:] for n in range(len(self.in_time.shape))]
+        elif isinstance(slce, tuple):
+            slce = slce + (np.s_[:],)
+        else:
+            slce = (slce, np.s_[:])
+
+        # move time / frequency axis to first dimension
+        freq_plotready = np.rollaxis(self.in_freq[tuple(slce)], -1).reshape(
+            (self.nf, -1)
+        )
+
+        df = self.freqs[1] - self.freqs[0]
+        # TODO: use scipy.signal.group_delay here as below has problem at larger delays
+        grpd = -np.gradient(np.unwrap(np.angle(freq_plotready)), df, axis=0)
+
+        plotf = ax.semilogx if logf else ax.plot
+        plotf(self.freqs, grpd, label=label, **plot_kw)
+        ax.set_xlabel(&#34;Frequency [Hz]&#34;)
+        ax.set_ylabel(&#34;Delay [s]&#34;)
+        ax.set_title(&#34;Group Delay&#34;)
+        ax.grid(True)
+
+        if flim is None:
+            lowlim = min(10, self.fs / 2 / 100)
+            flim = (lowlim, self.fs / 2)
+        ax.set_xlim(flim)
+
+        if ylim:
+            ax.set_ylim(ylim)
+
+        if label is not None:
+            ax.legend()
+
+        if third_oct_f:
+            _add_octave_band_xticks(ax)
+
+        return fig
+
+    def plot_power_in_bands(
+        self, bands=None, use_ax=None, barkwargs={}, avgaxis=None, dbref=1, **figkwargs
+    ):
+        &#34;&#34;&#34;Plot signal&#39;s power in bands.
+
+        Parameters
+        ----------
+        bands : list or None, optional
+            List of tuples (f_center, f_lower, f_upper). If `None`, use third octave
+            bands.
+        use_ax : matplotlib.axis.Axis or None, optional
+            Plot into this axis.
+        barkwargs : dict
+            Keyword arguments to `axis.bar`
+        avgaxis : int, tuple or None
+            Average power over these axes.
+        dbref : float
+            dB reference.
+        **figkwargs
+            Keyword arguments passed to plt.subplots
+
+        Returns
+        -------
+        P : ndarray
+            Power in bands
+        fc : ndarray
+            Band frequencies
+        fig : matplotlib.figure.Figure
+            Figure
+
+        &#34;&#34;&#34;
+        P, fc = self.power_in_bands(bands=bands, avgaxis=avgaxis)
+
+        nbands = P.shape[-1]
+        P = np.atleast_2d(P).reshape((-1, nbands))
+
+        if use_ax is None:
+            fig, ax = plt.subplots(**figkwargs)
+        else:
+            ax = use_ax
+            fig = ax.get_figure()
+
+        xticks = range(1, nbands + 1)
+        for i in range(P.shape[0]):
+            ax.bar(xticks, 10 * np.log10(P[i] / dbref ** 2), **barkwargs)
+        ax.set_xticks(xticks)
+        ax.set_xticklabels([&#34;{:.0f}&#34;.format(f) for f in fc], rotation=&#34;vertical&#34;)
+        ax.grid(True)
+        ax.set_xlabel(&#34;Band&#39;s center frequencies [Hz]&#34;)
+        ax.set_ylabel(&#34;Power [dB]&#34;)
+
+        return (P, fc, fig)
+
+    def time_window(self, startwindow, stopwindow, window=&#34;hann&#34;):
+        &#34;&#34;&#34;Apply time domain windows.
+
+        Parameters
+        ----------
+        startwindow : None or tuple
+            Tuple (t1, t2) with beginning and end times of window opening.
+        stopwindow : None or tuple
+            Tuple (t1, t2) with beginning and end times of window closing.
+        window : string or tuple of string and parameter values, optional
+            Desired window to use. See scipy.signal.get_window for a list of
+            windows and required parameters.
+
+        Returns
+        -------
+        Response
+            Time windowed response object
+
+        &#34;&#34;&#34;
+        n = self.times.size
+        twindow = _time_window(self.fs, n, startwindow, stopwindow, window=window)
+        new_response = self.from_time(self.fs, self.in_time * twindow)
+
+        return new_response
+
+    def freq_window(self, startwindow, stopwindow, window=&#34;hann&#34;):
+        &#34;&#34;&#34;Apply frequency domain window.
+
+        Parameters
+        ----------
+        startwindow : None or tuple
+            Tuple (t1, t2) with beginning and end frequencies of window opening.
+        stopwindow : None or tuple
+            Tuple (t1, t2) with beginning and end frequencies of window closing.
+        window : string or tuple of string and parameter values, optional
+            Desired window to use. See scipy.signal.get_window for a list of
+            windows and required parameters.
+
+        Returns
+        -------
+        Response
+            Frequency windowed response object
+
+        &#34;&#34;&#34;
+        n = self.times.size
+        fwindow = _freq_window(self.fs, n, startwindow, stopwindow, window=window)
+        new_response = self.from_freq(self.fs, self.in_freq * fwindow)
+
+        return new_response
+
+    def window_around_peak(self, tleft, tright, alpha, return_window=False):
+        &#34;&#34;&#34;Time window each impulse response around its peak value.
+
+        Parameters
+        ----------
+        tleft, tright : float
+            Window starts `tleft` seconds before and ends `tright` seconds after maximum
+            of impulse response.
+        alpha : float
+            `alpha` parameter of `scipy.signal.tukey` window.
+        return_window : bool, optional
+            Also return used time window
+
+        Returns
+        -------
+        Response
+            Time windowed response object.
+        ndarray
+            Time window, if `return_window` is `True`.
+
+        &#34;&#34;&#34;
+        window = _construct_window_around_peak(
+            self.fs, self.in_time, tleft, tright, alpha=alpha
+        )
+
+        if return_window:
+            return self.from_time(self.fs, self.in_time * window), window
+
+        return self.from_time(self.fs, self.in_time * window)
+
+    def delay(self, dt, keep_length=True):
+        &#34;&#34;&#34;Delay time response by dt seconds.
+
+        Rounds of to closest integer delay.
+        &#34;&#34;&#34;
+        x = delay(self.fs, self.in_time, dt, keep_length=keep_length)
+        return self.from_time(self.fs, x)
+
+    def circdelay(self, dt):
+        &#34;&#34;&#34;Delay by circular shift.
+
+        Rounds of to closest integer delay.
+        &#34;&#34;&#34;
+        x = self.in_time
+        n = int(round(dt * self.fs))
+        shifted = np.roll(x, n, axis=-1)
+
+        return self.from_time(self.fs, shifted)
+
+    def timecrop(self, start, end):
+        &#34;&#34;&#34;Crop time response.
+
+        Parameters
+        ----------
+        start, end : float
+            Start and end times in seconds. Does not include sample at t=end. Use
+            end=None to force inclusion of last sample.
+
+        Returns
+        -------
+        Response
+            New Response object with cropped time.
+
+        Notes
+        -----
+        Creates new Response object.
+
+        Examples
+        --------
+        &gt;&gt;&gt; import numpy as np
+        &gt;&gt;&gt; from response import Response
+        &gt;&gt;&gt; r = Response.from_time(100, np.random.normal(size=100))
+        &gt;&gt;&gt; split = 0.2
+
+        The following holds:
+
+        &gt;&gt;&gt; np.all(np.concatenate(
+        ...     (
+        ...         r.timecrop(0, split).in_time,
+        ...         r.timecrop(split, None).in_time,
+        ...     ),
+        ...     axis=-1,
+        ... ) == r.in_time)
+        True
+
+        &#34;&#34;&#34;
+        if start &lt; 0:
+            start += self.time_length
+        if end is not None and end &lt; 0:
+            end += self.time_length
+        assert 0 &lt;= start &lt; self.time_length
+        assert end is None or (0 &lt; end &lt;= self.time_length)
+
+        _, i_start = _find_nearest(self.times, start)
+        if end is None:
+            i_end = None
+        else:
+            _, i_end = _find_nearest(self.times, end)
+
+        h = self.in_time[..., i_start:i_end]
+
+        new_response = self.from_time(self.fs, h)
+
+        return new_response
+
+    def non_causal_timecrop(self, length):
+        &#34;&#34;&#34;Cut length of non-causal impulse response.
+
+        &#34;FFT shift, cropping on both ends, iFFT shift&#34;
+
+        Parameters
+        ----------
+        length : float
+            final length in seconds
+
+        Returns
+        -------
+        Response
+            New Response object new length.
+
+        Note
+        ----
+        Can introduce delay pre-delay by a sample.
+
+        &#34;&#34;&#34;
+        assert length &lt; self.time_length
+
+        cut = (self.time_length - length) / 2
+
+        _, i_start = _find_nearest(self.times, cut)
+        _, i_end = _find_nearest(self.times, self.time_length - cut)
+
+        h = np.fft.ifftshift(np.fft.fftshift(self.in_time)[..., i_start:i_end])
+
+        new_response = self.from_time(self.fs, h)
+
+        if new_response.time_length != length:
+            w = f&#34;Could not precisely shrink to {length}s with fs = {self.fs}&#34;
+            warnings.warn(w)
+
+        return new_response
+
+    def zeropad(self, before, after):
+        &#34;&#34;&#34;Zeropad time response.
+
+        Parameters
+        ----------
+        before, after : int
+            Number of zero samples inserted before and after response.
+
+        Returns
+        -------
+        Response
+            Zeropadded response
+
+        &#34;&#34;&#34;
+        assert before % 1 == 0
+        assert after % 1 == 0
+        dims = self.in_time.ndim
+
+        pad_width = [(0, 0) for n in range(dims)]
+        pad_width[-1] = (int(before), int(after))
+
+        h = np.pad(self.in_time, pad_width, &#34;constant&#34;)
+
+        return self.from_time(self.fs, h)
+
+    def zeropad_to_power_of_2(self):
+        &#34;&#34;&#34;Pad time response for length of power of 2.
+
+        Returns
+        -------
+        Response
+            New response object with larger, power of 2 length.
+
+        &#34;&#34;&#34;
+        # https://stackoverflow.com/questions/14267555/find-the-smallest-power-of-2-greater-than-n-in-python
+        n = 2 ** (self.nt - 1).bit_length()
+        return self.zeropad(0, n - self.nt)
+
+    def zeropad_to_length(self, n):
+        &#34;&#34;&#34;Zeropad time response to specific length.
+
+        Returns
+        -------
+        Response
+            New response object with new length n.
+
+        &#34;&#34;&#34;
+        oldn = self.nt
+        assert n &gt;= oldn
+        return self.zeropad(0, n - oldn)
+
+    def resample(self, fs_new, normalize=&#34;same_gain&#34;, window=None):
+        &#34;&#34;&#34;Resample using Fourier method.
+
+        Parameters
+        ----------
+        fs_new : int
+            New sample rate
+        normalize : str, optional
+            If &#39;same_gain&#39;, normalize such that the gain is the same
+            as the original signal. If &#39;same_amplitude&#39;, amplitudes will be preserved.
+        window : None, optional
+            Passed to scipy.signal.resample.
+
+        Returns
+        -------
+        Response
+            New resampled response object.
+
+        Raises
+        ------
+        ValueError
+            If resulting number of samples would be a non-integer.
+
+        &#34;&#34;&#34;
+        if fs_new == self.fs:
+            return self
+
+        nt_new = fs_new * self.time_length
+
+        if nt_new % 1 != 0:
+            raise ValueError(
+                &#34;New number of samples must be integer, but is {}&#34;.format(nt_new)
+            )
+
+        nt_new = int(nt_new)
+
+        h_new = resample(self.in_time, nt_new, axis=-1, window=window)
+
+        if normalize == &#34;same_gain&#34;:
+            h_new *= self.nt / nt_new
+        elif normalize == &#34;same_amplitude&#34;:
+            pass
+        else:
+            raise ValueError(
+                &#34;Expected &#39;same_gain&#39; or &#39;same_amplitude&#39;, got %s&#34; % (normalize,)
+            )
+
+        return self.from_time(fs_new, h_new)
+
+    def resample_poly(self, fs_new, normalize=&#34;same_gain&#34;, window=(&#34;kaiser&#34;, 5.0)):
+        &#34;&#34;&#34;Resample using polyphase filtering.
+
+        Parameters
+        ----------
+        fs_new : int
+            New sample rate
+        normalize : str, optional
+            If &#39;same_gain&#39;, normalize such that the gain is the same
+            as the original signal. If &#39;same_amplitude&#39;, amplitudes will be preserved.
+        window : None, optional
+            Passed to scipy.signal.resample_poly.
+
+        Returns
+        -------
+        Response
+            New resampled response object.
+
+        &#34;&#34;&#34;
+        if fs_new == self.fs:
+            return self
+
+        ratio = Fraction(fs_new, self.fs)
+        up = ratio.numerator
+        down = ratio.denominator
+
+        if up &gt; 1000 or down &gt; 1000:
+            print(&#34;Warning: resampling with high ratio {}/{}&#34;.format(up, down))
+
+        h_new = resample_poly(self.in_time, up, down, axis=-1, window=window)
+
+        if normalize == &#34;same_gain&#34;:
+            h_new *= down / up
+        elif normalize == &#34;same_amplitude&#34;:
+            pass
+        else:
+            raise ValueError(
+                &#34;Expected &#39;same_gain&#39; or &#39;same_amplitude&#39;, got %s&#34; % (normalize,)
+            )
+
+        return self.from_time(fs_new, h_new)
+
+    def normalize(self, maxval=1):
+        &#34;&#34;&#34;Normalize time response.
+
+        Parameters
+        ----------
+        maxval: float, optional
+            Maximum amplitude in resulting time response.
+
+        Returns
+        -------
+        Response
+
+        &#34;&#34;&#34;
+        h = self.in_time
+        h /= np.abs(self.in_time).max()
+        h *= maxval
+        return self.from_time(self.fs, h)
+
+    def export_wav(self, folder, name_fmt=&#34;{:02d}.wav&#34;, dtype=np.int16):
+        &#34;&#34;&#34;Export impulse response to wave files.
+
+        Dimension of data must 2.
+
+        Parameters
+        ----------
+        folder : file path
+            Save in this folder
+        name_fmt : str, optional
+            Format string for file names with one placeholder, e.g. &#39;filt1{:02d}.wav&#39;.
+        dtype : one of np.float32, np.int32, np.int16, np.uint8
+            Data is converted to this type.
+
+        &#34;&#34;&#34;
+        data = np.atleast_2d(self.in_time)
+
+        assert data.ndim == 2
+        assert np.all(np.abs(data) &lt;= 1.0)
+
+        # convert and scale to new output datatype
+        if dtype in [np.uint8, np.int16, np.int32]:
+            lim_orig = (-1.0, 1.0)
+            lim_new = (np.iinfo(dtype).min, np.iinfo(dtype).max)
+            data = _rescale(data, lim_orig, lim_new).astype(dtype)
+        elif dtype != np.float32:
+            raise TypeError(f&#34;dtype {dtype} is not supported by scipy.wavfile.write.&#34;)
+
+        path = Path(folder)
+        if not path.is_dir():
+            path.mkdir(parents=True, exist_ok=False)
+
+        for i in range(data.shape[0]):
+            wavfile.write(path / name_fmt.format(i + 1), self.fs, data[i])
+
+    def export_npz(self, filename, dtype=np.float32):
+        &#34;&#34;&#34;Export impulse response as npz file.
+
+        Parameters
+        ----------
+        filename: str or Path
+            File path
+        dtype: numpy dtype
+            Convert to this type before saving
+
+        &#34;&#34;&#34;
+        np.savez(
+            filename, impulse_response=self.in_time.astype(dtype), samplerate=self.fs
+        )
+
+    def power_in_bands(self, bands=None, avgaxis=None):
+        &#34;&#34;&#34;Compute power of signal in third octave bands.
+
+        Power(band) =   1/T  integral  |X(f)| ** 2 df
+                            f in band
+
+        Parameters
+        ----------
+        bands : list of tuples, length nbands optional
+            Center, lower and upper frequencies of bands.
+        avgaxis: int, tuple or None
+            Average result over these axis
+
+        Returns
+        -------
+        P: ndarray, shape (..., nbands)
+            Power in bands
+        fcs: list, length nbands
+            Center frequencies of bands
+
+        &#34;&#34;&#34;
+        if bands is None:
+            bands = _third_octave_bands
+
+        # center frequencies
+        fcs = np.asarray([b[0] for b in bands])
+        Npow2 = 2 ** (self.nt - 1).bit_length()
+        f = np.fft.fftfreq(Npow2, d=1 / self.fs)
+
+        shape = list(self.in_freq.shape)
+        shape[-1] = len(bands)
+        P = np.zeros(shape)
+        for i, (fc, fl, fu) in enumerate(bands):
+            if fu &lt; self.fs / 2:  # include only bands in frequency range
+                iband = np.logical_and(fl &lt;= f, f &lt; fu)
+                P[..., i] = np.sum(
+                    np.abs(np.fft.fft(self.in_time, n=Npow2, axis=-1)[..., iband]) ** 2
+                    * 2  # energy from negative and positive frequencies
+                    * self.dt
+                    / self.nt
+                    / self.time_length,
+                    axis=-1,
+                )
+            else:
+                P[..., i] = 0
+
+        if avgaxis is not None:
+            P = P.mean(axis=avgaxis)
+
+        return P, fcs
+
+    @classmethod
+    def time_vector(cls, n, fs):
+        &#34;&#34;&#34;Time values of filter with n taps sampled at fs.
+
+        Parameters
+        ----------
+        n : int
+            number of taps in FIR filter
+        fs : int
+            sampling frequency in Hertz
+
+        Returns
+        -------
+        (n) ndarray
+            times in seconds
+
+        &#34;&#34;&#34;
+        return time_vector(n, fs)
+
+    @classmethod
+    def freq_vector(cls, n, fs):
+        &#34;&#34;&#34;Frequency values of filter with n taps sampled at fs up to Nyquist.
+
+        Parameters
+        ----------
+        n : int
+            Number of taps in FIR filter
+        fs : int
+            Sampling frequency in Hertz
+
+        Returns
+        -------
+        (n // 2 + 1) ndarray
+            Frequencies in Hz
+
+        &#34;&#34;&#34;
+        return freq_vector(n, fs, sided=&#39;single&#39;)
+
+    def filter(self, b, a=[1]):
+        &#34;&#34;&#34;Filter response along one-dimension with an IIR or FIR filter.
+
+        Parameters
+        ----------
+        b : array_like
+            The numerator coefficient vector in a 1-D sequence.
+        a : array_like, optional
+            The denominator coefficient vector in a 1-D sequence.  If ``a[0]``
+            is not 1, then both `a` and `b` are normalized by ``a[0]``.
+
+        &#34;&#34;&#34;
+        return self.from_time(self.fs, lfilter(b, a, self.in_time, axis=-1))
+
+    def add_noise(self, snr, unit=None):
+        &#34;&#34;&#34;Add noise to x with relative noise level SNR.
+
+        Parameters
+        ----------
+        snr : float
+            relative magnitude of noise, i.e. snr = Ex/En
+        unit : None or str, optional
+            if &#34;dB&#34;, SNR is specified in dB, i.e. SNR = 10*log(Ex/En).
+
+        Returns
+        -------
+        Response
+
+        &#34;&#34;&#34;
+        return self.from_time(self.fs, noisify(self.in_time, snr, unit=unit))
+
+    def psd(self, **kwargs):
+        &#34;&#34;&#34;Compute the power spectral density of the signal.
+
+        Parameters
+        ----------
+        kwargs
+            keword arguments passed to scipy.signal.welch
+
+        Returns
+        -------
+        f : ndarray
+            Array of sample frequencies.
+        Pxx : ndarray
+            Power spectral density of time signal.
+
+        Notes
+        -----
+        Use scaling=&#39;density&#39; for power per bin bandwidth and scaling=&#39;spectrum&#39; for
+        power per bin.
+
+        &#34;&#34;&#34;
+        return welch(self.in_time, fs=self.fs, **kwargs)</code></pre>
+</details>
+<h3>Static methods</h3>
+<dl>
+<dt id="response.Response.freq_vector"><code class="name flex">
+<span>def <span class="ident">freq_vector</span></span>(<span>n, fs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Frequency values of filter with n taps sampled at fs up to Nyquist.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>n</code></strong> :&ensp;<code>int</code></dt>
+<dd>Number of taps in FIR filter</dd>
+<dt><strong><code>fs</code></strong> :&ensp;<code>int</code></dt>
+<dd>Sampling frequency in Hertz</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>(n // 2 + 1) ndarray
+Frequencies in Hz</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def freq_vector(cls, n, fs):
+    &#34;&#34;&#34;Frequency values of filter with n taps sampled at fs up to Nyquist.
+
+    Parameters
+    ----------
+    n : int
+        Number of taps in FIR filter
+    fs : int
+        Sampling frequency in Hertz
+
+    Returns
+    -------
+    (n // 2 + 1) ndarray
+        Frequencies in Hz
+
+    &#34;&#34;&#34;
+    return freq_vector(n, fs, sided=&#39;single&#39;)</code></pre>
+</details>
+</dd>
+<dt id="response.Response.from_freq"><code class="name flex">
+<span>def <span class="ident">from_freq</span></span>(<span>fs, fdata, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generate Response obj from frequency response data.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def from_freq(cls, fs, fdata, **kwargs):
+    &#34;&#34;&#34;Generate Response obj from frequency response data.&#34;&#34;&#34;
+    tf = cls(fs, fdata=fdata, **kwargs)
+    return tf</code></pre>
+</details>
+</dd>
+<dt id="response.Response.from_time"><code class="name flex">
+<span>def <span class="ident">from_time</span></span>(<span>fs, tdata, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generate Response obj from time response data.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def from_time(cls, fs, tdata, **kwargs):
+    &#34;&#34;&#34;Generate Response obj from time response data.&#34;&#34;&#34;
+    tf = cls(fs, tdata=tdata, **kwargs)
+    return tf</code></pre>
+</details>
+</dd>
+<dt id="response.Response.from_wav"><code class="name flex">
+<span>def <span class="ident">from_wav</span></span>(<span>fps)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Import responses from wav files.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>fps</code></strong> :&ensp;<code>list</code></dt>
+<dd>File paths of all wav files.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="response.Response" href="#response.Response">Response</a></code></dt>
+<dd>New Response object with imported time responses.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def from_wav(cls, fps):
+    &#34;&#34;&#34;Import responses from wav files.
+
+    Parameters
+    ----------
+    fps : list
+        File paths of all wav files.
+
+    Returns
+    -------
+    Response
+        New Response object with imported time responses.
+
+    &#34;&#34;&#34;
+    fpi = iter(fps)
+    fs, data = wavfile.read(next(fpi))
+    hlist = [data] + [wavfile.read(fp)[1] for fp in fpi]
+
+    h = np.array(hlist)
+    if data.dtype in [np.uint8, np.int16, np.int32]:
+        lim_orig = (np.iinfo(data.dtype).min, np.iinfo(data.dtype).max)
+        lim_new = (-1.0, 1.0)
+        h = _rescale(h, lim_orig, lim_new).astype(np.double)
+
+    return cls.from_time(fs, h)</code></pre>
+</details>
+</dd>
+<dt id="response.Response.join"><code class="name flex">
+<span>def <span class="ident">join</span></span>(<span>tfs, axis=0, newaxis=True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Concat or stack a set of Responses along a given axis.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>tfs</code></strong> :&ensp;<code>array_like</code></dt>
+<dd>List of Responses</dd>
+<dt><strong><code>axis</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Indice of axis along wich to concatenate / stack TFs.</dd>
+<dt><strong><code>newaxis</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>If True, do not concatenate but stack arrays along a new axis.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="response.Response" href="#response.Response">Response</a></code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="note">Note</h2>
+<p>Transfer functions need to have same sampling rate, length etc.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def join(cls, tfs, axis=0, newaxis=True):
+    &#34;&#34;&#34;Concat or stack a set of Responses along a given axis.
+
+    Parameters
+    ----------
+    tfs : array_like
+        List of Responses
+    axis : int, optional
+        Indice of axis along wich to concatenate / stack TFs.
+    newaxis : bool, optional
+        If True, do not concatenate but stack arrays along a new axis.
+
+    Returns
+    -------
+    Response
+
+    Note
+    ----
+    Transfer functions need to have same sampling rate, length etc.
+
+    &#34;&#34;&#34;
+    joinfunc = np.stack if newaxis else np.concatenate
+    tdata = joinfunc([tf.in_time for tf in tfs], axis=axis)
+    return cls.from_time(tfs[0].fs, tdata)</code></pre>
+</details>
+</dd>
+<dt id="response.Response.new_dirac"><code class="name flex">
+<span>def <span class="ident">new_dirac</span></span>(<span>fs, T=None, n=None, nch=(1,))</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generate new allpass / dirac response.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def new_dirac(cls, fs, T=None, n=None, nch=(1,)):
+    &#34;&#34;&#34;Generate new allpass / dirac response.&#34;&#34;&#34;
+    nch = np.atleast_1d(nch)
+    if T is not None:
+        nt = round(fs * T)
+    else:
+        nt = n
+    h = np.zeros((*nch, nt))
+    h[..., 0] = 1
+    return cls.from_time(fs, h)</code></pre>
+</details>
+</dd>
+<dt id="response.Response.time_vector"><code class="name flex">
+<span>def <span class="ident">time_vector</span></span>(<span>n, fs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Time values of filter with n taps sampled at fs.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>n</code></strong> :&ensp;<code>int</code></dt>
+<dd>number of taps in FIR filter</dd>
+<dt><strong><code>fs</code></strong> :&ensp;<code>int</code></dt>
+<dd>sampling frequency in Hertz</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>(n) ndarray
+times in seconds</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def time_vector(cls, n, fs):
+    &#34;&#34;&#34;Time values of filter with n taps sampled at fs.
+
+    Parameters
+    ----------
+    n : int
+        number of taps in FIR filter
+    fs : int
+        sampling frequency in Hertz
+
+    Returns
+    -------
+    (n) ndarray
+        times in seconds
+
+    &#34;&#34;&#34;
+    return time_vector(n, fs)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="response.Response.amplitude_spectrum"><code class="name">var <span class="ident">amplitude_spectrum</span></code></dt>
+<dd>
+<div class="desc"><p>Amplitude spectrum.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def amplitude_spectrum(self):
+    &#34;&#34;&#34;Amplitude spectrum.&#34;&#34;&#34;
+    X = self.in_freq / self.nt
+
+    if self.nt % 2 == 0:
+        # zero and nyquist element only appear once in complex spectrum
+        X[..., 1:-1] *= 2
+    else:
+        # there is no nyquist element
+        X[..., 1:] *= 2
+
+    return X</code></pre>
+</details>
+</dd>
+<dt id="response.Response.freqs"><code class="name">var <span class="ident">freqs</span></code></dt>
+<dd>
+<div class="desc"><p>Frequencies.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def freqs(self):  # noqa: D401
+    &#34;&#34;&#34;Frequencies.&#34;&#34;&#34;
+    return self._freqs</code></pre>
+</details>
+</dd>
+<dt id="response.Response.fs"><code class="name">var <span class="ident">fs</span></code></dt>
+<dd>
+<div class="desc"><p>Sampling frequency.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def fs(self):  # noqa: D401
+    &#34;&#34;&#34;Sampling frequency.&#34;&#34;&#34;
+    return self._fs</code></pre>
+</details>
+</dd>
+<dt id="response.Response.in_freq"><code class="name">var <span class="ident">in_freq</span></code></dt>
+<dd>
+<div class="desc"><p>Single sided frequency spectrum.</p>
+<h2 id="returns">Returns</h2>
+<p>(&hellip; , n) ndarray
+Complex frequency response.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def in_freq(self):
+    &#34;&#34;&#34;Single sided frequency spectrum.
+
+    Returns
+    -------
+    (... , n) ndarray
+        Complex frequency response.
+
+    &#34;&#34;&#34;
+    if self._in_freq is None:
+        self._in_freq = np.fft.rfft(self._in_time)
+    return self._in_freq</code></pre>
+</details>
+</dd>
+<dt id="response.Response.in_time"><code class="name">var <span class="ident">in_time</span></code></dt>
+<dd>
+<div class="desc"><p>Time domain response.</p>
+<h2 id="returns">Returns</h2>
+<p>(&hellip; , n) ndarray
+Real FIR filters.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def in_time(self):
+    &#34;&#34;&#34;Time domain response.
+
+    Returns
+    -------
+    (... , n) ndarray
+        Real FIR filters.
+
+    &#34;&#34;&#34;
+    if self._in_time is None:
+        self._in_time = np.fft.irfft(self._in_freq, n=self._times.size)
+    return self._in_time</code></pre>
+</details>
+</dd>
+<dt id="response.Response.nf"><code class="name">var <span class="ident">nf</span></code></dt>
+<dd>
+<div class="desc"><p>Number of frequencies in frequency representation.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def nf(self):  # noqa: D401
+    &#34;&#34;&#34;Number of frequencies in frequency representation.&#34;&#34;&#34;
+    return len(self._freqs)</code></pre>
+</details>
+</dd>
+<dt id="response.Response.nt"><code class="name">var <span class="ident">nt</span></code></dt>
+<dd>
+<div class="desc"><p>Number of taps.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def nt(self):  # noqa: D401
+    &#34;&#34;&#34;Number of taps.&#34;&#34;&#34;
+    return len(self._times)</code></pre>
+</details>
+</dd>
+<dt id="response.Response.time_length"><code class="name">var <span class="ident">time_length</span></code></dt>
+<dd>
+<div class="desc"><p>Length of time response in seconds.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def time_length(self):
+    &#34;&#34;&#34;Length of time response in seconds.&#34;&#34;&#34;
+    return self._time_length</code></pre>
+</details>
+</dd>
+<dt id="response.Response.times"><code class="name">var <span class="ident">times</span></code></dt>
+<dd>
+<div class="desc"><p>Times.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def times(self):  # noqa: D401
+    &#34;&#34;&#34;Times.&#34;&#34;&#34;
+    return self._times</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="response.Response.add_noise"><code class="name flex">
+<span>def <span class="ident">add_noise</span></span>(<span>self, snr, unit=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Add noise to x with relative noise level SNR.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>snr</code></strong> :&ensp;<code>float</code></dt>
+<dd>relative magnitude of noise, i.e. snr = Ex/En</dd>
+<dt><strong><code>unit</code></strong> :&ensp;<code>None</code> or <code>str</code>, optional</dt>
+<dd>if "dB", SNR is specified in dB, i.e. SNR = 10*log(Ex/En).</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="response.Response" href="#response.Response">Response</a></code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_noise(self, snr, unit=None):
+    &#34;&#34;&#34;Add noise to x with relative noise level SNR.
+
+    Parameters
+    ----------
+    snr : float
+        relative magnitude of noise, i.e. snr = Ex/En
+    unit : None or str, optional
+        if &#34;dB&#34;, SNR is specified in dB, i.e. SNR = 10*log(Ex/En).
+
+    Returns
+    -------
+    Response
+
+    &#34;&#34;&#34;
+    return self.from_time(self.fs, noisify(self.in_time, snr, unit=unit))</code></pre>
+</details>
+</dd>
+<dt id="response.Response.circdelay"><code class="name flex">
+<span>def <span class="ident">circdelay</span></span>(<span>self, dt)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Delay by circular shift.</p>
+<p>Rounds of to closest integer delay.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def circdelay(self, dt):
+    &#34;&#34;&#34;Delay by circular shift.
+
+    Rounds of to closest integer delay.
+    &#34;&#34;&#34;
+    x = self.in_time
+    n = int(round(dt * self.fs))
+    shifted = np.roll(x, n, axis=-1)
+
+    return self.from_time(self.fs, shifted)</code></pre>
+</details>
+</dd>
+<dt id="response.Response.delay"><code class="name flex">
+<span>def <span class="ident">delay</span></span>(<span>self, dt, keep_length=True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Delay time response by dt seconds.</p>
+<p>Rounds of to closest integer delay.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def delay(self, dt, keep_length=True):
+    &#34;&#34;&#34;Delay time response by dt seconds.
+
+    Rounds of to closest integer delay.
+    &#34;&#34;&#34;
+    x = delay(self.fs, self.in_time, dt, keep_length=keep_length)
+    return self.from_time(self.fs, x)</code></pre>
+</details>
+</dd>
+<dt id="response.Response.export_npz"><code class="name flex">
+<span>def <span class="ident">export_npz</span></span>(<span>self, filename, dtype=numpy.float32)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Export impulse response as npz file.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>str</code> or <code>Path</code></dt>
+<dd>File path</dd>
+<dt><strong><code>dtype</code></strong> :&ensp;<code>numpy dtype</code></dt>
+<dd>Convert to this type before saving</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def export_npz(self, filename, dtype=np.float32):
+    &#34;&#34;&#34;Export impulse response as npz file.
+
+    Parameters
+    ----------
+    filename: str or Path
+        File path
+    dtype: numpy dtype
+        Convert to this type before saving
+
+    &#34;&#34;&#34;
+    np.savez(
+        filename, impulse_response=self.in_time.astype(dtype), samplerate=self.fs
+    )</code></pre>
+</details>
+</dd>
+<dt id="response.Response.export_wav"><code class="name flex">
+<span>def <span class="ident">export_wav</span></span>(<span>self, folder, name_fmt='{:02d}.wav', dtype=numpy.int16)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Export impulse response to wave files.</p>
+<p>Dimension of data must 2.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>folder</code></strong> :&ensp;<code>file path</code></dt>
+<dd>Save in this folder</dd>
+<dt><strong><code>name_fmt</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>Format string for file names with one placeholder, e.g. 'filt1{:02d}.wav'.</dd>
+<dt><strong><code>dtype</code></strong> :&ensp;<code>one</code> of <code>np.float32, np.int32, np.int16, np.uint8</code></dt>
+<dd>Data is converted to this type.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def export_wav(self, folder, name_fmt=&#34;{:02d}.wav&#34;, dtype=np.int16):
+    &#34;&#34;&#34;Export impulse response to wave files.
+
+    Dimension of data must 2.
+
+    Parameters
+    ----------
+    folder : file path
+        Save in this folder
+    name_fmt : str, optional
+        Format string for file names with one placeholder, e.g. &#39;filt1{:02d}.wav&#39;.
+    dtype : one of np.float32, np.int32, np.int16, np.uint8
+        Data is converted to this type.
+
+    &#34;&#34;&#34;
+    data = np.atleast_2d(self.in_time)
+
+    assert data.ndim == 2
+    assert np.all(np.abs(data) &lt;= 1.0)
+
+    # convert and scale to new output datatype
+    if dtype in [np.uint8, np.int16, np.int32]:
+        lim_orig = (-1.0, 1.0)
+        lim_new = (np.iinfo(dtype).min, np.iinfo(dtype).max)
+        data = _rescale(data, lim_orig, lim_new).astype(dtype)
+    elif dtype != np.float32:
+        raise TypeError(f&#34;dtype {dtype} is not supported by scipy.wavfile.write.&#34;)
+
+    path = Path(folder)
+    if not path.is_dir():
+        path.mkdir(parents=True, exist_ok=False)
+
+    for i in range(data.shape[0]):
+        wavfile.write(path / name_fmt.format(i + 1), self.fs, data[i])</code></pre>
+</details>
+</dd>
+<dt id="response.Response.filter"><code class="name flex">
+<span>def <span class="ident">filter</span></span>(<span>self, b, a=[1])</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Filter response along one-dimension with an IIR or FIR filter.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>b</code></strong> :&ensp;<code>array_like</code></dt>
+<dd>The numerator coefficient vector in a 1-D sequence.</dd>
+<dt><strong><code>a</code></strong> :&ensp;<code>array_like</code>, optional</dt>
+<dd>The denominator coefficient vector in a 1-D sequence.
+If <code>a[0]</code>
+is not 1, then both <code>a</code> and <code>b</code> are normalized by <code>a[0]</code>.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def filter(self, b, a=[1]):
+    &#34;&#34;&#34;Filter response along one-dimension with an IIR or FIR filter.
+
+    Parameters
+    ----------
+    b : array_like
+        The numerator coefficient vector in a 1-D sequence.
+    a : array_like, optional
+        The denominator coefficient vector in a 1-D sequence.  If ``a[0]``
+        is not 1, then both `a` and `b` are normalized by ``a[0]``.
+
+    &#34;&#34;&#34;
+    return self.from_time(self.fs, lfilter(b, a, self.in_time, axis=-1))</code></pre>
+</details>
+</dd>
+<dt id="response.Response.freq_window"><code class="name flex">
+<span>def <span class="ident">freq_window</span></span>(<span>self, startwindow, stopwindow, window='hann')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Apply frequency domain window.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>startwindow</code></strong> :&ensp;<code>None</code> or <code>tuple</code></dt>
+<dd>Tuple (t1, t2) with beginning and end frequencies of window opening.</dd>
+<dt><strong><code>stopwindow</code></strong> :&ensp;<code>None</code> or <code>tuple</code></dt>
+<dd>Tuple (t1, t2) with beginning and end frequencies of window closing.</dd>
+<dt><strong><code>window</code></strong> :&ensp;<code>string</code> or <code>tuple</code> of <code>string and parameter values</code>, optional</dt>
+<dd>Desired window to use. See scipy.signal.get_window for a list of
+windows and required parameters.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="response.Response" href="#response.Response">Response</a></code></dt>
+<dd>Frequency windowed response object</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def freq_window(self, startwindow, stopwindow, window=&#34;hann&#34;):
+    &#34;&#34;&#34;Apply frequency domain window.
+
+    Parameters
+    ----------
+    startwindow : None or tuple
+        Tuple (t1, t2) with beginning and end frequencies of window opening.
+    stopwindow : None or tuple
+        Tuple (t1, t2) with beginning and end frequencies of window closing.
+    window : string or tuple of string and parameter values, optional
+        Desired window to use. See scipy.signal.get_window for a list of
+        windows and required parameters.
+
+    Returns
+    -------
+    Response
+        Frequency windowed response object
+
+    &#34;&#34;&#34;
+    n = self.times.size
+    fwindow = _freq_window(self.fs, n, startwindow, stopwindow, window=window)
+    new_response = self.from_freq(self.fs, self.in_freq * fwindow)
+
+    return new_response</code></pre>
+</details>
+</dd>
+<dt id="response.Response.non_causal_timecrop"><code class="name flex">
+<span>def <span class="ident">non_causal_timecrop</span></span>(<span>self, length)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Cut length of non-causal impulse response.</p>
+<p>"FFT shift, cropping on both ends, iFFT shift"</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>length</code></strong> :&ensp;<code>float</code></dt>
+<dd>final length in seconds</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="response.Response" href="#response.Response">Response</a></code></dt>
+<dd>New Response object new length.</dd>
+</dl>
+<h2 id="note">Note</h2>
+<p>Can introduce delay pre-delay by a sample.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def non_causal_timecrop(self, length):
+    &#34;&#34;&#34;Cut length of non-causal impulse response.
+
+    &#34;FFT shift, cropping on both ends, iFFT shift&#34;
+
+    Parameters
+    ----------
+    length : float
+        final length in seconds
+
+    Returns
+    -------
+    Response
+        New Response object new length.
+
+    Note
+    ----
+    Can introduce delay pre-delay by a sample.
+
+    &#34;&#34;&#34;
+    assert length &lt; self.time_length
+
+    cut = (self.time_length - length) / 2
+
+    _, i_start = _find_nearest(self.times, cut)
+    _, i_end = _find_nearest(self.times, self.time_length - cut)
+
+    h = np.fft.ifftshift(np.fft.fftshift(self.in_time)[..., i_start:i_end])
+
+    new_response = self.from_time(self.fs, h)
+
+    if new_response.time_length != length:
+        w = f&#34;Could not precisely shrink to {length}s with fs = {self.fs}&#34;
+        warnings.warn(w)
+
+    return new_response</code></pre>
+</details>
+</dd>
+<dt id="response.Response.normalize"><code class="name flex">
+<span>def <span class="ident">normalize</span></span>(<span>self, maxval=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Normalize time response.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>maxval</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Maximum amplitude in resulting time response.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="response.Response" href="#response.Response">Response</a></code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def normalize(self, maxval=1):
+    &#34;&#34;&#34;Normalize time response.
+
+    Parameters
+    ----------
+    maxval: float, optional
+        Maximum amplitude in resulting time response.
+
+    Returns
+    -------
+    Response
+
+    &#34;&#34;&#34;
+    h = self.in_time
+    h /= np.abs(self.in_time).max()
+    h *= maxval
+    return self.from_time(self.fs, h)</code></pre>
+</details>
+</dd>
+<dt id="response.Response.plot"><code class="name flex">
+<span>def <span class="ident">plot</span></span>(<span>self, group_delay=False, slce=None, flim=None, dblim=None, tlim=None, grpdlim=None, dbref=1, show=False, use_fig=None, label=None, unwrap_phase=False, logf=True, third_oct_f=True, plot_kw={}, **fig_kw)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Plot the response in both domains.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>group_delay</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Display group delay instead of phase.</dd>
+<dt><strong><code>slce</code></strong> :&ensp;<code>numpy.lib.index_tricks.IndexExpression</code></dt>
+<dd>only plot subset of responses defined by a slice. Last
+dimension (frequency or time) is always completely taken.</dd>
+<dt><strong><code>flim</code></strong> :&ensp;<code>tuple</code> or <code>None</code>, optional</dt>
+<dd>Frequency axis limits as tuple <code>(lower, upper)</code></dd>
+<dt><strong><code>dblim</code></strong> :&ensp;<code>tuple</code> or <code>None</code>, optional</dt>
+<dd>Magnitude axis limits as tuple <code>(lower, upper)</code></dd>
+<dt><strong><code>tlim</code></strong> :&ensp;<code>tuple</code> or <code>None</code>, optional</dt>
+<dd>Time axis limits as tuple <code>(lower, upper)</code></dd>
+<dt><strong><code>grpdlim</code></strong> :&ensp;<code>tuple</code> or <code>None</code>, optional</dt>
+<dd>Group delay axis limit as tuple <code>(lower, upper)</code></dd>
+<dt><strong><code>dbref</code></strong> :&ensp;<code>float</code></dt>
+<dd>dB reference in magnitude plot</dd>
+<dt><strong><code>show</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Run <code>matplotlib.pyplot.show()</code></dd>
+<dt><strong><code>use_fig</code></strong> :&ensp;<code>matplotlib.pyplot.Figure</code></dt>
+<dd>Reuse an existing figure.</dd>
+<dt><strong><code>label</code></strong> :&ensp;<code>None</code>, optional</dt>
+<dd>Description</dd>
+<dt><strong><code>unwrap_phase</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>unwrap phase in phase plot</dd>
+<dt><strong><code>logf</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>If <code>True</code>, use logarithmic frequency axis.</dd>
+<dt><strong><code>third_oct_f</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Label frequency axis with third octave bands.</dd>
+<dt><strong><code>plot_kw</code></strong> :&ensp;<code>dictionary</code>, optional</dt>
+<dd>Keyword arguments passed to the <code>plt.plot</code> commands.</dd>
+<dt><strong><code>**fig_kw</code></strong></dt>
+<dd>Additional options passe to figure creation.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plot(
+    self,
+    group_delay=False,
+    slce=None,
+    flim=None,
+    dblim=None,
+    tlim=None,
+    grpdlim=None,
+    dbref=1,
+    show=False,
+    use_fig=None,
+    label=None,
+    unwrap_phase=False,
+    logf=True,
+    third_oct_f=True,
+    plot_kw={},
+    **fig_kw,
+):
+    &#34;&#34;&#34;Plot the response in both domains.
+
+    Parameters
+    ----------
+    group_delay : bool, optional
+        Display group delay instead of phase.
+    slce : numpy.lib.index_tricks.IndexExpression
+        only plot subset of responses defined by a slice. Last
+        dimension (frequency or time) is always completely taken.
+    flim : tuple or None, optional
+        Frequency axis limits as tuple `(lower, upper)`
+    dblim : tuple or None, optional
+        Magnitude axis limits as tuple `(lower, upper)`
+    tlim : tuple or None, optional
+        Time axis limits as tuple `(lower, upper)`
+    grpdlim: tuple or None, optional
+        Group delay axis limit as tuple `(lower, upper)`
+    dbref : float
+        dB reference in magnitude plot
+    show : bool, optional
+        Run `matplotlib.pyplot.show()`
+    use_fig : matplotlib.pyplot.Figure
+        Reuse an existing figure.
+    label : None, optional
+        Description
+    unwrap_phase : bool, optional
+        unwrap phase in phase plot
+    logf : bool, optional
+        If `True`, use logarithmic frequency axis.
+    third_oct_f: bool, optional
+        Label frequency axis with third octave bands.
+    plot_kw : dictionary, optional
+        Keyword arguments passed to the `plt.plot` commands.
+    **fig_kw
+        Additional options passe to figure creation.
+
+    &#34;&#34;&#34;
+    if use_fig is None:
+        fig_kw = {**{&#34;figsize&#34;: (10, 10)}, **fig_kw}
+        fig, axes = plt.subplots(nrows=3, constrained_layout=True, **fig_kw)
+    else:
+        fig = use_fig
+        axes = fig.axes
+
+    self.plot_magnitude(
+        use_ax=axes[0],
+        slce=slce,
+        dblim=dblim,
+        flim=flim,
+        dbref=dbref,
+        label=label,
+        plot_kw=plot_kw,
+        logf=logf,
+        third_oct_f=third_oct_f,
+    )
+    if group_delay:
+        self.plot_group_delay(
+            use_ax=axes[1],
+            slce=slce,
+            flim=flim,
+            ylim=grpdlim,
+            plot_kw=plot_kw,
+            logf=logf,
+            third_oct_f=third_oct_f,
+        )
+    else:
+        self.plot_phase(
+            use_ax=axes[1],
+            slce=slce,
+            flim=flim,
+            plot_kw=plot_kw,
+            unwrap=unwrap_phase,
+            logf=logf,
+            third_oct_f=third_oct_f,
+        )
+    self.plot_time(
+        use_ax=axes[2], tlim=tlim, slce=slce, plot_kw=plot_kw
+    )
+
+    if show:
+        plt.show()
+
+    return fig</code></pre>
+</details>
+</dd>
+<dt id="response.Response.plot_group_delay"><code class="name flex">
+<span>def <span class="ident">plot_group_delay</span></span>(<span>self, use_ax=None, slce=None, flim=None, label=None, ylim=None, plot_kw={}, logf=True, third_oct_f=True, **fig_kw)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Plot group delay.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plot_group_delay(
+    self,
+    use_ax=None,
+    slce=None,
+    flim=None,
+    label=None,
+    ylim=None,
+    plot_kw={},
+    logf=True,
+    third_oct_f=True,
+    **fig_kw,
+):
+    &#34;&#34;&#34;Plot group delay.&#34;&#34;&#34;
+    if use_ax is None:
+        fig_kw = {**{&#34;figsize&#34;: (10, 5)}, **fig_kw}
+        fig, ax = plt.subplots(nrows=1, constrained_layout=True, **fig_kw)
+    else:
+        ax = use_ax
+        fig = ax.get_figure()
+
+    # append frequency/time dimension to slice
+    if slce is None:
+        slce = [np.s_[:] for n in range(len(self.in_time.shape))]
+    elif isinstance(slce, tuple):
+        slce = slce + (np.s_[:],)
+    else:
+        slce = (slce, np.s_[:])
+
+    # move time / frequency axis to first dimension
+    freq_plotready = np.rollaxis(self.in_freq[tuple(slce)], -1).reshape(
+        (self.nf, -1)
+    )
+
+    df = self.freqs[1] - self.freqs[0]
+    # TODO: use scipy.signal.group_delay here as below has problem at larger delays
+    grpd = -np.gradient(np.unwrap(np.angle(freq_plotready)), df, axis=0)
+
+    plotf = ax.semilogx if logf else ax.plot
+    plotf(self.freqs, grpd, label=label, **plot_kw)
+    ax.set_xlabel(&#34;Frequency [Hz]&#34;)
+    ax.set_ylabel(&#34;Delay [s]&#34;)
+    ax.set_title(&#34;Group Delay&#34;)
+    ax.grid(True)
+
+    if flim is None:
+        lowlim = min(10, self.fs / 2 / 100)
+        flim = (lowlim, self.fs / 2)
+    ax.set_xlim(flim)
+
+    if ylim:
+        ax.set_ylim(ylim)
+
+    if label is not None:
+        ax.legend()
+
+    if third_oct_f:
+        _add_octave_band_xticks(ax)
+
+    return fig</code></pre>
+</details>
+</dd>
+<dt id="response.Response.plot_magnitude"><code class="name flex">
+<span>def <span class="ident">plot_magnitude</span></span>(<span>self, use_ax=None, slce=None, dblim=None, flim=None, dbref=1, label=None, plot_kw={}, logf=True, third_oct_f=True, **fig_kw)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Plot magnitude response.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plot_magnitude(
+    self,
+    use_ax=None,
+    slce=None,
+    dblim=None,
+    flim=None,
+    dbref=1,
+    label=None,
+    plot_kw={},
+    logf=True,
+    third_oct_f=True,
+    **fig_kw,
+):
+    &#34;&#34;&#34;Plot magnitude response.&#34;&#34;&#34;
+    # TODO: compute db limits similar to librosa.amplitude_to_db / power_to_db
+    if use_ax is None:
+        fig_kw = {**{&#34;figsize&#34;: (10, 5)}, **fig_kw}
+        fig, ax = plt.subplots(nrows=1, constrained_layout=True, **fig_kw)
+    else:
+        ax = use_ax
+        fig = ax.get_figure()
+
+    # append frequency/time dimension to slice
+    if slce is None:
+        slce = [np.s_[:] for n in range(len(self.in_time.shape))]
+    elif isinstance(slce, tuple):
+        slce = slce + (np.s_[:],)
+    else:
+        slce = (slce, np.s_[:])
+
+    # move time / frequency axis to first dimension
+    freq_plotready = np.rollaxis(self.in_freq[tuple(slce)], -1).reshape(
+        (self.nf, -1)
+    )
+
+    plotf = ax.semilogx if logf else ax.plot
+    plotf(
+        self.freqs,
+        20 * np.log10(np.abs(freq_plotready / dbref)),
+        label=label,
+        **plot_kw,
+    )
+    ax.set_xlabel(&#34;Frequency [Hz]&#34;)
+    ax.set_ylabel(&#34;Magnitude [dB]&#34;)
+    ax.set_title(&#34;Frequency response&#34;)
+    ax.grid(True)
+
+    if flim is None:
+        lowlim = min(10, self.fs / 2 / 100)
+        flim = (lowlim, self.fs / 2)
+    ax.set_xlim(flim)
+
+    if dblim is not None:
+        ax.set_ylim(dblim)
+
+    if label is not None:
+        ax.legend()
+
+    if third_oct_f:
+        _add_octave_band_xticks(ax)
+
+    return fig</code></pre>
+</details>
+</dd>
+<dt id="response.Response.plot_phase"><code class="name flex">
+<span>def <span class="ident">plot_phase</span></span>(<span>self, use_ax=None, slce=None, flim=None, label=None, unwrap=False, ylim=None, plot_kw={}, logf=True, third_oct_f=True, **fig_kw)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Plot phase response.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plot_phase(
+    self,
+    use_ax=None,
+    slce=None,
+    flim=None,
+    label=None,
+    unwrap=False,
+    ylim=None,
+    plot_kw={},
+    logf=True,
+    third_oct_f=True,
+    **fig_kw,
+):
+    &#34;&#34;&#34;Plot phase response.&#34;&#34;&#34;
+    if use_ax is None:
+        fig_kw = {**{&#34;figsize&#34;: (10, 5)}, **fig_kw}
+        fig, ax = plt.subplots(nrows=1, constrained_layout=True, **fig_kw)
+    else:
+        ax = use_ax
+        fig = ax.get_figure()
+
+    # append frequency/time dimension to slice
+    if slce is None:
+        slce = [np.s_[:] for n in range(len(self.in_time.shape))]
+    elif isinstance(slce, tuple):
+        slce = slce + (np.s_[:],)
+    else:
+        slce = (slce, np.s_[:])
+
+    # move time / frequency axis to first dimension
+    freq_plotready = np.rollaxis(self.in_freq[tuple(slce)], -1).reshape(
+        (self.nf, -1)
+    )
+    phase = (
+        np.unwrap(np.angle(freq_plotready)) if unwrap else np.angle(freq_plotready)
+    )
+
+    plotf = ax.semilogx if logf else ax.plot
+    plotf(self.freqs, phase, label=label, **plot_kw)
+    ax.set_xlabel(&#34;Frequency [Hz]&#34;)
+    ax.set_ylabel(&#34;Phase [rad]&#34;)
+    ax.set_title(&#34;Phase response&#34;)
+    ax.grid(True)
+
+    if flim is None:
+        lowlim = min(10, self.fs / 2 / 100)
+        flim = (lowlim, self.fs / 2)
+    ax.set_xlim(flim)
+    if ylim:
+        ax.set_ylim(ylim)
+
+    if label is not None:
+        ax.legend()
+
+    if third_oct_f:
+        _add_octave_band_xticks(ax)
+
+    return fig</code></pre>
+</details>
+</dd>
+<dt id="response.Response.plot_power_in_bands"><code class="name flex">
+<span>def <span class="ident">plot_power_in_bands</span></span>(<span>self, bands=None, use_ax=None, barkwargs={}, avgaxis=None, dbref=1, **figkwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Plot signal's power in bands.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>bands</code></strong> :&ensp;<code>list</code> or <code>None</code>, optional</dt>
+<dd>List of tuples (f_center, f_lower, f_upper). If <code>None</code>, use third octave
+bands.</dd>
+<dt><strong><code>use_ax</code></strong> :&ensp;<code>matplotlib.axis.Axis</code> or <code>None</code>, optional</dt>
+<dd>Plot into this axis.</dd>
+<dt><strong><code>barkwargs</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Keyword arguments to <code>axis.bar</code></dd>
+<dt><strong><code>avgaxis</code></strong> :&ensp;<code>int, tuple</code> or <code>None</code></dt>
+<dd>Average power over these axes.</dd>
+<dt><strong><code>dbref</code></strong> :&ensp;<code>float</code></dt>
+<dd>dB reference.</dd>
+<dt><strong><code>**figkwargs</code></strong></dt>
+<dd>Keyword arguments passed to plt.subplots</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>P</code></strong> :&ensp;<code>ndarray</code></dt>
+<dd>Power in bands</dd>
+<dt><strong><code>fc</code></strong> :&ensp;<code>ndarray</code></dt>
+<dd>Band frequencies</dd>
+<dt><strong><code>fig</code></strong> :&ensp;<code>matplotlib.figure.Figure</code></dt>
+<dd>Figure</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plot_power_in_bands(
+    self, bands=None, use_ax=None, barkwargs={}, avgaxis=None, dbref=1, **figkwargs
+):
+    &#34;&#34;&#34;Plot signal&#39;s power in bands.
+
+    Parameters
+    ----------
+    bands : list or None, optional
+        List of tuples (f_center, f_lower, f_upper). If `None`, use third octave
+        bands.
+    use_ax : matplotlib.axis.Axis or None, optional
+        Plot into this axis.
+    barkwargs : dict
+        Keyword arguments to `axis.bar`
+    avgaxis : int, tuple or None
+        Average power over these axes.
+    dbref : float
+        dB reference.
+    **figkwargs
+        Keyword arguments passed to plt.subplots
+
+    Returns
+    -------
+    P : ndarray
+        Power in bands
+    fc : ndarray
+        Band frequencies
+    fig : matplotlib.figure.Figure
+        Figure
+
+    &#34;&#34;&#34;
+    P, fc = self.power_in_bands(bands=bands, avgaxis=avgaxis)
+
+    nbands = P.shape[-1]
+    P = np.atleast_2d(P).reshape((-1, nbands))
+
+    if use_ax is None:
+        fig, ax = plt.subplots(**figkwargs)
+    else:
+        ax = use_ax
+        fig = ax.get_figure()
+
+    xticks = range(1, nbands + 1)
+    for i in range(P.shape[0]):
+        ax.bar(xticks, 10 * np.log10(P[i] / dbref ** 2), **barkwargs)
+    ax.set_xticks(xticks)
+    ax.set_xticklabels([&#34;{:.0f}&#34;.format(f) for f in fc], rotation=&#34;vertical&#34;)
+    ax.grid(True)
+    ax.set_xlabel(&#34;Band&#39;s center frequencies [Hz]&#34;)
+    ax.set_ylabel(&#34;Power [dB]&#34;)
+
+    return (P, fc, fig)</code></pre>
+</details>
+</dd>
+<dt id="response.Response.plot_time"><code class="name flex">
+<span>def <span class="ident">plot_time</span></span>(<span>self, use_ax=None, slce=None, tlim=None, ylim=None, label=None, plot_kw={}, **fig_kw)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Plot time response.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plot_time(
+    self,
+    use_ax=None,
+    slce=None,
+    tlim=None,
+    ylim=None,
+    label=None,
+    plot_kw={},
+    **fig_kw,
+):
+    &#34;&#34;&#34;Plot time response.&#34;&#34;&#34;
+    if use_ax is None:
+        fig_kw = {**{&#34;figsize&#34;: (10, 5)}, **fig_kw}
+        fig, ax = plt.subplots(nrows=1, constrained_layout=True, **fig_kw)
+    else:
+        ax = use_ax
+        fig = ax.get_figure()
+
+    # append frequency/time dimension to slice
+    if slce is None:
+        slce = [np.s_[:] for n in range(len(self.in_time.shape))]
+    elif isinstance(slce, tuple):
+        slce = slce + (np.s_[:],)
+    else:
+        slce = (slce, np.s_[:])
+
+    time_plotready = np.rollaxis(self.in_time[tuple(slce)], -1).reshape(
+        (self.nt, -1)
+    )
+
+    ax.plot(self.times, time_plotready, label=label, **plot_kw)
+    ax.set_xlabel(&#34;Time [s]&#34;)
+    ax.set_ylabel(&#34;&#34;)
+    ax.set_title(&#34;Time response&#34;)
+    ax.grid(True)
+
+    if tlim:
+        ax.set_xlim(tlim)
+    if ylim:
+        ax.set_ylim(ylim)
+
+    if label is not None:
+        ax.legend()
+
+    return fig</code></pre>
+</details>
+</dd>
+<dt id="response.Response.power_in_bands"><code class="name flex">
+<span>def <span class="ident">power_in_bands</span></span>(<span>self, bands=None, avgaxis=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Compute power of signal in third octave bands.</p>
+<p>Power(band) =
+1/T
+integral
+|X(f)| ** 2 df
+f in band</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>bands</code></strong> :&ensp;<code>list</code> of <code>tuples, length nbands optional</code></dt>
+<dd>Center, lower and upper frequencies of bands.</dd>
+<dt><strong><code>avgaxis</code></strong> :&ensp;<code>int, tuple</code> or <code>None</code></dt>
+<dd>Average result over these axis</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>P</code></strong> :&ensp;<code>ndarray, shape (&hellip;, nbands)</code></dt>
+<dd>Power in bands</dd>
+<dt><strong><code>fcs</code></strong> :&ensp;<code>list, length nbands</code></dt>
+<dd>Center frequencies of bands</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def power_in_bands(self, bands=None, avgaxis=None):
+    &#34;&#34;&#34;Compute power of signal in third octave bands.
+
+    Power(band) =   1/T  integral  |X(f)| ** 2 df
+                        f in band
+
+    Parameters
+    ----------
+    bands : list of tuples, length nbands optional
+        Center, lower and upper frequencies of bands.
+    avgaxis: int, tuple or None
+        Average result over these axis
+
+    Returns
+    -------
+    P: ndarray, shape (..., nbands)
+        Power in bands
+    fcs: list, length nbands
+        Center frequencies of bands
+
+    &#34;&#34;&#34;
+    if bands is None:
+        bands = _third_octave_bands
+
+    # center frequencies
+    fcs = np.asarray([b[0] for b in bands])
+    Npow2 = 2 ** (self.nt - 1).bit_length()
+    f = np.fft.fftfreq(Npow2, d=1 / self.fs)
+
+    shape = list(self.in_freq.shape)
+    shape[-1] = len(bands)
+    P = np.zeros(shape)
+    for i, (fc, fl, fu) in enumerate(bands):
+        if fu &lt; self.fs / 2:  # include only bands in frequency range
+            iband = np.logical_and(fl &lt;= f, f &lt; fu)
+            P[..., i] = np.sum(
+                np.abs(np.fft.fft(self.in_time, n=Npow2, axis=-1)[..., iband]) ** 2
+                * 2  # energy from negative and positive frequencies
+                * self.dt
+                / self.nt
+                / self.time_length,
+                axis=-1,
+            )
+        else:
+            P[..., i] = 0
+
+    if avgaxis is not None:
+        P = P.mean(axis=avgaxis)
+
+    return P, fcs</code></pre>
+</details>
+</dd>
+<dt id="response.Response.psd"><code class="name flex">
+<span>def <span class="ident">psd</span></span>(<span>self, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Compute the power spectral density of the signal.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>kwargs</code></strong></dt>
+<dd>keword arguments passed to scipy.signal.welch</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>f</code></strong> :&ensp;<code>ndarray</code></dt>
+<dd>Array of sample frequencies.</dd>
+<dt><strong><code>Pxx</code></strong> :&ensp;<code>ndarray</code></dt>
+<dd>Power spectral density of time signal.</dd>
+</dl>
+<h2 id="notes">Notes</h2>
+<p>Use scaling='density' for power per bin bandwidth and scaling='spectrum' for
+power per bin.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def psd(self, **kwargs):
+    &#34;&#34;&#34;Compute the power spectral density of the signal.
+
+    Parameters
+    ----------
+    kwargs
+        keword arguments passed to scipy.signal.welch
+
+    Returns
+    -------
+    f : ndarray
+        Array of sample frequencies.
+    Pxx : ndarray
+        Power spectral density of time signal.
+
+    Notes
+    -----
+    Use scaling=&#39;density&#39; for power per bin bandwidth and scaling=&#39;spectrum&#39; for
+    power per bin.
+
+    &#34;&#34;&#34;
+    return welch(self.in_time, fs=self.fs, **kwargs)</code></pre>
+</details>
+</dd>
+<dt id="response.Response.resample"><code class="name flex">
+<span>def <span class="ident">resample</span></span>(<span>self, fs_new, normalize='same_gain', window=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Resample using Fourier method.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>fs_new</code></strong> :&ensp;<code>int</code></dt>
+<dd>New sample rate</dd>
+<dt><strong><code>normalize</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>If 'same_gain', normalize such that the gain is the same
+as the original signal. If 'same_amplitude', amplitudes will be preserved.</dd>
+<dt><strong><code>window</code></strong> :&ensp;<code>None</code>, optional</dt>
+<dd>Passed to scipy.signal.resample.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="response.Response" href="#response.Response">Response</a></code></dt>
+<dd>New resampled response object.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If resulting number of samples would be a non-integer.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def resample(self, fs_new, normalize=&#34;same_gain&#34;, window=None):
+    &#34;&#34;&#34;Resample using Fourier method.
+
+    Parameters
+    ----------
+    fs_new : int
+        New sample rate
+    normalize : str, optional
+        If &#39;same_gain&#39;, normalize such that the gain is the same
+        as the original signal. If &#39;same_amplitude&#39;, amplitudes will be preserved.
+    window : None, optional
+        Passed to scipy.signal.resample.
+
+    Returns
+    -------
+    Response
+        New resampled response object.
+
+    Raises
+    ------
+    ValueError
+        If resulting number of samples would be a non-integer.
+
+    &#34;&#34;&#34;
+    if fs_new == self.fs:
+        return self
+
+    nt_new = fs_new * self.time_length
+
+    if nt_new % 1 != 0:
+        raise ValueError(
+            &#34;New number of samples must be integer, but is {}&#34;.format(nt_new)
+        )
+
+    nt_new = int(nt_new)
+
+    h_new = resample(self.in_time, nt_new, axis=-1, window=window)
+
+    if normalize == &#34;same_gain&#34;:
+        h_new *= self.nt / nt_new
+    elif normalize == &#34;same_amplitude&#34;:
+        pass
+    else:
+        raise ValueError(
+            &#34;Expected &#39;same_gain&#39; or &#39;same_amplitude&#39;, got %s&#34; % (normalize,)
+        )
+
+    return self.from_time(fs_new, h_new)</code></pre>
+</details>
+</dd>
+<dt id="response.Response.resample_poly"><code class="name flex">
+<span>def <span class="ident">resample_poly</span></span>(<span>self, fs_new, normalize='same_gain', window=('kaiser', 5.0))</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Resample using polyphase filtering.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>fs_new</code></strong> :&ensp;<code>int</code></dt>
+<dd>New sample rate</dd>
+<dt><strong><code>normalize</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>If 'same_gain', normalize such that the gain is the same
+as the original signal. If 'same_amplitude', amplitudes will be preserved.</dd>
+<dt><strong><code>window</code></strong> :&ensp;<code>None</code>, optional</dt>
+<dd>Passed to scipy.signal.resample_poly.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="response.Response" href="#response.Response">Response</a></code></dt>
+<dd>New resampled response object.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def resample_poly(self, fs_new, normalize=&#34;same_gain&#34;, window=(&#34;kaiser&#34;, 5.0)):
+    &#34;&#34;&#34;Resample using polyphase filtering.
+
+    Parameters
+    ----------
+    fs_new : int
+        New sample rate
+    normalize : str, optional
+        If &#39;same_gain&#39;, normalize such that the gain is the same
+        as the original signal. If &#39;same_amplitude&#39;, amplitudes will be preserved.
+    window : None, optional
+        Passed to scipy.signal.resample_poly.
+
+    Returns
+    -------
+    Response
+        New resampled response object.
+
+    &#34;&#34;&#34;
+    if fs_new == self.fs:
+        return self
+
+    ratio = Fraction(fs_new, self.fs)
+    up = ratio.numerator
+    down = ratio.denominator
+
+    if up &gt; 1000 or down &gt; 1000:
+        print(&#34;Warning: resampling with high ratio {}/{}&#34;.format(up, down))
+
+    h_new = resample_poly(self.in_time, up, down, axis=-1, window=window)
+
+    if normalize == &#34;same_gain&#34;:
+        h_new *= down / up
+    elif normalize == &#34;same_amplitude&#34;:
+        pass
+    else:
+        raise ValueError(
+            &#34;Expected &#39;same_gain&#39; or &#39;same_amplitude&#39;, got %s&#34; % (normalize,)
+        )
+
+    return self.from_time(fs_new, h_new)</code></pre>
+</details>
+</dd>
+<dt id="response.Response.time_window"><code class="name flex">
+<span>def <span class="ident">time_window</span></span>(<span>self, startwindow, stopwindow, window='hann')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Apply time domain windows.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>startwindow</code></strong> :&ensp;<code>None</code> or <code>tuple</code></dt>
+<dd>Tuple (t1, t2) with beginning and end times of window opening.</dd>
+<dt><strong><code>stopwindow</code></strong> :&ensp;<code>None</code> or <code>tuple</code></dt>
+<dd>Tuple (t1, t2) with beginning and end times of window closing.</dd>
+<dt><strong><code>window</code></strong> :&ensp;<code>string</code> or <code>tuple</code> of <code>string and parameter values</code>, optional</dt>
+<dd>Desired window to use. See scipy.signal.get_window for a list of
+windows and required parameters.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="response.Response" href="#response.Response">Response</a></code></dt>
+<dd>Time windowed response object</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def time_window(self, startwindow, stopwindow, window=&#34;hann&#34;):
+    &#34;&#34;&#34;Apply time domain windows.
+
+    Parameters
+    ----------
+    startwindow : None or tuple
+        Tuple (t1, t2) with beginning and end times of window opening.
+    stopwindow : None or tuple
+        Tuple (t1, t2) with beginning and end times of window closing.
+    window : string or tuple of string and parameter values, optional
+        Desired window to use. See scipy.signal.get_window for a list of
+        windows and required parameters.
+
+    Returns
+    -------
+    Response
+        Time windowed response object
+
+    &#34;&#34;&#34;
+    n = self.times.size
+    twindow = _time_window(self.fs, n, startwindow, stopwindow, window=window)
+    new_response = self.from_time(self.fs, self.in_time * twindow)
+
+    return new_response</code></pre>
+</details>
+</dd>
+<dt id="response.Response.timecrop"><code class="name flex">
+<span>def <span class="ident">timecrop</span></span>(<span>self, start, end)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Crop time response.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>start</code></strong>, <strong><code>end</code></strong> :&ensp;<code>float</code></dt>
+<dd>Start and end times in seconds. Does not include sample at t=end. Use
+end=None to force inclusion of last sample.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="response.Response" href="#response.Response">Response</a></code></dt>
+<dd>New Response object with cropped time.</dd>
+</dl>
+<h2 id="notes">Notes</h2>
+<p>Creates new Response object.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="python-repl">&gt;&gt;&gt; import numpy as np
+&gt;&gt;&gt; from response import Response
+&gt;&gt;&gt; r = Response.from_time(100, np.random.normal(size=100))
+&gt;&gt;&gt; split = 0.2
+</code></pre>
+<p>The following holds:</p>
+<pre><code class="python-repl">&gt;&gt;&gt; np.all(np.concatenate(
+...     (
+...         r.timecrop(0, split).in_time,
+...         r.timecrop(split, None).in_time,
+...     ),
+...     axis=-1,
+... ) == r.in_time)
+True
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def timecrop(self, start, end):
+    &#34;&#34;&#34;Crop time response.
+
+    Parameters
+    ----------
+    start, end : float
+        Start and end times in seconds. Does not include sample at t=end. Use
+        end=None to force inclusion of last sample.
+
+    Returns
+    -------
+    Response
+        New Response object with cropped time.
+
+    Notes
+    -----
+    Creates new Response object.
+
+    Examples
+    --------
+    &gt;&gt;&gt; import numpy as np
+    &gt;&gt;&gt; from response import Response
+    &gt;&gt;&gt; r = Response.from_time(100, np.random.normal(size=100))
+    &gt;&gt;&gt; split = 0.2
+
+    The following holds:
+
+    &gt;&gt;&gt; np.all(np.concatenate(
+    ...     (
+    ...         r.timecrop(0, split).in_time,
+    ...         r.timecrop(split, None).in_time,
+    ...     ),
+    ...     axis=-1,
+    ... ) == r.in_time)
+    True
+
+    &#34;&#34;&#34;
+    if start &lt; 0:
+        start += self.time_length
+    if end is not None and end &lt; 0:
+        end += self.time_length
+    assert 0 &lt;= start &lt; self.time_length
+    assert end is None or (0 &lt; end &lt;= self.time_length)
+
+    _, i_start = _find_nearest(self.times, start)
+    if end is None:
+        i_end = None
+    else:
+        _, i_end = _find_nearest(self.times, end)
+
+    h = self.in_time[..., i_start:i_end]
+
+    new_response = self.from_time(self.fs, h)
+
+    return new_response</code></pre>
+</details>
+</dd>
+<dt id="response.Response.window_around_peak"><code class="name flex">
+<span>def <span class="ident">window_around_peak</span></span>(<span>self, tleft, tright, alpha, return_window=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Time window each impulse response around its peak value.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>tleft</code></strong>, <strong><code>tright</code></strong> :&ensp;<code>float</code></dt>
+<dd>Window starts <code>tleft</code> seconds before and ends <code>tright</code> seconds after maximum
+of impulse response.</dd>
+<dt><strong><code>alpha</code></strong> :&ensp;<code>float</code></dt>
+<dd><code>alpha</code> parameter of <code>scipy.signal.tukey</code> window.</dd>
+<dt><strong><code>return_window</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Also return used time window</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="response.Response" href="#response.Response">Response</a></code></dt>
+<dd>Time windowed response object.</dd>
+<dt><code>ndarray</code></dt>
+<dd>Time window, if <code>return_window</code> is <code>True</code>.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def window_around_peak(self, tleft, tright, alpha, return_window=False):
+    &#34;&#34;&#34;Time window each impulse response around its peak value.
+
+    Parameters
+    ----------
+    tleft, tright : float
+        Window starts `tleft` seconds before and ends `tright` seconds after maximum
+        of impulse response.
+    alpha : float
+        `alpha` parameter of `scipy.signal.tukey` window.
+    return_window : bool, optional
+        Also return used time window
+
+    Returns
+    -------
+    Response
+        Time windowed response object.
+    ndarray
+        Time window, if `return_window` is `True`.
+
+    &#34;&#34;&#34;
+    window = _construct_window_around_peak(
+        self.fs, self.in_time, tleft, tright, alpha=alpha
+    )
+
+    if return_window:
+        return self.from_time(self.fs, self.in_time * window), window
+
+    return self.from_time(self.fs, self.in_time * window)</code></pre>
+</details>
+</dd>
+<dt id="response.Response.zeropad"><code class="name flex">
+<span>def <span class="ident">zeropad</span></span>(<span>self, before, after)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Zeropad time response.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>before</code></strong>, <strong><code>after</code></strong> :&ensp;<code>int</code></dt>
+<dd>Number of zero samples inserted before and after response.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="response.Response" href="#response.Response">Response</a></code></dt>
+<dd>Zeropadded response</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def zeropad(self, before, after):
+    &#34;&#34;&#34;Zeropad time response.
+
+    Parameters
+    ----------
+    before, after : int
+        Number of zero samples inserted before and after response.
+
+    Returns
+    -------
+    Response
+        Zeropadded response
+
+    &#34;&#34;&#34;
+    assert before % 1 == 0
+    assert after % 1 == 0
+    dims = self.in_time.ndim
+
+    pad_width = [(0, 0) for n in range(dims)]
+    pad_width[-1] = (int(before), int(after))
+
+    h = np.pad(self.in_time, pad_width, &#34;constant&#34;)
+
+    return self.from_time(self.fs, h)</code></pre>
+</details>
+</dd>
+<dt id="response.Response.zeropad_to_length"><code class="name flex">
+<span>def <span class="ident">zeropad_to_length</span></span>(<span>self, n)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Zeropad time response to specific length.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="response.Response" href="#response.Response">Response</a></code></dt>
+<dd>New response object with new length n.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def zeropad_to_length(self, n):
+    &#34;&#34;&#34;Zeropad time response to specific length.
+
+    Returns
+    -------
+    Response
+        New response object with new length n.
+
+    &#34;&#34;&#34;
+    oldn = self.nt
+    assert n &gt;= oldn
+    return self.zeropad(0, n - oldn)</code></pre>
+</details>
+</dd>
+<dt id="response.Response.zeropad_to_power_of_2"><code class="name flex">
+<span>def <span class="ident">zeropad_to_power_of_2</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Pad time response for length of power of 2.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="response.Response" href="#response.Response">Response</a></code></dt>
+<dd>New response object with larger, power of 2 length.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def zeropad_to_power_of_2(self):
+    &#34;&#34;&#34;Pad time response for length of power of 2.
+
+    Returns
+    -------
+    Response
+        New response object with larger, power of 2 length.
+
+    &#34;&#34;&#34;
+    # https://stackoverflow.com/questions/14267555/find-the-smallest-power-of-2-greater-than-n-in-python
+    n = 2 ** (self.nt - 1).bit_length()
+    return self.zeropad(0, n - self.nt)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="two-column">
+<li><code><a title="response.align" href="#response.align">align</a></code></li>
+<li><code><a title="response.delay" href="#response.delay">delay</a></code></li>
+<li><code><a title="response.delay_between" href="#response.delay_between">delay_between</a></code></li>
+<li><code><a title="response.freq_vector" href="#response.freq_vector">freq_vector</a></code></li>
+<li><code><a title="response.noisify" href="#response.noisify">noisify</a></code></li>
+<li><code><a title="response.time_vector" href="#response.time_vector">time_vector</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="response.Response" href="#response.Response">Response</a></code></h4>
+<ul class="">
+<li><code><a title="response.Response.add_noise" href="#response.Response.add_noise">add_noise</a></code></li>
+<li><code><a title="response.Response.amplitude_spectrum" href="#response.Response.amplitude_spectrum">amplitude_spectrum</a></code></li>
+<li><code><a title="response.Response.circdelay" href="#response.Response.circdelay">circdelay</a></code></li>
+<li><code><a title="response.Response.delay" href="#response.Response.delay">delay</a></code></li>
+<li><code><a title="response.Response.export_npz" href="#response.Response.export_npz">export_npz</a></code></li>
+<li><code><a title="response.Response.export_wav" href="#response.Response.export_wav">export_wav</a></code></li>
+<li><code><a title="response.Response.filter" href="#response.Response.filter">filter</a></code></li>
+<li><code><a title="response.Response.freq_vector" href="#response.Response.freq_vector">freq_vector</a></code></li>
+<li><code><a title="response.Response.freq_window" href="#response.Response.freq_window">freq_window</a></code></li>
+<li><code><a title="response.Response.freqs" href="#response.Response.freqs">freqs</a></code></li>
+<li><code><a title="response.Response.from_freq" href="#response.Response.from_freq">from_freq</a></code></li>
+<li><code><a title="response.Response.from_time" href="#response.Response.from_time">from_time</a></code></li>
+<li><code><a title="response.Response.from_wav" href="#response.Response.from_wav">from_wav</a></code></li>
+<li><code><a title="response.Response.fs" href="#response.Response.fs">fs</a></code></li>
+<li><code><a title="response.Response.in_freq" href="#response.Response.in_freq">in_freq</a></code></li>
+<li><code><a title="response.Response.in_time" href="#response.Response.in_time">in_time</a></code></li>
+<li><code><a title="response.Response.join" href="#response.Response.join">join</a></code></li>
+<li><code><a title="response.Response.new_dirac" href="#response.Response.new_dirac">new_dirac</a></code></li>
+<li><code><a title="response.Response.nf" href="#response.Response.nf">nf</a></code></li>
+<li><code><a title="response.Response.non_causal_timecrop" href="#response.Response.non_causal_timecrop">non_causal_timecrop</a></code></li>
+<li><code><a title="response.Response.normalize" href="#response.Response.normalize">normalize</a></code></li>
+<li><code><a title="response.Response.nt" href="#response.Response.nt">nt</a></code></li>
+<li><code><a title="response.Response.plot" href="#response.Response.plot">plot</a></code></li>
+<li><code><a title="response.Response.plot_group_delay" href="#response.Response.plot_group_delay">plot_group_delay</a></code></li>
+<li><code><a title="response.Response.plot_magnitude" href="#response.Response.plot_magnitude">plot_magnitude</a></code></li>
+<li><code><a title="response.Response.plot_phase" href="#response.Response.plot_phase">plot_phase</a></code></li>
+<li><code><a title="response.Response.plot_power_in_bands" href="#response.Response.plot_power_in_bands">plot_power_in_bands</a></code></li>
+<li><code><a title="response.Response.plot_time" href="#response.Response.plot_time">plot_time</a></code></li>
+<li><code><a title="response.Response.power_in_bands" href="#response.Response.power_in_bands">power_in_bands</a></code></li>
+<li><code><a title="response.Response.psd" href="#response.Response.psd">psd</a></code></li>
+<li><code><a title="response.Response.resample" href="#response.Response.resample">resample</a></code></li>
+<li><code><a title="response.Response.resample_poly" href="#response.Response.resample_poly">resample_poly</a></code></li>
+<li><code><a title="response.Response.time_length" href="#response.Response.time_length">time_length</a></code></li>
+<li><code><a title="response.Response.time_vector" href="#response.Response.time_vector">time_vector</a></code></li>
+<li><code><a title="response.Response.time_window" href="#response.Response.time_window">time_window</a></code></li>
+<li><code><a title="response.Response.timecrop" href="#response.Response.timecrop">timecrop</a></code></li>
+<li><code><a title="response.Response.times" href="#response.Response.times">times</a></code></li>
+<li><code><a title="response.Response.window_around_peak" href="#response.Response.window_around_peak">window_around_peak</a></code></li>
+<li><code><a title="response.Response.zeropad" href="#response.Response.zeropad">zeropad</a></code></li>
+<li><code><a title="response.Response.zeropad_to_length" href="#response.Response.zeropad_to_length">zeropad_to_length</a></code></li>
+<li><code><a title="response.Response.zeropad_to_power_of_2" href="#response.Response.zeropad_to_power_of_2">zeropad_to_power_of_2</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.1</a>.</p>
+</footer>
+</body>
+</html>

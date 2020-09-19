@@ -9,7 +9,7 @@ _Your handy frequency and impulse response processing object!_
 [![codecov](https://codecov.io/gh/fhchl/Response/branch/master/graph/badge.svg)](https://codecov.io/gh/fhchl/Response)
 
 This module supplies the `Response` class: an abstraction of frequency and
-impulse responses and a set of handy methods their its processing. It implements a
+impulse responses and a set of handy methods for their processing. It implements a
 [fluent interface][1] for chaining the processing commands.
 
 Find the documentation [here][2] and the source code on [GitHub][3].

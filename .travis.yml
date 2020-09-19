@@ -8,11 +8,11 @@ matrix:
       dist: xenial
       sudo: true
 install:
-  - pip install 'pytest>=3.6' pytest-cov codecov pydocstyle pycodestyle
-  - python setup.py install
+  - pip install codecov
+  - pip install .[dev]
 # command to run tests
 script:
-  - pytest --cov=response tests
+  - pytest --cov=response --doctest-modules tests
   - pydocstyle response.py
   - pycodestyle response.py
 after_success:
