@@ -18,7 +18,9 @@ Git commit messages follow [Angular style][4]. Uses [python-semantic-release][5]
 
 Create documentation with
 
+    rm -rf docs
     pdoc --html --force --output-dir docs response.py
+    mv docs/response.html docs/index.html
 
 [1]: https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt
 [2]: http://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_numpy.html
