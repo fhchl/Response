@@ -118,3 +118,10 @@ class TestFunctions:
 
         assert np.all(rolled[:, :1] == 1)
         assert np.all(rolled[:, 1:] == 0)
+
+    def test_non_causal_set_to_length(self):
+        h = [1, 0, 0, 1]
+        r = Response.from_time(1, h)
+
+        npt.assert_equal(r.non_causal_set_to_length(6).in_time, [1, 0, 0, 0, 0, 1])
+        npt.assert_equal(r.non_causal_set_to_length(2).in_time, [1, 1])

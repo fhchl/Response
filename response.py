@@ -854,6 +854,42 @@ class Response(object):
 
         return new_response
 
+    
+    def non_causal_set_to_length(self, n):
+        """Change length of non-causal impulse response.
+
+        "FFT shift, cropping / adding on both ends, iFFT shift"
+
+        Parameters
+        ----------
+        n : float
+            final length in samples
+
+        Returns
+        -------
+        Response
+            New Response object with new length n.
+
+        """
+        if n == self.nt:
+            # return copy
+            return self.from_time(self.fs, self.in_time)
+        elif n < self.nt:
+            cut = (self.nt - n) / 2
+            h = np.fft.ifftshift(np.fft.fftshift(self.in_time)[..., int(np.floor(cut)):int(-np.ceil(cut))])
+        elif n > self.nt:
+            add =  (n - self.nt) / 2
+            h = np.fft.ifftshift(
+                Response.from_time(self.fs, np.fft.fftshift(self.in_time))
+                .zeropad(np.floor(add), np.ceil(add)).in_time
+            )
+        new_response = self.from_time(self.fs, h)
+
+        assert new_response.nt == n
+
+        return new_response
+
+
     def zeropad(self, before, after):
         """Zeropad time response.
 
